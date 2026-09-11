@@ -18,5 +18,24 @@
 - **Warunek usunięcia:** Nest czyta tabele cennika `evapremium_shop` przez
   adapter za tymi samymi portami (bez zmiany kontraktu `listCategoryVariants` /
   `quotePrice`). Fixture zostaje w testach.
-- **Nie robić przy usuwaniu:** HTTP czatu, Mastra, Bitrix, apply migracji na
+-   **Nie robić przy usuwaniu:** HTTP czatu, Mastra, Bitrix, apply migracji na
   PROD bez zgody, sprzężenie z `TemplateCascadeService`.
+
+## TD-002 — węzły context tree in-memory zamiast `eva_bot.context_nodes`
+
+- **Slice:** 3 (context tree)
+- **Stan:** otwarte
+- **Priorytet:** średni (blokuje prawdziwe FAQ/klauzule ze sklepu, nie blokuje kontraktu lookupu)
+- **Kompromis:** `ContextTreeModule` wiąże port `ContextNodeCatalog` z fixture
+  in-memory (`api/src/context-tree/in-memory/`). Hit/miss i `body` w teście
+  i w procesie Nest pochodzą z tej listy, nie z PROD. Migracja tabeli jest
+  w repo (`supabase/migrations/20260912001000_context_nodes.sql`), bez apply.
+- **Wpływ:** treść liści (w tym puste seed `chat-zapis` / `zgoda-lead`) w
+  aplikacji nie odzwierciedla aktualnej tabeli `eva_bot.context_nodes`.
+  Ryzyko rozjazdu faktów po wklejeniu treści przez biznes. LLM nadal nie
+  jest źródłem FAQ.
+- **Warunek usunięcia:** Nest czyta `eva_bot.context_nodes` przez adapter za
+  tym samym portem (bez zmiany kontraktu `lookupLeaf` / `lookupContextLeaf`).
+  Fixture zostaje w testach.
+- **Nie robić przy usuwaniu:** HTTP czatu, Mastra, Bitrix, apply migracji na
+  PROD bez zgody, sprzężenie z `PricingModule` / `TemplateCascadeService`.

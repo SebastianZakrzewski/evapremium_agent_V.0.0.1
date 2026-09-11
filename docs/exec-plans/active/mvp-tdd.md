@@ -36,10 +36,11 @@ kwota z `pricing_matrix`; brak wariantu na kategorii → błąd domeny, nie licz
 Kod: lista z `pricing_category_variants`, lookup macierzy. Katalogi in-memory
 (dług TD-001); bez HTTP.
 
-## Slice 3 — context tree
+## Slice 3 — context tree (zrobione)
 
 Migracja `eva_bot.context_nodes`. Testy: slug liścia zwraca `body`; brak liścia
 → miss. Seed pustych `chat-zapis`, `zgoda-lead` (body uzupełnia biznes).
+Katalog in-memory (dług TD-002); bez apply PROD.
 
 ## Slice 4 — HTTP + Mastra
 

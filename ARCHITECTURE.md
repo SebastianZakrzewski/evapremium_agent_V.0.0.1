@@ -3,10 +3,11 @@
 ## Stan implementacji
 
 Szkielet monorepo (npm workspaces): `api/` (NestJS + Express, bez Mastry)
-i `widget/` (React / Vite). Kaskada szablonu i **wycena** są w `api` (domena +
-serwisy Nest, katalogi in-memory / fixture). Moduły nie importują się nawzajem;
-wycena dostaje `dealerPricingCategoryKey` jako dane, nie serwis kaskady.
-Brak HTTP czatu i leada. Katalogi nie biją jeszcze do PROD.
+i `widget/` (React / Vite). Kaskada szablonu, **wycena** i **context tree** są
+w `api` (domena + serwisy Nest, katalogi in-memory / fixture). Moduły nie
+importują się nawzajem; wycena dostaje `dealerPricingCategoryKey` jako dane,
+lookup drzewa — `slug`. Brak HTTP czatu i leada. Katalogi i migracja
+`context_nodes` nie biją jeszcze do PROD.
 Poniżej są **zaakceptowane granice MVP**.
 
 Ten dokument jest źródłem prawdy o architekturze wysokiego poziomu.
@@ -56,10 +57,12 @@ serwerowo (nie anon z widgetu).
 2. **Cennik:** `pricing_vehicle_categories`, `pricing_variants`,
    `pricing_category_variants`, `pricing_matrix` (cena = kategoria + wariant +
    `mat_type`). Zakres: wszystkie szablony z tabeli, nie podzbiór „hitów”.
-3. **Context tree:** `eva_bot.context_nodes` (do utworzenia). Kolumny: `id`,
+3. **Context tree:** `eva_bot.context_nodes` (migracja w repo, bez apply PROD).
+   Kolumny: `id`,
    `parent_id` (NULL = korzeń), `slug`, `title`, `body` (puste u gałęzi, treść
-   u liścia), `sort_order`, `is_active`. Nest schodzi po `slug` / rodzicu.
-   **Bez RAG.** Wymagane liście na start: `chat-zapis` (informacja o transkrypcie),
+   u liścia), `sort_order`, `is_active`. Nest lookup po unikalnym `slug`
+   (aktywny liść → `body`, w tym puste seed; gałąź / brak / nieaktywny → miss).
+   W procesie: fixture in-memory za portem (jak kaskada i wycena). **Bez RAG.** Wymagane liście na start: `chat-zapis` (informacja o transkrypcie),
    `zgoda-lead` (klauzula przy telefonie/mailu). **Treść prawną wkleja biznes**
    ze sklepu; agent jej nie generuje. Dalsze FAQ (dostawa, pielęgnacja, …) jako
    kolejne liście.
