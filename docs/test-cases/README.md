@@ -31,7 +31,8 @@ docs/test-cases/
 │   ├── domain/               ← czysta logika (bez Nest / HTTP)
 │   ├── templates/            ← serwis kaskady / porty
 │   ├── pricing/              ← serwis wyceny / porty
-│   └── context-tree/         ← serwis liści FAQ / porty
+│   ├── context-tree/         ← serwis liści FAQ / porty
+│   └── chat/                 ← kontrakt HTTP czatu
 └── widget/                   ← UI widgetu
 ```
 
@@ -76,4 +77,5 @@ Przy wątpliwości wybierz wyższy poziom.
 | Resolver kaskady | [api/templates/template-cascade-resolver.md](api/templates/template-cascade-resolver.md) | `api/src/templates/template-cascade.resolver.spec.ts` |
 | Resolver wyceny | [api/pricing/pricing-resolver.md](api/pricing/pricing-resolver.md) | `api/src/pricing/pricing.resolver.spec.ts` |
 | Resolver context tree | [api/context-tree/context-tree-resolver.md](api/context-tree/context-tree-resolver.md) | `api/src/context-tree/context-tree.resolver.spec.ts` |
+| Kontrakt HTTP czatu | [api/chat/chat-http.md](api/chat/chat-http.md) | `api/src/chat/chat.contract.spec.ts` |
 | Widget szkielet | [widget/app-skeleton.md](widget/app-skeleton.md) | `widget/src/App.test.tsx` |

@@ -39,3 +39,58 @@
   Fixture zostaje w testach.
 - **Nie robić przy usuwaniu:** HTTP czatu, Mastra, Bitrix, apply migracji na
   PROD bez zgody, sprzężenie z `PricingModule` / `TemplateCascadeService`.
+
+## TD-003 — CORS i routing HTTP bez bootu Nest 12 w Jest
+
+- **Slice:** 4 (HTTP + Mastra)
+- **Stan:** otwarte
+- **Priorytet:** średni (kontrakt originów i ścieżek jest w kodzie; Jest nie
+  ćwiczy Express)
+- **Kompromis:** `configureChatHttp` w `api/src/main.ts` ustawia CORS z
+  `SHOP_CORS_ORIGINS` (`docs/SECURITY.md`). `ChatController` ma
+  `POST /v1/sessions` i `POST /v1/sessions/:sessionId/messages`. Test
+  `chat.contract.spec.ts` nie startuje aplikacji Nest (Jest + Nest 12 ESM);
+  CORS to asercja listy originów, sesja/wiadomość — `InMemoryChatSessions` +
+  `postChatMessage` + `StubChatAgent`.
+- **Wpływ:** regresja `enableCors` / mapowania ścieżek Express może przejść
+  `npm test`, dopóki lista originów i funkcja `postChatMessage` są poprawne.
+  Lista originów nadal nie jest szersza niż sklep.
+- **Warunek usunięcia:** test HTTP (np. osobny runner albo Jest zdolny
+  zbootować Nest) woła prawdziwe `POST /v1/sessions` i sprawdza nagłówki CORS
+  z `configureChatHttp`, bez DeepSeek.
+- **Nie robić przy usuwaniu:** Bitrix, persistencja Supabase, apply PROD,
+  zmiana originów poza `SECURITY.md`, sprzężenie kaskady/wyceny/drzewa z
+  `chat/`.
+
+## TD-004 — sesje czatu in-memory zamiast `eva_bot.chat_sessions`
+
+- **Slice:** 4 (HTTP + Mastra)
+- **Stan:** otwarte
+- **Priorytet:** średni (blokuje transkrypt i debug w PROD, nie blokuje
+  kontraktu wiadomości)
+- **Kompromis:** `ChatService` trzyma `InMemoryChatSessions` (zbiór id w
+  procesie). Brak zapisu `chat_sessions` / `chat_messages` w Supabase — to
+  Slice 5. Restart API gubi sesje.
+- **Wpływ:** widget może dostać 404 po redeployu; brak transkryptu do leada.
+  LLM nadal nie jest magazynem sesji.
+- **Warunek usunięcia:** adapter za tym samym kontraktem `create` /
+  `assertExists` (rozszerzonym o wiadomości) pisze do `eva_bot` w Slice 5.
+  Fixture in-memory zostaje w testach.
+- **Nie robić przy usuwaniu:** lead Bitrix bez zgody, apply PROD bez zgody,
+  zmiana portu `CHAT_AGENT`, źródło ceny/faktu z LLM.
+
+## TD-005 — Mastra `generate` tylko przy `DEEPSEEK_API_KEY`
+
+- **Slice:** 4 (HTTP + Mastra)
+- **Stan:** otwarte
+- **Priorytet:** niski (CI ma zostać bez klucza i bez sieci do DeepSeek)
+- **Kompromis:** `ChatModule` wiąże `CHAT_AGENT` z `StubChatAgent`, gdy brak
+  `DEEPSEEK_API_KEY`; `MastraChatAgent` + `createEvaMastraAgent`
+  (`deepseek/deepseek-v4-flash`, `createTool` → `ShopTools`) tylko z kluczem.
+  `verify` nie woła `agent.generate`.
+- **Wpływ:** produkcyjna ścieżka tekstu modelu i tool-calling Mastry nie jest
+  w czerwonym teście; strzeżony jest kontrakt narzędzi Nest przez stub.
+- **Warunek usunięcia:** test adaptera z nagraniem/fakiem Mastry (bez żywego
+  API) albo osobny job z sekretem, poza domyślnym `npm run verify`.
+- **Nie robić przy usuwaniu:** klucz w widgecie, LLM jako źródło kwoty/SQL/id
+  szablonu, Bitrix, persistencja sesji.

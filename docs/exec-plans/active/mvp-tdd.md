@@ -42,11 +42,11 @@ Migracja `eva_bot.context_nodes`. Testy: slug liścia zwraca `body`; brak liści
 → miss. Seed pustych `chat-zapis`, `zgoda-lead` (body uzupełnia biznes).
 Katalog in-memory (dług TD-002); bez apply PROD.
 
-## Slice 4 — HTTP + Mastra
+## Slice 4 — HTTP + Mastra (zrobione)
 
 Testy kontraktu API (sesja, wiadomość, narzędzia wołają serwisy z 1–3).
 Mastra w procesie Nestu; DeepSeek za adapterem (w teście stub).
-Widget → Nest; CORS origin sklepu.
+Widget → Nest; CORS origin sklepu. Dług TD-003–005.
 
 ## Slice 5 — sesja i lead
 

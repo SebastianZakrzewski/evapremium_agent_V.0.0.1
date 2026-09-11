@@ -2,12 +2,12 @@
 
 ## Stan implementacji
 
-Szkielet monorepo (npm workspaces): `api/` (NestJS + Express, bez Mastry)
-i `widget/` (React / Vite). Kaskada szablonu, **wycena** i **context tree** są
-w `api` (domena + serwisy Nest, katalogi in-memory / fixture). Moduły nie
-importują się nawzajem; wycena dostaje `dealerPricingCategoryKey` jako dane,
-lookup drzewa — `slug`. Brak HTTP czatu i leada. Katalogi i migracja
-`context_nodes` nie biją jeszcze do PROD.
+Szkielet monorepo (npm workspaces): `api/` (NestJS + Express, Mastra w tym
+samym procesie za portem `CHAT_AGENT`) i `widget/` (React / Vite). Kaskada,
+wycena i context tree zostają serwisami Nest (in-memory). HTTP czatu:
+`POST /v1/sessions` i wiadomości; narzędzia wołają te serwisy. DeepSeek za
+adapterem Mastry (`deepseek/deepseek-v4-flash`); w teście stub bez klucza.
+CORS: originy sklepu. Brak leada Bitrix i zapisu sesji w Supabase.
 Poniżej są **zaakceptowane granice MVP**.
 
 Ten dokument jest źródłem prawdy o architekturze wysokiego poziomu.
