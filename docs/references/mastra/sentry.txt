@@ -1,0 +1,26 @@
+# Mastra — Sentry
+
+Źródło: https://mastra.ai/integrations/observability/sentry.md
+Pobrane: 2026-09-11.
+
+Pakiet: `@mastra/sentry` + `@mastra/observability`. Env: `SENTRY_DSN` (opcjonalnie `SENTRY_ENVIRONMENT`, `SENTRY_RELEASE`).
+
+```ts
+import { Observability } from '@mastra/observability'
+import { SentryExporter } from '@mastra/sentry'
+
+new Mastra({
+  observability: new Observability({
+    configs: {
+      sentry: {
+        serviceName: 'eva-bot',
+        exporters: [new SentryExporter()],
+      },
+    },
+  }),
+})
+```
+
+Albo `new SentryExporter({ dsn, tracesSampleRate })`. Prod: sample 0.1–0.2, nie 0.
+
+Span map: AGENT_RUN → `gen_ai.invoke_agent`, MODEL_GENERATION → `gen_ai.chat`, TOOL_CALL → `gen_ai.execute_tool`.

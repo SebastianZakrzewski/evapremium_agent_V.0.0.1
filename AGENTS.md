@@ -15,6 +15,7 @@ poznawania projektu, wprowadzania zmian i utrzymywania dokumentacji.
    Przy API, originach, sekretach lub PII: `docs/SECURITY.md`.
 5. Otwórz tylko pozostałe dokumenty związane z wykonywanym zadaniem.
    Implementacja MVP: `docs/exec-plans/active/mvp-tdd.md`.
+   Mastra: `docs/references/mastra/INDEX.md`, potem jeden fragment.
 6. Przed zmianą kodu sprawdź istniejące wzorce i testy.
 
 ## Zasady pracy
@@ -42,9 +43,9 @@ Nie twórz infrastruktury planów dla prostych, jednorazowych zmian.
 Przed uznaniem zadania za zakończone uruchom kontrole odpowiednie do zmienionego
 obszaru, w szczególności testy, lint, kontrolę typów i build, jeśli są dostępne.
 
-Repozytorium nie ma jeszcze zdefiniowanej wspólnej komendy weryfikacyjnej. Gdy
-pojawi się kod i narzędzia projektu, dodaj jedną kanoniczną komendę oraz opisz ją
-w tym miejscu.
+Kanoniczna weryfikacja z katalogu głównego: `npm run verify`
+(test + lint + typecheck w workspace’ach `api` i `widget`).
+Skrót tylko do testów: `npm test`.
 
 ## Utrzymanie dokumentacji
 

@@ -1,0 +1,61 @@
+# Mastra — agent i narzędzia
+
+Źródło: https://mastra.ai/docs.md , https://mastra.ai/docs/agents/tools.md
+Pobrane: 2026-09-11. Kanoniczne: mastra.ai (aktualny `@mastra/core`).
+
+## Zakazy
+
+- `model` to string `provider/model` (np. `deepseek/deepseek-v4-flash`), nie `provider:model` i nie obiekt providera, chyba że docs na to pozwalają.
+- Narzędzia TYLKO `createTool()` z `@mastra/core/tools`. Zwykły obiekt toola **milcząco nie działa**.
+- `execute(inputData, context)` — pierwszy arg = input ze schematu; drugi daje runtime (`requestContext`, `tracingContext`, `abortSignal`). Drugi można pominąć.
+- Nie instaluj AI SDK, dopóki konkretna strona Mastry tego nie każe.
+- Importy lokalne z rozszerzeniem `.ts` (Node 22+). `package.json`: `"type": "module"`.
+
+## Agent
+
+```ts
+import { Agent } from '@mastra/core/agent'
+import { Mastra } from '@mastra/core'
+
+new Agent({
+  id: 'weather-agent',
+  name: 'Weather Agent',
+  instructions: '...',
+  model: 'openai/gpt-5.6-sol', // u nas: deepseek/deepseek-v4-flash
+  tools: { weatherTool },
+})
+
+export const mastra = new Mastra({ agents: { weatherAgent } })
+const agent = mastra.getAgentById('weather-agent')
+await agent.generate('...')
+```
+
+W Nest: `MastraService.getAgent(id)` albo `agent.generate({ messages: [{ role: 'user', content }] })`.
+
+## Tool
+
+```ts
+import { createTool } from '@mastra/core/tools'
+import { z } from 'zod'
+
+export const weatherTool = createTool({
+  id: 'get-weather',
+  description: 'Get current weather for a location',
+  inputSchema: z.object({ location: z.string() }),
+  outputSchema: z.object({
+    location: z.string(),
+    temperatureCelsius: z.number(),
+    conditions: z.string(),
+  }),
+  execute: async ({ location }) => {
+    return { location, temperatureCelsius: 21, conditions: 'sunny' }
+  },
+})
+```
+
+W `execute` narzędzia EVA: wołać serwis Nest (szablon, cena, drzewo) — nie SQL z LLM.
+
+W promptcie agenta wymień narzędzia i kiedy ich używać.
+
+Pełne API generate: https://mastra.ai/reference/agents/generate.md
+createTool: https://mastra.ai/reference/tools/create-tool.md

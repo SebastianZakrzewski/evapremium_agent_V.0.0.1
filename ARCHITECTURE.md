@@ -2,8 +2,9 @@
 
 ## Stan implementacji
 
-Repozytorium nie zawiera jeszcze kodu aplikacji. Poniżej są **zaakceptowane
-granice MVP**, nie opis działającego systemu.
+Szkielet monorepo (npm workspaces): `api/` (NestJS + Express, bez Mastry)
+i `widget/` (React + Vite). Brak zachowania MVP (kaskada, wycena, HTTP czatu,
+lead). Poniżej są **zaakceptowane granice MVP**, nie opis działającego produktu.
 
 Ten dokument jest źródłem prawdy o architekturze wysokiego poziomu.
 
@@ -23,6 +24,9 @@ Zasady decyzyjne: `docs/design-docs/core-beliefs.md`.
 Kierunek zależności: sklep ładuje snippet → hostowany widget → NestJS;
 Mastra → NestJS; NestJS → Supabase; NestJS → Bitrix24 (leady).
 LLM nie sięga do bazy ani nie jest źródłem cen ani polityki sklepu.
+
+Kod w jednym gicie, pakiety `api` i `widget`. Deploy nadal rozdzielony
+(Nest na Hetznerze, widget na Vercel/CDN).
 
 | Warstwa | Technologia | Odpowiedzialność |
 | --- | --- | --- |
@@ -88,11 +92,10 @@ Szczegóły: `docs/SECURITY.md`.
 
 ## LLM
 
-Dostawca: **DeepSeek** (`https://api.deepseek.com`). Model: linia **V4 Flash**.
-W wywołaniach API używamy id **`deepseek-flash`** (aktualnie DeepSeek-V4.1-Flash).
-Alias `deepseek-v4-flash` jest legacy i też trafia na Flash. Klucz tylko po stronie
-serwera (Nest/Mastra), nigdy w widgecie. Model nie jest źródłem cen ani FAQ.
-Język rozmowy MVP: **polski**.
+Dostawca: **DeepSeek**. W Mastrze: `model: "deepseek/deepseek-v4-flash"`, env
+`DEEPSEEK_API_KEY`. API DeepSeek: id `deepseek-flash` (V4.1-Flash). Klucz tylko
+po stronie serwera. Model nie jest źródłem cen ani FAQ. Język MVP: **polski**.
+Kontekst implementacji: `docs/references/mastra/`.
 
 ## Hosting
 
@@ -141,4 +144,5 @@ zapisie rozmowy.
 - `docs/design-docs/core-beliefs.md`
 - `docs/SECURITY.md`
 - `docs/exec-plans/active/mvp-tdd.md`
+- `docs/references/mastra/INDEX.md`
 - `docs/product-specs/mvp-obsluga-klienta.md`

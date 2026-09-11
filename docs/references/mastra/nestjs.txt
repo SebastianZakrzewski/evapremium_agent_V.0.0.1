@@ -1,0 +1,49 @@
+# Mastra — NestJS
+
+Źródło: https://mastra.ai/integrations/frameworks/nestjs.md
+https://mastra.ai/reference/server/nestjs-adapter.md
+Pobrane: 2026-09-11.
+
+## Wymagania
+
+- Node `>= 22.13`
+- Platforma **Express** (`@nestjs/platform-express`). Inny adapter HTTP → `MastraModule` rzuca przy starcie (v1, tylko Express).
+- Pakiet: `@mastra/nestjs`
+
+## Rejestracja
+
+```ts
+import { MastraModule } from '@mastra/nestjs'
+import { mastra } from './mastra'
+
+@Module({
+  imports: [
+    // inne moduły najpierw
+    MastraModule.register({ mastra }), // NA KOŃCU
+  ],
+})
+export class AppModule {}
+```
+
+`MastraModule` ma catch-all `@All('*')`. Import przed własnymi kontrolerami = 404 na ich routach. Albo prefix np. `/api/v1/mastra`.
+
+Domyślne ścieżki Mastry: pod `/api` (np. `POST /api/agents/<id>/generate`). Health bez prefixu: `/health`, `/ready`, `/info`.
+
+## Dostęp z serwisów Nest (nasz MVP)
+
+```ts
+import { MastraService, MASTRA } from '@mastra/nestjs'
+
+// wrapper
+constructor(private readonly mastraService: MastraService) {}
+this.mastraService.getAgent(agentId)
+
+// surowa instancja
+@Inject(MASTRA) private readonly mastra: Mastra
+```
+
+To jest ten sam singleton. Narzędzia agenta mają wołać **serwisy Nest**, nie bazę.
+
+Opcje modułu (skrót): `prefix`, `rateLimitOptions`, `streamOptions`, `auth` (domyślnie wyłączone — Nest ma własne guardy).
+
+init szkieletu Mastry w istniejącym Nescie: `npx mastra@latest init` (tworzy `src/mastra`).

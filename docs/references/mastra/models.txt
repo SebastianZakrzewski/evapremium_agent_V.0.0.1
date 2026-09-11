@@ -1,0 +1,23 @@
+# Mastra — modele (EVA: DeepSeek)
+
+Źródło: https://mastra.ai/models/environment-variables.md
+https://mastra.ai/models/providers/deepseek
+Pobrane: 2026-09-11.
+
+## Router
+
+`model: "provider/model-id"` — Mastra czyta env providera. Nie importuj SDK OpenAI.
+
+DeepSeek:
+
+- Env: `DEEPSEEK_API_KEY`
+- Prefix: `deepseek/*`
+- Agent MVP: `model: "deepseek/deepseek-v4-flash"`
+
+Klucz tylko na serwerze (Hetzner). Nigdy w widgecie.
+
+Opcjonalnie obiekt z `url: "https://api.deepseek.com"` jeśli trzeba nadpisać host.
+
+Bezpośrednie API DeepSeek używa też id `deepseek-flash` (V4.1-Flash); w **Mastra** trzymaj string routera `deepseek/deepseek-v4-flash`, dopóki ich tabela modeli tego nie zmieni.
+
+Inne prefiksy (nie używać na MVP): cała lista na stronie env — nie kopiować tutaj.

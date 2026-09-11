@@ -13,11 +13,11 @@ ceny, drzewa ani Bitrix.
 
 Checkout, RAG, Deal zamiast Lead, RLS na n8n, treść prawna (wkleja biznes).
 
-## Slice 0 — szkielet repo
+## Slice 0 — szkielet repo (zrobione)
 
-Monorepo lub dwa pakiety: `api` (Nest + Mastra, Hetzner), `widget` (React, Vercel).
-Kanoniczna komenda test/lint/typecheck — wpisać do `AGENTS.md` gdy powstanie.
-Test: bootstrapped `npm test` / równoważne pada na pustym module domeny.
+Monorepo npm workspaces: `api/` (Nest, Hetzner; Mastra w Slice 4), `widget/`
+(React/Vite, Vercel). Kanoniczna komenda: `npm run verify` (`AGENTS.md`).
+Stub domeny `resolveTemplate` (`not-implemented`); kaskada w Slice 1.
 
 ## Slice 1 — kaskada szablonu
 

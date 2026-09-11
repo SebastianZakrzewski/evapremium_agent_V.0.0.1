@@ -1,0 +1,25 @@
+# Mastra — message history
+
+Źródło: https://mastra.ai/docs/memory/message-history.md
+Pobrane: 2026-09-11.
+
+Thread = rozmowa. Resource = użytkownik / encja.
+
+Z klienta wysyłaj **tylko nową wiadomość**, nie cały transkrypt — Mastra ładuje historię ze storage. Pełna historia z klienta psuje kolejność.
+
+MVP EVA i tak zapisuje sesję w `eva_bot` (Nest). Mastra Memory (`@mastra/memory` + adapter) jest **opcjonalna**; semantic recall = RAG — poza MVP.
+
+Jeśli włączysz Memory:
+
+```ts
+memory: new Memory({ options: { lastMessages: 10 } })
+await agent.generate('Hello', {
+  memory: { thread: { id: 'thread-123' }, resource: 'user-456' },
+})
+```
+
+Storage na instancji `Mastra` (np. LibSQL). `lastMessages` liczy też tool-call/result.
+
+Brak ACL w Memory — autoryzację wątku robi aplikacja (u nas: sesja widgetu + CORS).
+
+Semantic recall / observational memory: nie na MVP.

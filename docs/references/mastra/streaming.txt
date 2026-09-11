@@ -1,0 +1,23 @@
+# Mastra — streaming
+
+Źródło: https://mastra.ai/docs/guides/streaming.md
+Pobrane: 2026-09-11.
+
+`Agent.stream()` zwraca `MastraModelOutput`:
+
+- `textStream` — chunki tekstu (`for await`)
+- `text`, `steps`, `usage`, `finishReason` — Promise po końcu
+- `fullStream` — eventy (`start`, `text-delta`, `tool-call`, `tool-result`, `finish`, …)
+
+```ts
+const stream = await agent.stream([{ role: 'user', content: '...' }])
+for await (const chunk of stream.textStream) {
+  process.stdout.write(chunk)
+}
+```
+
+W `execute` toola: `await context.writer.write(...)` (bez await = locked stream). `writer.custom({ type: 'data-...', transient: true })` nie ląduje w historii.
+
+Mostek AI SDK (widget): `@mastra/ai-sdk` — `toAISdkStream(stream, { from: 'agent', version: 'v7' })` zgodnie z wersją AI SDK. Dołączać tylko gdy docs UI tego wymagają.
+
+Workflow stream to eventy kroku, nie tekst — na MVP agenta nie potrzebujemy workflow.

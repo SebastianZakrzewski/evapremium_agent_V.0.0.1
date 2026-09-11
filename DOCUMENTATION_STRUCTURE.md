@@ -123,6 +123,8 @@ Wersjonowane materiały referencyjne potrzebne agentom podczas implementacji.
   projektowego.
 - `nixpacks-llms.txt` — dokumentacja używanej wersji Nixpacks.
 - `uv-llms.txt` — dokumentacja używanej wersji narzędzia `uv`.
+- `mastra/` — skondensowane fragmenty [dokumentacji Mastra](https://mastra.ai/docs)
+  (źródło i data w `docs/references/mastra/INDEX.md`).
 - Pozostałe pliki — skondensowane materiały dotyczące faktycznie używanych
   technologii.
 
