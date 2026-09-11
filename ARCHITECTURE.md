@@ -3,8 +3,9 @@
 ## Stan implementacji
 
 Szkielet monorepo (npm workspaces): `api/` (NestJS + Express, bez Mastry)
-i `widget/` (React + Vite). Brak zachowania MVP (kaskada, wycena, HTTP czatu,
-lead). Poniżej są **zaakceptowane granice MVP**, nie opis działającego produktu.
+i `widget/` (React + Vite). Kaskada szablonu jest w `api` (domena + serwis Nest,
+katalog in-memory / fixture). Brak wyceny, HTTP czatu i leada. Poniżej są
+**zaakceptowane granice MVP**; kaskada nie bije jeszcze do PROD.
 
 Ten dokument jest źródłem prawdy o architekturze wysokiego poziomu.
 
@@ -33,7 +34,7 @@ Kod w jednym gicie, pakiety `api` i `widget`. Deploy nadal rozdzielony
 | Prezentacja | React, hostowany widget | Snippet na `evapremium.pl`; UI czatu z Waszego originu |
 | Agent / LLM | Mastra + DeepSeek | Orchestracja; język modelu `deepseek-flash` (linia V4 Flash) |
 | Logika biznesowa | NestJS | Kaskada filtrów, wycena, context tree, utworzenie leada; jedyne I/O do danych i CRM |
-| Dane | Supabase PROD | `evapremium_shop` (szablony, cennik), `eva_bot` (sesje, context tree) |
+| Dane | Supabase PROD | `evapremium_shop` (szablony, cennik), `eva_bot` (aliasy slotów, sesje, context tree) |
 | CRM | Bitrix24 | Kolejka pracy człowieka (zapis leada z czatu) |
 | Obserwowalność | Sentry | Błędy i analiza w produkcji |
 | Jakość | TDD | Test najpierw, potem implementacja |
@@ -45,7 +46,11 @@ serwerowo (nie anon z widgetu).
 
 1. **Szablony:** `evapremium_shop.mat_templates` (~2756, aktywne szablony).
    Kaskada po `brand_key` / `model_key` / `body_type_*_key` / lata / `record_key`.
-   Kategoria cennika: `dealer_pricing_category_key`.
+   Kategoria cennika: `dealer_pricing_category_key`. Nest mapuje surowe sloty
+   tabelą `eva_bot.vehicle_slot_aliases` (`slot_kind`, `alias_normalized`,
+   `canonical_key`, opcjonalny `brand_key` dla modeli). Migracja jest w repo
+   (`supabase/migrations/`); nie zaaplikowana na PROD bez osobnej zgody.
+   W teście: fixture, jeden strzał ze znanymi kluczami → 0 / 1 / N.
 2. **Cennik:** `pricing_vehicle_categories`, `pricing_variants`,
    `pricing_category_variants`, `pricing_matrix` (cena = kategoria + wariant +
    `mat_type`). Zakres: wszystkie szablony z tabeli, nie podzbiór „hitów”.

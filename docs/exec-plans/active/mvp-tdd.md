@@ -17,12 +17,13 @@ Checkout, RAG, Deal zamiast Lead, RLS na n8n, treść prawna (wkleja biznes).
 
 Monorepo npm workspaces: `api/` (Nest, Hetzner; Mastra w Slice 4), `widget/`
 (React/Vite, Vercel). Kanoniczna komenda: `npm run verify` (`AGENTS.md`).
-Stub domeny `resolveTemplate` (`not-implemented`); kaskada w Slice 1.
+Stub domeny zastąpiony kaskadą w Slice 1.
 
-## Slice 1 — kaskada szablonu
+## Slice 1 — kaskada szablonu (zrobione)
 
 Testy: sloty → alias → 0 / 1 / N wierszy `mat_templates` (fixture, bez LLM).
-Kod: serwis Nest, tabela aliasów w `eva_bot` jeśli brak. LLM nie jest w teście.
+Kod: `TemplateCascadeService`, porty in-memory. SQL `eva_bot.vehicle_slot_aliases`
+w repo, bez apply na PROD. LLM nie jest w teście.
 
 ## Slice 2 — wycena
 
