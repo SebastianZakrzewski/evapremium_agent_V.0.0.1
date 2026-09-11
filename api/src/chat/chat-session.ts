@@ -5,8 +5,17 @@ export class UnknownSessionError extends Error {
   }
 }
 
+export type ChatMessageRole = 'user' | 'assistant';
+
+export type ChatMessageRecord = {
+  sessionId: string;
+  role: ChatMessageRole;
+  body: string;
+};
+
 export class InMemoryChatSessions {
   private readonly ids = new Set<string>();
+  private readonly messages: ChatMessageRecord[] = [];
 
   constructor(private readonly createId: () => string) {}
 
@@ -20,5 +29,15 @@ export class InMemoryChatSessions {
     if (!this.ids.has(sessionId)) {
       throw new UnknownSessionError();
     }
+  }
+
+  appendMessage(record: ChatMessageRecord): void {
+    this.assertExists(record.sessionId);
+    this.messages.push(record);
+  }
+
+  listMessages(sessionId: string): ChatMessageRecord[] {
+    this.assertExists(sessionId);
+    return this.messages.filter((row) => row.sessionId === sessionId);
   }
 }

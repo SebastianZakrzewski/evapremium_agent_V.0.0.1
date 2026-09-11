@@ -103,4 +103,23 @@ describe('chat HTTP contract (tools → Nest services 1–3)', () => {
       'https://www.evapremium.pl',
     ]);
   });
+
+  it('persists user and assistant messages on the session', async () => {
+    const stored = new InMemoryChatSessions(() => 'session-persist');
+    const { sessionId } = stored.create();
+    await postChatMessage(
+      stored,
+      agent,
+      sessionId,
+      'quote passenger_car komplet-5szt',
+    );
+    expect(stored.listMessages(sessionId)).toEqual([
+      {
+        sessionId: 'session-persist',
+        role: 'user',
+        body: 'quote passenger_car komplet-5szt',
+      },
+      { sessionId: 'session-persist', role: 'assistant', body: 'quoted' },
+    ]);
+  });
 });

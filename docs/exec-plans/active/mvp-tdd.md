@@ -48,10 +48,12 @@ Testy kontraktu API (sesja, wiadomość, narzędzia wołają serwisy z 1–3).
 Mastra w procesie Nestu; DeepSeek za adapterem (w teście stub).
 Widget → Nest; CORS origin sklepu. Dług TD-003–005.
 
-## Slice 5 — sesja i lead
+## Slice 5 — sesja i lead (zrobione)
 
 Testy: zapis `chat_sessions` / `chat_messages`; lead Bitrix tylko przy kontakcie
 + zgodzie; bez zgody brak `crm.lead.add`. Bitrix w teście: fake HTTP.
+Migracja w repo, transkrypt in-memory (TD-006); webhook Fetch tylko z env
+(TD-007).
 
 ## Slice 6 — widget + snippet
 

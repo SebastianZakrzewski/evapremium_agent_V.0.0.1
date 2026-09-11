@@ -15,6 +15,7 @@ sklepu. Sesje in-memory (TD-004). Bez Bitrix i bez zapisu w Supabase.
 | chat-003 | critical | Liść i miss bez zmyślonego body |
 | chat-004 | high | Nieznana sesja → 404 |
 | chat-005 | medium | CORS origin sklepu |
+| chat-006 | high | Zapis user/assistant na sesji |
 
 ### chat-001 — Sesja + wycena z narzędzia Nest
 
@@ -55,3 +56,11 @@ sklepu. Sesje in-memory (TD-004). Bez Bitrix i bez zapisu w Supabase.
 - **Logika:** przeglądarka sklepu może wołać API; lista originów jak w `SECURITY.md` (wiring `configureChatHttp` w `main`, bez bootu Nest — TD-003).
 - **Wejście:** `SHOP_CORS_ORIGINS`
 - **Wyjście:** `https://evapremium.pl`, `https://www.evapremium.pl`
+
+### chat-006 — Zapis user/assistant na sesji
+
+- **Kod:** `api/src/chat/chat.contract.spec.ts` → `it('persists user and assistant messages on the session')`
+- **Krytyczność:** high
+- **Logika:** transkrypt zostaje przy sesji (in-memory / przyszły `eva_bot`); nie idzie do Bitrix.
+- **Wejście:** `session-persist` + `quote passenger_car komplet-5szt`
+- **Wyjście:** dwa rekordy `user` / `assistant` (`quoted`)

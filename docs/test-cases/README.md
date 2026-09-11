@@ -32,7 +32,8 @@ docs/test-cases/
 │   ├── templates/            ← serwis kaskady / porty
 │   ├── pricing/              ← serwis wyceny / porty
 │   ├── context-tree/         ← serwis liści FAQ / porty
-│   └── chat/                 ← kontrakt HTTP czatu
+│   ├── chat/                 ← kontrakt HTTP czatu
+│   └── lead/                 ← Bitrix lead / fake HTTP
 └── widget/                   ← UI widgetu
 ```
 
@@ -74,8 +75,10 @@ Przy wątpliwości wybierz wyższy poziom.
 | Kaskada szablonu (domena) | [api/domain/template-cascade.md](api/domain/template-cascade.md) | `api/src/domain/template-cascade.spec.ts` |
 | Wycena (domena) | [api/domain/pricing.md](api/domain/pricing.md) | `api/src/domain/pricing.spec.ts` |
 | Context tree (domena) | [api/domain/context-tree.md](api/domain/context-tree.md) | `api/src/domain/context-tree.spec.ts` |
+| Lead Bitrix (domena) | [api/domain/lead.md](api/domain/lead.md) | `api/src/domain/lead.spec.ts` |
 | Resolver kaskady | [api/templates/template-cascade-resolver.md](api/templates/template-cascade-resolver.md) | `api/src/templates/template-cascade.resolver.spec.ts` |
 | Resolver wyceny | [api/pricing/pricing-resolver.md](api/pricing/pricing-resolver.md) | `api/src/pricing/pricing.resolver.spec.ts` |
 | Resolver context tree | [api/context-tree/context-tree-resolver.md](api/context-tree/context-tree-resolver.md) | `api/src/context-tree/context-tree.resolver.spec.ts` |
 | Kontrakt HTTP czatu | [api/chat/chat-http.md](api/chat/chat-http.md) | `api/src/chat/chat.contract.spec.ts` |
+| Resolver leada | [api/lead/lead-resolver.md](api/lead/lead-resolver.md) | `api/src/lead/lead.resolver.spec.ts` |
 | Widget szkielet | [widget/app-skeleton.md](widget/app-skeleton.md) | `widget/src/App.test.tsx` |

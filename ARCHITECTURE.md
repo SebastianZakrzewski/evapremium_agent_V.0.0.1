@@ -7,7 +7,9 @@ samym procesie za portem `CHAT_AGENT`) i `widget/` (React / Vite). Kaskada,
 wycena i context tree zostają serwisami Nest (in-memory). HTTP czatu:
 `POST /v1/sessions` i wiadomości; narzędzia wołają te serwisy. DeepSeek za
 adapterem Mastry (`deepseek/deepseek-v4-flash`); w teście stub bez klucza.
-CORS: originy sklepu. Brak leada Bitrix i zapisu sesji w Supabase.
+CORS: originy sklepu. Lead Bitrix za `LeadModule` (`crm.lead.add` tylko kontakt +
+zgoda; w teście fake HTTP). Transkrypt: `InMemoryChatSessions` + migracja
+`chat_sessions` / `chat_messages` w repo, bez apply PROD.
 Poniżej są **zaakceptowane granice MVP**.
 
 Ten dokument jest źródłem prawdy o architekturze wysokiego poziomu.
@@ -66,7 +68,9 @@ serwerowo (nie anon z widgetu).
    `zgoda-lead` (klauzula przy telefonie/mailu). **Treść prawną wkleja biznes**
    ze sklepu; agent jej nie generuje. Dalsze FAQ (dostawa, pielęgnacja, …) jako
    kolejne liście.
-4. **Sesja czatu:** schemat `eva_bot` (`chat_sessions`, `chat_messages`; puste).
+4. **Sesja czatu:** `eva_bot.chat_sessions` / `chat_messages` (migracja w repo,
+   bez apply PROD). Nest zapisuje transkrypt za tym samym kontraktem co
+   `InMemoryChatSessions` (create / append / list).
 
 Nie używać pustej `public.mats` ani katalogu n8n w `public` jako cennika.
 
