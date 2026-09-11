@@ -1,0 +1,58 @@
+---
+description: Bramka jakości pętli MVP TDD — jeden slice, audyt i reguły tylko przez osobnego subagenta.
+alwaysApply: true
+---
+
+# Bramka jakości: `docs/exec-plans/active/mvp-tdd.md`
+
+Dopóki plan jest w `active/`, implementacja MVP idzie **pętlą po jednym slice**.
+Nie zamykaj całego planu w jednym branchu, commicie ani jednej sesji.
+
+## Stan slice’y (nie zgaduj)
+
+Źródło prawdy: nagłówki w `mvp-tdd.md`.
+
+- Slice z dopiskiem **(zrobione)** jest wdrożony (kod na `main`). **Nie implementuj
+  go ponownie**, nie przepisuj „dla porządku”, nie otwieraj pod niego brancha.
+- Bierz wyłącznie **pierwszy slice bez (zrobione)** (kolejność 2 → 3 → 4 → 5 → 6 → 7).
+- Jeśli użytkownik każe „zrób cały plan” — i tak jedna iteracja = jeden slice, potem STOP.
+
+## Jedna iteracja pętli
+
+1. Przeczytaj plan, `ARCHITECTURE.md`, spec produktu, `docs/SECURITY.md` (gdy HTTP,
+   originy, sekrety, PII).
+2. Branch od aktualnego `main`: `slice-<N>-<krotki-slug>` (np. `slice-2-wycena`).
+3. TDD: czerwony test → kod → zielony. Bez testu nie ma fetcha ceny, drzewa ani Bitrix.
+   Nowy/zmieniony test → wpis w `docs/test-cases/`.
+4. Tylko zakres tego slice. Poza planem: checkout, RAG, Deal, RLS n8n, treść prawna.
+5. `npm run verify`. Przy zmianie granic — `ARCHITECTURE.md` w tej samej zmianie.
+6. **STOP kodowania.** Odpal **osobnego** subagenta audytu (Task `generalPurpose`,
+   świeża sesja — nie self-fork, nie audyt własnego diffu). `(zrobione)` tylko przy
+   **pass**. Przy fail: poprawki i ponowny subagent.
+7. Raport bramki dla człowieka. Nie zaczynaj Slice N+1. Merge na `main` przed następną
+   iteracją. Po merge Slice 7 i smoke: plan → `docs/exec-plans/completed/`.
+
+## Subagent audytu (obowiązkowy)
+
+Po `verify` implementer nie wypełnia checklisty sam. Subagent egzekwuje tę bramkę
+i punkty: architektura, nadmiar, SRP, porty/API bez sprzężenia zwrotnego,
+czytelność + test-cases dla istotnej logiki, anti-spaghetti, garbage (tylko realne
+naruszenie, nie rewrite (zrobione)), dług w `docs/exec-plans/tech-debt-tracker.md`
+albo jawny brak (bez pustego pliku). Wejście: diff vs `main`. Zakaz: Slice N+1,
+apply PROD, przepis Slice 0–1 bez naruszenia.
+
+## Wdrożenie ≠ PROD po każdym slice
+
+- Slice 0–1: już na `main` — nie deployuj ich od nowa.
+- Slice 2–6: testy + bramka; nie apply migracji na PROD bez zgody.
+- Slice 7: jedyny slice deployu (Vercel widget, Hetzner API, env, smoke).
+
+## Raport przed oddaniem slice
+
+- Werdykt **pass** subagenta audytu (checklista 1–8).
+- Slice N vs diff (nic z N+1); (zrobione) nietknięte poza haczykiem.
+- Cena/fakt z Nestu, nie z LLM; LLM nie pisze SQL ani id szablonu.
+- `verify` zielone; test-cases zaktualizowane.
+- Brak apply PROD / sekretów, chyba że Slice 7 i zgoda.
+
+Nie raportuj slice’a jako skończonego bez pass subagenta.

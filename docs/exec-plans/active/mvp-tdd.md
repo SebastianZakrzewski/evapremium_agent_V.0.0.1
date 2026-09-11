@@ -9,6 +9,10 @@ z `evapremium_shop`, z leadem w Bitrix przy braku szablonu.
 Zasada: **czerwony test → implementacja → zielony**. Bez testu nie ma fetcha
 ceny, drzewa ani Bitrix.
 
+Bramka pętli (jeden slice, (zrobione) = nie ruszaj, merge przed następnym,
+PROD dopiero w Slice 7, audyt przez osobnego subagenta):
+`.cursor/rules/mvp-tdd-quality-gate.mdc`.
+
 ## Poza tym planem
 
 Checkout, RAG, Deal zamiast Lead, RLS na n8n, treść prawna (wkleja biznes).
@@ -25,11 +29,12 @@ Testy: sloty → alias → 0 / 1 / N wierszy `mat_templates` (fixture, bez LLM).
 Kod: `TemplateCascadeService`, porty in-memory. SQL `eva_bot.vehicle_slot_aliases`
 w repo, bez apply na PROD. LLM nie jest w teście.
 
-## Slice 2 — wycena
+## Slice 2 — wycena (zrobione)
 
 Testy: przy znanym szablonie + `variant_key` (+ `mat_type` gdy dual) → jedna
 kwota z `pricing_matrix`; brak wariantu na kategorii → błąd domeny, nie liczba.
-Kod: lista z `pricing_category_variants`, lookup macierzy.
+Kod: lista z `pricing_category_variants`, lookup macierzy. Katalogi in-memory
+(dług TD-001); bez HTTP.
 
 ## Slice 3 — context tree
 

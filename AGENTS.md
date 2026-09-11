@@ -43,6 +43,11 @@ Większe, wieloetapowe lub ryzykowne zadania powinny otrzymać plan w
 
 Nie twórz infrastruktury planów dla prostych, jednorazowych zmian.
 
+Aktywny plan MVP (`docs/exec-plans/active/mvp-tdd.md`): pętla **jeden niedokończony
+slice → branch → TDD → `verify` → osobny subagent audytu (pass) → STOP na merge**.
+Implementer nie audytuje własnego diffu. Slice’e **(zrobione)** — nie implementuj
+ponownie. Bramka: `.cursor/rules/mvp-tdd-quality-gate.mdc`.
+
 ## Weryfikacja
 
 Przed uznaniem zadania za zakończone uruchom kontrole odpowiednie do zmienionego

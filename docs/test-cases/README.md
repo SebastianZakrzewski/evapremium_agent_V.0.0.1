@@ -29,7 +29,8 @@ docs/test-cases/
 ├── README.md                 ← ten standard
 ├── api/
 │   ├── domain/               ← czysta logika (bez Nest / HTTP)
-│   └── templates/            ← serwis kaskady / porty
+│   ├── templates/            ← serwis kaskady / porty
+│   └── pricing/              ← serwis wyceny / porty
 └── widget/                   ← UI widgetu
 ```
 
@@ -69,5 +70,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Zestaw | Podkatalog | Kod |
 | --- | --- | --- |
 | Kaskada szablonu (domena) | [api/domain/template-cascade.md](api/domain/template-cascade.md) | `api/src/domain/template-cascade.spec.ts` |
+| Wycena (domena) | [api/domain/pricing.md](api/domain/pricing.md) | `api/src/domain/pricing.spec.ts` |
 | Resolver kaskady | [api/templates/template-cascade-resolver.md](api/templates/template-cascade-resolver.md) | `api/src/templates/template-cascade.resolver.spec.ts` |
+| Resolver wyceny | [api/pricing/pricing-resolver.md](api/pricing/pricing-resolver.md) | `api/src/pricing/pricing.resolver.spec.ts` |
 | Widget szkielet | [widget/app-skeleton.md](widget/app-skeleton.md) | `widget/src/App.test.tsx` |

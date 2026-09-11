@@ -3,9 +3,11 @@
 ## Stan implementacji
 
 Szkielet monorepo (npm workspaces): `api/` (NestJS + Express, bez Mastry)
-i `widget/` (React + Vite). Kaskada szablonu jest w `api` (domena + serwis Nest,
-katalog in-memory / fixture). Brak wyceny, HTTP czatu i leada. Poniżej są
-**zaakceptowane granice MVP**; kaskada nie bije jeszcze do PROD.
+i `widget/` (React / Vite). Kaskada szablonu i **wycena** są w `api` (domena +
+serwisy Nest, katalogi in-memory / fixture). Moduły nie importują się nawzajem;
+wycena dostaje `dealerPricingCategoryKey` jako dane, nie serwis kaskady.
+Brak HTTP czatu i leada. Katalogi nie biją jeszcze do PROD.
+Poniżej są **zaakceptowane granice MVP**.
 
 Ten dokument jest źródłem prawdy o architekturze wysokiego poziomu.
 
