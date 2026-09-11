@@ -10,6 +10,8 @@ adapterem Mastry (`deepseek/deepseek-v4-flash`); w teście stub bez klucza.
 CORS: originy sklepu. Lead Bitrix za `LeadModule` (`crm.lead.add` tylko kontakt +
 zgoda; w teście fake HTTP). Transkrypt: `InMemoryChatSessions` + migracja
 `chat_sessions` / `chat_messages` w repo, bez apply PROD.
+Widget: UI wyceny/miss z payloadu API; sklep ładuje `embed.js` z originu CDN
+i publiczny `data-eva-widget`. Sentry: `@sentry/node` przy `SENTRY_DSN` na API.
 Poniżej są **zaakceptowane granice MVP**.
 
 Ten dokument jest źródłem prawdy o architekturze wysokiego poziomu.

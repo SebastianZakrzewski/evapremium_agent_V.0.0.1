@@ -55,9 +55,10 @@ Testy: zapis `chat_sessions` / `chat_messages`; lead Bitrix tylko przy kontakcie
 Migracja w repo, transkrypt in-memory (TD-006); webhook Fetch tylko z env
 (TD-007).
 
-## Slice 6 — widget + snippet
+## Slice 6 — widget + snippet (zrobione)
 
 Testy jednostkowe UI na ścieżce wyceny i miss. Osadzenie snippetu. Sentry na API.
+Dług TD-008 (Mastra `generated`+`text`), TD-009 (origin iframe vs CORS sklepu).
 
 ## Slice 7 — deploy
 

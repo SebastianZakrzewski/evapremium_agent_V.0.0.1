@@ -2,6 +2,9 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { configureChatHttp } from './chat/configure-chat-http';
+import { initSentry } from './observability/init-sentry';
+
+initSentry();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

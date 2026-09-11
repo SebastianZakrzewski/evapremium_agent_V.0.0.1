@@ -4,8 +4,8 @@ Aktualizuj przy zmianie originów, sekretów, PII lub integracji.
 
 ## Sekrety
 
-Klucze DeepSeek, Supabase (service), Bitrix — tylko na serwerze (Nest na
-Hetznerze). Nigdy w widgecie ani w snippecie.
+Klucze DeepSeek, Supabase (service), Bitrix oraz `SENTRY_DSN` — tylko na
+serwerze (Nest na Hetznerze). Nigdy w widgecie ani w snippecie.
 
 ## Publiczne API czatu (MVP)
 

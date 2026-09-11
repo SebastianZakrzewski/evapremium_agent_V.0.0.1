@@ -131,3 +131,33 @@
   `npm run verify`.
 - **Nie robić przy usuwaniu:** webhook w widgecie, lead bez zgody, apply
   PROD, LLM jako źródło pól leada.
+
+## TD-008 — widget czyta `quoted`/`miss` z `data`, Mastra zwraca `generated`+`text`
+
+- **Slice:** 6 (widget + snippet)
+- **Stan:** otwarte
+- **Priorytet:** średni (stub w `verify` ustawia `quoted`/`miss` w `data`; produkcja z kluczem DeepSeek idzie przez `MastraChatAgent`)
+- **Kompromis:** UI formatuje wycenę/miss z `data` gdy status to `quoted`/`miss`
+  (ścieżka stubu). Przy `generated` pokazuje `turn.text` (adapter Mastry,
+  TD-005) i nie zgaduje kwoty. Nie zmieniamy kontraktu `MastraChatAgent`
+  w Slice 6 (Slice 4 `(zrobione)`).
+- **Wpływ:** treść wyceny w produkcji zależy od tego, czy model powtórzy
+  wynik narzędzia w `text`; widget nie czyta kwoty z `generated`.
+- **Warunek usunięcia:** osobny slice — adapter Mastry mapuje wynik narzędzi
+  Nest na `data.status` `quoted`/`miss`/`hit` (albo widget dostaje ten sam
+  kształt co stub), bez LLM jako źródła `amount`.
+- **Nie robić przy usuwaniu:** klucz w widgecie, zmiana Bitrix/lead, apply PROD.
+
+## TD-009 — Origin iframe widgetu vs CORS sklepu
+
+- **Slice:** 6 (widget + snippet)
+- **Stan:** otwarte
+- **Priorytet:** średni (blokuje czat z hostowanego CDN w przeglądarce sklepu)
+- **Kompromis:** `embed.js` wstawia iframe z originu widgetu (Vercel/CDN).
+  `SHOP_CORS_ORIGINS` to tylko `https://evapremium.pl` i `www`. Fetch z
+  iframe ma `Origin` CDN, nie sklepu.
+- **Wpływ:** po wklejeniu snippetu czat z CDN nie przejdzie CORS, dopóki
+  Slice 7 nie doda originu widgetu albo nie osadzi UI w originie sklepu.
+- **Warunek usunięcia:** decyzja w Slice 7 (origin widgetu na liście CORS
+  albo inny sposób osadzenia). Bez apply PROD w Slice 6.
+- **Nie robić przy usuwaniu:** sekrety w snippecie, otwarty CORS `*`.

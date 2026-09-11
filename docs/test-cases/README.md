@@ -33,8 +33,9 @@ docs/test-cases/
 │   ├── pricing/              ← serwis wyceny / porty
 │   ├── context-tree/         ← serwis liści FAQ / porty
 │   ├── chat/                 ← kontrakt HTTP czatu
-│   └── lead/                 ← Bitrix lead / fake HTTP
-└── widget/                   ← UI widgetu
+│   ├── lead/                 ← Bitrix lead / fake HTTP
+│   └── observability/        ← Sentry na API
+└── widget/                   ← UI widgetu i snippet sklepu
 ```
 
 Nowy obszar (wycena, context tree, HTTP, Bitrix, snippet) = nowy podkatalog
@@ -81,4 +82,6 @@ Przy wątpliwości wybierz wyższy poziom.
 | Resolver context tree | [api/context-tree/context-tree-resolver.md](api/context-tree/context-tree-resolver.md) | `api/src/context-tree/context-tree.resolver.spec.ts` |
 | Kontrakt HTTP czatu | [api/chat/chat-http.md](api/chat/chat-http.md) | `api/src/chat/chat.contract.spec.ts` |
 | Resolver leada | [api/lead/lead-resolver.md](api/lead/lead-resolver.md) | `api/src/lead/lead.resolver.spec.ts` |
-| Widget szkielet | [widget/app-skeleton.md](widget/app-skeleton.md) | `widget/src/App.test.tsx` |
+| Sentry na API | [api/observability/sentry.md](api/observability/sentry.md) | `api/src/observability/init-sentry.spec.ts` |
+| Widget czat (wycena i miss) | [widget/chat-ui.md](widget/chat-ui.md) | `widget/src/chat/ChatPanel.test.tsx`, `format-turn.test.ts`, `App.test.tsx` |
+| Snippet sklepu | [widget/snippet.md](widget/snippet.md) | `widget/src/embed/shop-snippet.test.ts` |
