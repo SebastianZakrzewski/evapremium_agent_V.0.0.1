@@ -17,6 +17,8 @@ poznawania projektu, wprowadzania zmian i utrzymywania dokumentacji.
    Implementacja MVP: `docs/exec-plans/active/mvp-tdd.md`.
    Mastra: `docs/references/mastra/INDEX.md`, potem jeden fragment.
 6. Przed zmianą kodu sprawdź istniejące wzorce i testy.
+   Katalog przypadków (wejście / wyjście / logika / krytyczność):
+   `docs/test-cases/README.md`.
 
 ## Zasady pracy
 
@@ -29,6 +31,9 @@ poznawania projektu, wprowadzania zmian i utrzymywania dokumentacji.
 - Nie twórz pustych katalogów ani dokumentów z treścią zastępczą.
 - Wraz ze zmianą zachowania systemu aktualizuj powiązaną dokumentację.
 - Wyraźnie oznaczaj dokumentację generowaną i nie edytuj jej ręcznie.
+- **Każdy nowy lub zmieniony test** opisz w `docs/test-cases/` w standardzie
+  z `docs/test-cases/README.md` (opis, wejście, wyjście, logika, krytyczność,
+  ścieżka do `it(...)`). Test bez tego wpisu nie jest kompletny.
 
 ## Plany wykonawcze
 
@@ -46,6 +51,8 @@ obszaru, w szczególności testy, lint, kontrolę typów i build, jeśli są dos
 Kanoniczna weryfikacja z katalogu głównego: `npm run verify`
 (test + lint + typecheck w workspace’ach `api` i `widget`).
 Skrót tylko do testów: `npm test`.
+
+Po dodaniu testu zaktualizuj odpowiadający zestaw w `docs/test-cases/`.
 
 ## Utrzymanie dokumentacji
 

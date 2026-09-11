@@ -53,6 +53,10 @@ docs/
 │   ├── index.md
 │   ├── new-user-onboarding.md
 │   └── ...
+├── test-cases/
+│   ├── README.md
+│   ├── api/
+│   └── widget/
 ├── references/
 │   ├── design-system-reference-llms.txt
 │   ├── nixpacks-llms.txt
@@ -114,6 +118,17 @@ Specyfikacje opisujące oczekiwane zachowanie produktu i uzasadnienie biznesowe.
 
 Utwórz specyfikację, gdy wymagania, przypadki brzegowe lub kryteria akceptacji nie
 są oczywiste bez osobnego opisu.
+
+## `docs/test-cases/`
+
+Katalog przypadków testowych całego repozytorium: kontrakt (wejście, wyjście,
+logika, krytyczność), nie kopia kodu Jest/Vitest.
+
+- `README.md` — standard opisu i **obowiązek agenta**: każdy nowy test musi
+  dostać wpis w tym katalogu.
+- Podkatalogi wg pakietu i obszaru (`api/domain`, `api/templates`, `widget`, …).
+
+Aktualizuj wraz z testem. Kod wykonywalny zostaje w pakietach.
 
 ## `docs/references/`
 
