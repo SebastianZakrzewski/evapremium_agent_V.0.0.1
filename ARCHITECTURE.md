@@ -11,8 +11,9 @@ wycena i context tree: serwisy Nest; przy `SUPABASE_URL` +
 w teście, `eva_bot.chat_sessions` / `chat_messages` (kolumny PROD `text` +
 `direction`) przy Supabase. DeepSeek za adapterem Mastry; stub bez klucza.
 CORS: originy sklepu + opcjonalny `WIDGET_ORIGIN` (HTTPS). Lead Bitrix za
-`LeadModule`. Widget: EvaBot + snippet `embed.js`. Sentry: `@sentry/node`
-przy `SENTRY_DSN` (DSN, nie token użytkownika).
+`LeadModule`. Widget: EvaBot + snippet `embed.js`. Sentry: `@sentry/nestjs`
+przy `SENTRY_DSN` (`instrument.ts` przed Nest, `SentryGlobalFilter`; awarie
+SSE przez `reportUnexpectedError`). DSN, nie token użytkownika.
 Poniżej są **zaakceptowane granice MVP**.
 
 Ten dokument jest źródłem prawdy o architekturze wysokiego poziomu.

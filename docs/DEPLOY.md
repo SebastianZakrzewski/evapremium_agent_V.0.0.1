@@ -18,7 +18,8 @@ Sekrety zostają w `/opt/evabot/api/.env` (nie w obrazie).
 
 Env: `DEEPSEEK_API_KEY`, `BITRIX_WEBHOOK_URL`, `SUPABASE_URL`
 (`https://kmepxyervpeujwvgdqtm.supabase.co`), `SUPABASE_SERVICE_ROLE_KEY`,
-`WIDGET_ORIGIN` (HTTPS origin Vercel, bez slasha), `PORT=3000`.
+`WIDGET_ORIGIN` (HTTPS origin Vercel, bez slasha), `PORT=3000`,
+`SENTRY_DSN` (adres ingest projektu, nie token `sntryu_`).
 
 Proces w kontenerze słucha na `0.0.0.0`. HTTPS (Caddy/nginx + domena) jest
 potrzebny, żeby widget z Vercel wołał API bez mixed content (dziś rewrite `/v1`
