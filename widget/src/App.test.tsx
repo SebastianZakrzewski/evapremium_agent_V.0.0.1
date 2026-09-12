@@ -17,7 +17,8 @@ function mockApi(data: Record<string, unknown>): ChatApi {
 describe('App', () => {
   it('renders the chat widget chrome', () => {
     render(<App api={mockApi({ status: 'miss' })} />);
-    expect(screen.getByRole('heading', { name: 'EVA Premium' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'EvaBot' })).toBeInTheDocument();
+    expect(screen.getByText('EVA Premium')).toBeInTheDocument();
     expect(screen.getByText('Rozmowa jest zapisywana.')).toBeInTheDocument();
   });
 });

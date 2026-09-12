@@ -65,4 +65,25 @@ describe('ChatPanel', () => {
       await screen.findByText('Komplet dywaników: wycena orientacyjna 599 PLN.'),
     ).toBeInTheDocument();
   });
+
+  it('streams generated assistant tokens from SSE deltas', async () => {
+    const api: ChatApi = {
+      createSession: vi.fn(async () => ({ sessionId: 's1' })),
+      postMessage: vi.fn(async (_sessionId, _message, onDelta) => {
+        onDelta?.('Komplet ');
+        onDelta?.('dywaników');
+        return {
+          sessionId: 's1',
+          text: 'Komplet dywaników',
+          data: { status: 'generated' },
+        };
+      }),
+    };
+    render(<ChatPanel api={api} />);
+    fireEvent.change(screen.getByLabelText('Wiadomość'), {
+      target: { value: 'golf 8 komplet' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Wyślij' }));
+    expect(await screen.findByText('Komplet dywaników')).toBeInTheDocument();
+  });
 });

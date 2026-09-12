@@ -1,7 +1,7 @@
 # Widget — czat (wycena i miss)
 
 Kod: `widget/src/chat/ChatPanel.test.tsx`, `widget/src/chat/format-turn.test.ts`,
-`widget/src/App.test.tsx`  
+`widget/src/App.test.tsx`, `widget/src/chat/consume-chat-sse.test.ts`  
 Standard: [docs/test-cases/README.md](../README.md)
 
 Logika zestawu: UI pokazuje kwotę z payloadu API i miss bez zmyślonej polityki.
@@ -16,6 +16,8 @@ Kwota nie pochodzi z modelu w widgecie.
 | widget-006 | low | Chrome widgetu (zapis rozmowy) |
 | widget-007 | high | UI tekstu `generated` z API |
 | widget-008 | high | formatter `generated` → `text` |
+| widget-009 | high | parser SSE: tokeny i `done` |
+| widget-010 | high | UI dokłada tokeny z `onDelta` |
 
 ### widget-002 — UI wyceny orientacyjnej
 
@@ -55,7 +57,7 @@ Kwota nie pochodzi z modelu w widgecie.
 - **Krytyczność:** low
 - **Logika:** klient widzi, że rozmowa jest zapisywana (wymóg produktu).
 - **Wejście:** render `<App />` z mock API
-- **Wyjście:** nagłówek `EVA Premium` i tekst `Rozmowa jest zapisywana.`
+- **Wyjście:** nagłówek `EvaBot`, `EVA Premium` i tekst `Rozmowa jest zapisywana.`
 
 ### widget-007 — tekst Mastry (`generated`)
 
@@ -72,3 +74,19 @@ Kwota nie pochodzi z modelu w widgecie.
 - **Logika:** quoted/miss z payloadu; pozostałe statusy pokazują `text` z Nestu.
 - **Wejście:** `{ text: 'Wycena orientacyjna z macierzy: 599 PLN.', data: { status: 'generated' } }`
 - **Wyjście:** ten sam string, bez komunikatu błędu
+
+### widget-009 — parser SSE
+
+- **Kod:** `widget/src/chat/consume-chat-sse.test.ts` → `it('calls onDelta for tokens and returns the done payload')`
+- **Krytyczność:** high
+- **Logika:** UI nie czeka na cały JSON; tokeny z `delta`, kontrakt z `done`.
+- **Wejście:** strumień SSE `Komplet ` + `dywaników` + `done`
+- **Wyjście:** `onDelta` dwa razy; `text` złożony, `status: generated`
+
+### widget-010 — UI tokenów SSE
+
+- **Kod:** `widget/src/chat/ChatPanel.test.tsx` → `it('streams generated assistant tokens from SSE deltas')`
+- **Krytyczność:** high
+- **Logika:** `postMessage` woła `onDelta`; pęcherzyk asystenta pokazuje złożony tekst.
+- **Wejście:** mock `onDelta('Komplet ')`, `onDelta('dywaników')`
+- **Wyjście:** `Komplet dywaników` na liście wiadomości
