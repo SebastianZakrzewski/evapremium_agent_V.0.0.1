@@ -16,6 +16,8 @@ Filtr globalny nie widzi błędów zjedzonych w SSE — te zgłasza
 | sentry-003 | medium | Health check nie jest transakcją |
 | sentry-004 | high | SSE: nie zgłaszaj 404/400 |
 | sentry-005 | high | SSE: zgłoś nieoczekiwany błąd |
+| sentry-006 | low | Sonda Sentry tylko z env |
+| sentry-007 | low | Sonda to Error, nie HttpException |
 
 ### sentry-001 — Brak DSN → brak init
 
@@ -56,3 +58,19 @@ Filtr globalny nie widzi błędów zjedzonych w SSE — te zgłasza
 - **Logika:** `catch` w kontrolerze czatu zamiata wyjątek przed filtrem Nest.
 - **Wejście:** `Error('supabase insert failed')`
 - **Wyjście:** `capture` z tym błędem
+
+### sentry-006 — Sonda Sentry tylko z env
+
+- **Kod:** `api/src/observability/sentry-debug-probe.spec.ts` → `it('is off unless SENTRY_DEBUG_PROBE=1')`
+- **Krytyczność:** low
+- **Logika:** publiczny GET nie rzuca błędu testowego bez flagi na serwerze.
+- **Wejście:** puste env vs `SENTRY_DEBUG_PROBE=1`
+- **Wyjście:** `false` / `true`
+
+### sentry-007 — Sonda to Error, nie HttpException
+
+- **Kod:** `api/src/observability/sentry-debug-probe.spec.ts` → `it('builds an unexpected Error for Sentry (not an HTTP exception)')`
+- **Krytyczność:** low
+- **Logika:** filtr Sentry ma zgłosić ten błąd (nie 404).
+- **Wejście:** `sentryDebugError()`
+- **Wyjście:** `Error` o treści `EVA Sentry probe`, bez `getStatus`

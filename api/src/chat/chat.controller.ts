@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Param,
   Post,
   Res,
@@ -13,6 +14,10 @@ import { apiHealth } from './api-health';
 import { ChatService } from './chat.service';
 import { encodeSse } from './sse';
 import { reportUnexpectedError } from '../observability/report-unexpected-error';
+import {
+  sentryDebugError,
+  sentryDebugProbeEnabled,
+} from '../observability/sentry-debug-probe';
 
 @Controller('v1')
 export class ChatController {
@@ -21,6 +26,14 @@ export class ChatController {
   @Get('health')
   health(): { status: 'ok'; probe: string } {
     return apiHealth();
+  }
+
+  @Get('debug-sentry')
+  debugSentry(): never {
+    if (!sentryDebugProbeEnabled()) {
+      throw new NotFoundException();
+    }
+    throw sentryDebugError();
   }
 
   @Post('sessions')
