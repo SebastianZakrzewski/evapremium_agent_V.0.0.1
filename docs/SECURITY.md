@@ -17,7 +17,8 @@ publiczny odpowiednik w `authorized_keys`. Nie commituj klucza prywatnego.
   `WIDGET_ORIGIN` (HTTPS origin widgetu na Vercel/CDN).
 - W snippecie: **publiczny** identyfikator widgetu, nie sekret.
 - To ogranicza obce strony w przeglądarce; nie jest to silne uwierzytelnienie.
-- Brak logowania klienta w MVP.
+- Transkrypt czatu: nie logować treści wiadomości. Tura intencji: `sessionId`,
+  current/candidate/accepted, tool-e (`[intent-turn]` na stdout).
 
 ## Dane
 

@@ -6,6 +6,7 @@ import {
   outOfScopeProfile,
   profileOrOutOfScope,
 } from './intent-fallback';
+import type { IntentTurnLog } from './intent-turn-log';
 import { executeQualifyStep } from './qualify-step';
 import type { QualifyResult, ShopIntent, ShopToolId } from './schema';
 
@@ -49,20 +50,47 @@ async function qualifyOrOutOfScope(
   }
 }
 
+export type PrepareIntentTurnOptions = {
+  currentIntent?: ShopIntent;
+  sessionId?: string;
+  log?: (entry: IntentTurnLog) => void;
+};
+
+function emitTurnLog(
+  options: PrepareIntentTurnOptions | undefined,
+  turn: PreparedTurn,
+  extra: Pick<IntentTurnLog, 'candidateIntent' | 'forcedOutOfScope'>,
+): PreparedTurn {
+  options?.log?.({
+    sessionId: options.sessionId,
+    currentIntent: options.currentIntent,
+    candidateIntent: extra.candidateIntent,
+    acceptedIntent: turn.intent,
+    tools: turn.toolIds,
+    forcedOutOfScope: extra.forcedOutOfScope,
+  });
+  return turn;
+}
+
 export async function prepareIntentTurn(
   qualifier: IntentQualifier,
   message: string,
-  options?: { currentIntent?: ShopIntent },
+  options?: PrepareIntentTurnOptions,
 ): Promise<PreparedTurn> {
   let result = await qualifyOrOutOfScope(qualifier, message);
   if (result === 'out_of_scope') {
-    return assembledTurn(outOfScopeProfile());
+    return emitTurnLog(options, assembledTurn(outOfScopeProfile()), {
+      forcedOutOfScope: true,
+    });
   }
 
   if (isLowConfidence(result)) {
     result = await qualifyOrOutOfScope(qualifier, message);
     if (result === 'out_of_scope' || isLowConfidence(result)) {
-      return assembledTurn(outOfScopeProfile());
+      return emitTurnLog(options, assembledTurn(outOfScopeProfile()), {
+        candidateIntent: result === 'out_of_scope' ? undefined : result.intent,
+        forcedOutOfScope: true,
+      });
     }
   }
 
@@ -70,5 +98,12 @@ export async function prepareIntentTurn(
     options?.currentIntent,
     result.intent,
   );
-  return assembledTurn(profileOrOutOfScope(accepted));
+  return emitTurnLog(
+    options,
+    assembledTurn(profileOrOutOfScope(accepted)),
+    {
+      candidateIntent: result.intent,
+      forcedOutOfScope: false,
+    },
+  );
 }

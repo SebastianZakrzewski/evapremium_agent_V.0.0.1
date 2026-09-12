@@ -87,6 +87,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Gałąź tury (tool-e) | [api/mastra/intent-turn.md](api/mastra/intent-turn.md) | `api/src/mastra/intents/prepare-intent-turn.spec.ts` |
 | Fallback intencji i lead | [api/mastra/intent-fallback.md](api/mastra/intent-fallback.md) | `api/src/mastra/intents/intent-fallback.spec.ts` |
 | Pamięć intencji sesji | [api/mastra/intent-session-memory.md](api/mastra/intent-session-memory.md) | `api/src/mastra/intents/accept-intent-transition.spec.ts` |
+| Log tury intencji | [api/mastra/intent-turn-log.md](api/mastra/intent-turn-log.md) | `api/src/mastra/intents/intent-turn-log.spec.ts` |
 | Kontrakt HTTP czatu | [api/chat/chat-http.md](api/chat/chat-http.md) | `api/src/chat/chat.contract.spec.ts` |
 | CORS czatu | [api/chat/cors.md](api/chat/cors.md) | `api/src/chat/shop-cors.spec.ts` |
 | Sesje Supabase | [api/chat/supabase-sessions.md](api/chat/supabase-sessions.md) | `api/src/chat/supabase-chat-sessions.spec.ts` |
