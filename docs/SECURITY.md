@@ -20,6 +20,15 @@ publiczny odpowiednik w `authorized_keys`. Nie commituj klucza prywatnego.
 - Transkrypt czatu: nie logować treści wiadomości. Tura intencji: `sessionId`,
   current/candidate/accepted, tool-e (`[intent-turn]` na stdout).
 
+## Mastra Studio (HTTP `/mastra`)
+
+Nie jest to publiczny czat. Montaż tylko gdy `DEEPSEEK_API_KEY` **i**
+`MASTRA_STUDIO_TOKEN`. Auth: nagłówek `Authorization: Bearer <token>`
+(SimpleAuth). Bez `?apiKey=` w query. CORS: `localhost` / `127.0.0.1` porty
+4111 i 3000; opcjonalnie `MASTRA_STUDIO_ORIGIN` (HTTPS albo localhost).
+Dostęp do produkcji: tunel SSH na `127.0.0.1:3000`, nie otwierać `/mastra`
+w Caddy bez auth. Token tylko w `/opt/evabot/api/.env`.
+
 ## Dane
 
 Sesje: `eva_bot` w PROD. Katalog/cennik: `evapremium_shop`. Nest: klucz

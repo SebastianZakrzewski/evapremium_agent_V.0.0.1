@@ -44,6 +44,8 @@ this.mastraService.getAgent(agentId)
 
 To jest ten sam singleton. Narzędzia agenta mają wołać **serwisy Nest**, nie bazę.
 
-Opcje modułu (skrót): `prefix`, `rateLimitOptions`, `streamOptions`, `auth` (domyślnie wyłączone — Nest ma własne guardy).
+Opcje modułu (skrót): `prefix` (u nas `/mastra`), `rateLimitOptions`,
+`streamOptions`, `auth` (`enabled: true` + SimpleAuth, token
+`MASTRA_STUDIO_TOKEN`; bez query `apiKey`). Import **na końcu** `AppModule`.
 
 init szkieletu Mastry w istniejącym Nescie: `npx mastra@latest init` (tworzy `src/mastra`).

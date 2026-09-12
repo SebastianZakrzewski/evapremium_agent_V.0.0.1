@@ -20,6 +20,20 @@ Env: `DEEPSEEK_API_KEY`, `BITRIX_WEBHOOK_URL`, `SUPABASE_URL`
 (`https://kmepxyervpeujwvgdqtm.supabase.co`), `SUPABASE_SERVICE_ROLE_KEY`,
 `WIDGET_ORIGIN` (HTTPS origin Vercel, bez slasha), `PORT=3000`,
 `SENTRY_DSN` (adres ingest projektu, nie token `sntryu_`).
+Opcjonalnie Studio: `MASTRA_STUDIO_TOKEN` (Bearer), wtedy HTTP Mastry
+`/mastra`. Tunel:
+
+```bash
+ssh -L 3000:127.0.0.1:3000 -i ~/.ssh/id_rsa root@46.224.75.64
+```
+
+Lokalnie (Nest na `:3000`, UI Studio na `:4111`, żeby nie zająć portu API):
+
+```bash
+npx mastra studio --port 4111 --url http://localhost:3000 --server-api-prefix /mastra
+```
+i w Settings nagłówek `Authorization: Bearer <MASTRA_STUDIO_TOKEN>`.
+Request context: `{"intent":"pricing"}` (albo inny `ShopIntent`).
 
 Proces w kontenerze słucha na `0.0.0.0`. HTTPS (Caddy/nginx + domena) jest
 potrzebny, żeby widget z Vercel wołał API bez mixed content (dziś rewrite `/v1`

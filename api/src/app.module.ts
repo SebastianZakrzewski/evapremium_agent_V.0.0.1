@@ -4,6 +4,7 @@ import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
 import { ChatModule } from './chat/chat.module';
 import { ContextTreeModule } from './context-tree/context-tree.module';
 import { LeadModule } from './lead/lead.module';
+import { mastraHttpModules } from './mastra/mastra-http.module';
 import { PricingModule } from './pricing/pricing.module';
 import { TemplateCascadeModule } from './templates/template-cascade.module';
 
@@ -15,6 +16,7 @@ import { TemplateCascadeModule } from './templates/template-cascade.module';
     ContextTreeModule,
     ChatModule,
     LeadModule,
+    ...mastraHttpModules(),
   ],
   providers: [
     {

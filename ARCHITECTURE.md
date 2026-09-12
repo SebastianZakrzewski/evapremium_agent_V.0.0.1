@@ -10,7 +10,9 @@ wycena i context tree: serwisy Nest; przy `SUPABASE_URL` +
 `POST /v1/sessions`; wiadomości SSE. Transkrypt: `ChatSessions` — in-memory
 w teście, `eva_bot.chat_sessions` / `chat_messages` (kolumny PROD `text` +
 `direction`) przy Supabase. DeepSeek za adapterem Mastry; stub bez klucza.
-CORS: originy sklepu + opcjonalny `WIDGET_ORIGIN` (HTTPS). Lead Bitrix za
+CORS: originy sklepu + opcjonalny `WIDGET_ORIGIN` (HTTPS). Przy
+`MASTRA_STUDIO_TOKEN` + DeepSeek: HTTP Mastry pod `/mastra` (SimpleAuth,
+nie publiczny czat). CORS: localhost Studio. Lead Bitrix za
 `LeadModule`. Widget: EvaBot + snippet `embed.js`. Sentry: `@sentry/nestjs`
 przy `SENTRY_DSN` (`instrument.ts` przed Nest, `SentryGlobalFilter`; awarie
 SSE przez `reportUnexpectedError`). DSN, nie token użytkownika.
@@ -41,11 +43,11 @@ Kod w jednym gicie, pakiety `api` i `widget`. Deploy nadal rozdzielony
 | Warstwa | Technologia | Odpowiedzialność |
 | --- | --- | --- |
 | Prezentacja | React, hostowany widget | Snippet na `evapremium.pl`; UI czatu z Waszego originu |
-| Agent / LLM | Mastra + DeepSeek | Czat z kluczem: qualify → `IntentProfile` → ten sam `evaShopAgent` (`RequestContext.intent`, podzbiór tooli); `verify` bez klucza: stub |
+| Agent / LLM | Mastra + DeepSeek | Czat z kluczem: qualify → `IntentProfile` → ten sam `evaShopAgent` (`RequestContext.intent`, podzbiór tooli); `verify` bez klucza: stub. Studio: `mastra studio --url` + prefix `/mastra` |
 | Logika biznesowa | NestJS | Kaskada filtrów, wycena, context tree, utworzenie leada; jedyne I/O do danych i CRM |
 | Dane | Supabase PROD | `evapremium_shop` (szablony, cennik), `eva_bot` (aliasy slotów, sesje, context tree) |
 | CRM | Bitrix24 | Kolejka pracy człowieka (zapis leada z czatu) |
-| Obserwowalność | Sentry | Błędy i analiza w produkcji |
+| Obserwowalność | Sentry + Mastra traces | Błędy Nest (Sentry DSN). Traces Studio w LibSQL (`.mastra/editor.db`) |
 | Jakość | TDD | Test najpierw, potem implementacja |
 
 ## Źródła danych
@@ -138,7 +140,10 @@ w `InMemoryIntentSessionState`) → **ten sam** `evaShopAgent` z instancji
 Mastry (`createEvaMastra`). Per-intent: `RequestContext.intent`; instructions
 i mapa tooli z profilu (Studio: prompt-block / `{{intent}}`). SSE bez zmiany
 ramek. `stream(message, sessionId)`. Lead Bitrix zostaje w Neście. Bez klucza
-`verify` nadal `StubChatAgent`. Editor + LibSQL (`.mastra/editor.db`). Stan
+`verify` nadal `StubChatAgent`. Editor + LibSQL (`.mastra/editor.db`). Przy
+`MASTRA_STUDIO_TOKEN` Nest montuje `/mastra` (`@mastra/nestjs`, SimpleAuth).
+Studio: `mastra studio --url` + prefix `/mastra` + `Authorization: Bearer`.
+Do Hetznera: SSH tunnel na `127.0.0.1:3000`, nie publiczny `/mastra`. Stan
 intencji nie jest w Supabase.
 
 Szczegół kontraktu: `docs/design-docs/intent-workflow.md`.

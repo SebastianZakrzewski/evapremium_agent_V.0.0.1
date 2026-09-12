@@ -1,8 +1,10 @@
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { Mastra } from '@mastra/core';
+import { SimpleAuth } from '@mastra/core/server';
 import { MastraEditor } from '@mastra/editor';
 import { LibSQLStore } from '@mastra/libsql';
+import { MastraStorageExporter, Observability, SamplingStrategyType } from '@mastra/observability';
 import type { ShopTools } from '../chat/shop-tools';
 import {
   createEvaMastraAgent,
@@ -13,6 +15,7 @@ import { createIntentWorkflow } from './intents/create-intent-workflow';
 import type { IntentQualifier } from './intents/intent-qualifier';
 import { MastraIntentQualifier } from './intents/mastra-intent-qualifier';
 import { StubIntentQualifier } from './intents/stub-intent-qualifier';
+import { MASTRA_HTTP_PREFIX } from './studio-http';
 
 export const DEFAULT_MASTRA_STORAGE_URL = 'file:.mastra/editor.db';
 
@@ -33,6 +36,17 @@ function ensureFileStorageDir(url: string): void {
   mkdirSync(dirname(filePath), { recursive: true });
 }
 
+function studioAuth() {
+  const token = process.env.MASTRA_STUDIO_TOKEN?.trim();
+  if (!token) {
+    return undefined;
+  }
+  return new SimpleAuth({
+    tokens: { [token]: { id: 'eva-studio', name: 'Mastra Studio' } },
+    protected: [new RegExp(`^${MASTRA_HTTP_PREFIX}(?:/|$)`)],
+  });
+}
+
 export type CreateEvaMastraOptions = {
   storageUrl?: string;
 };
@@ -46,12 +60,23 @@ export function createEvaMastra(
     process.env.MASTRA_STORAGE_URL ??
     DEFAULT_MASTRA_STORAGE_URL;
   ensureFileStorageDir(storageUrl);
+  const auth = studioAuth();
   return new Mastra({
     storage: new LibSQLStore({
       id: 'eva-mastra-storage',
       url: storageUrl,
     }),
     editor: new MastraEditor(),
+    observability: new Observability({
+      configs: {
+        default: {
+          serviceName: 'eva-bot',
+          sampling: { type: SamplingStrategyType.ALWAYS },
+          exporters: [new MastraStorageExporter()],
+        },
+      },
+    }),
+    ...(auth ? { server: { auth } } : {}),
     agents: {
       [EVA_SHOP_AGENT_KEY]: createEvaMastraAgent(tools),
       evaIntentQualifier: createEvaQualifierAgent(),
