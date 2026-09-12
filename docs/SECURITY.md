@@ -6,10 +6,13 @@ Aktualizuj przy zmianie originów, sekretów, PII lub integracji.
 
 Klucze DeepSeek, Supabase (service), Bitrix oraz `SENTRY_DSN` — tylko na
 serwerze (Nest na Hetznerze). Nigdy w widgecie ani w snippecie.
+Lokalna lista sekretów: `docs/provider_configuration.json` (gitignore);
+szablon: `docs/provider_configuration.example.json`.
 
 ## Publiczne API czatu (MVP)
 
-- CORS: tylko `https://evapremium.pl` i `https://www.evapremium.pl`.
+- CORS: `https://evapremium.pl`, `https://www.evapremium.pl` oraz
+  `WIDGET_ORIGIN` (HTTPS origin widgetu na Vercel/CDN).
 - W snippecie: **publiczny** identyfikator widgetu, nie sekret.
 - To ogranicza obce strony w przeglądarce; nie jest to silne uwierzytelnienie.
 - Brak logowania klienta w MVP.

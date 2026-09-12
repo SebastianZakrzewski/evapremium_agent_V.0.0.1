@@ -4,41 +4,21 @@
 
 ## TD-001 — katalogi cennika in-memory zamiast `evapremium_shop`
 
-- **Slice:** 2 (wycena)
-- **Stan:** otwarte
-- **Priorytet:** średni (blokuje prawdziwe kwoty na sklepie, nie blokuje kontraktu domeny)
-- **Kompromis:** `PricingModule` wiąże porty
-  `PricingVariantCatalog` / `PricingCategoryVariantCatalog` / `PricingMatrixCatalog`
-  z fixture in-memory (`api/src/pricing/in-memory/`). Kwoty i listy wariantów
-  w teście i w procesie Nest pochodzą z tej macierzy, nie z PROD.
-- **Wpływ:** wycena w aplikacji nie odzwierciedla aktualnych tabel
-  `pricing_variants`, `pricing_category_variants`, `pricing_matrix` (oraz
-  powiązanych kategorii) w `evapremium_shop`. Ryzyko rozjazdu kwot po zmianie
-  cennika w sklepie. LLM nadal nie jest źródłem ceny.
-- **Warunek usunięcia:** Nest czyta tabele cennika `evapremium_shop` przez
-  adapter za tymi samymi portami (bez zmiany kontraktu `listCategoryVariants` /
-  `quotePrice`). Fixture zostaje w testach.
--   **Nie robić przy usuwaniu:** HTTP czatu, Mastra, Bitrix, apply migracji na
-  PROD bez zgody, sprzężenie z `TemplateCascadeService`.
+- **Slice:** 2 (wycena); zamknięcie 7
+- **Stan:** zamknięte
+- **Priorytet:** —
+- **Kompromis (historyczny):** fixture in-memory w teście.
+- **Aktualnie:** `PricingModule` przy `SUPABASE_*` ładuje aktywny katalog
+  `evapremium_shop` (`loadPricingLists`); bez env — fixture (`verify`).
+- **Nie robić przy dalszych zmianach:** LLM jako źródło kwoty, anon key w widgecie.
 
 ## TD-002 — węzły context tree in-memory zamiast `eva_bot.context_nodes`
 
-- **Slice:** 3 (context tree)
-- **Stan:** otwarte
-- **Priorytet:** średni (blokuje prawdziwe FAQ/klauzule ze sklepu, nie blokuje kontraktu lookupu)
-- **Kompromis:** `ContextTreeModule` wiąże port `ContextNodeCatalog` z fixture
-  in-memory (`api/src/context-tree/in-memory/`). Hit/miss i `body` w teście
-  i w procesie Nest pochodzą z tej listy, nie z PROD. Migracja tabeli jest
-  w repo (`supabase/migrations/20260912001000_context_nodes.sql`), bez apply.
-- **Wpływ:** treść liści (w tym puste seed `chat-zapis` / `zgoda-lead`) w
-  aplikacji nie odzwierciedla aktualnej tabeli `eva_bot.context_nodes`.
-  Ryzyko rozjazdu faktów po wklejeniu treści przez biznes. LLM nadal nie
-  jest źródłem FAQ.
-- **Warunek usunięcia:** Nest czyta `eva_bot.context_nodes` przez adapter za
-  tym samym portem (bez zmiany kontraktu `lookupLeaf` / `lookupContextLeaf`).
-  Fixture zostaje w testach.
-- **Nie robić przy usuwaniu:** HTTP czatu, Mastra, Bitrix, apply migracji na
-  PROD bez zgody, sprzężenie z `PricingModule` / `TemplateCascadeService`.
+- **Slice:** 3 (context tree); zamknięcie 7
+- **Stan:** zamknięte
+- **Kompromis (historyczny):** fixture + migracja w repo.
+- **Aktualnie:** `loadContextNodes` przy env Supabase; fixture w `verify`.
+  Tabela `eva_bot.context_nodes` jest na PROD.
 
 ## TD-003 — CORS i routing HTTP bez bootu Nest 12 w Jest
 
@@ -64,21 +44,10 @@
 
 ## TD-004 — sesje czatu in-memory zamiast `eva_bot.chat_sessions`
 
-- **Slice:** 4 (HTTP + Mastra)
-- **Stan:** otwarte
-- **Priorytet:** średni (blokuje transkrypt i debug w PROD, nie blokuje
-  kontraktu wiadomości)
-- **Kompromis:** `ChatService` trzyma `InMemoryChatSessions` (zbiór id w
-  procesie). Slice 5 rozszerzył kontrakt o `appendMessage` / `listMessages`
-  i dodał SQL `eva_bot.chat_sessions` / `chat_messages` w repo; proces Nest
-  nadal nie pisze do Supabase (TD-006).
-- **Wpływ:** widget może dostać 404 po redeployu; brak transkryptu w PROD.
-  LLM nadal nie jest magazynem sesji.
-- **Warunek usunięcia:** adapter za tym samym kontraktem `create` /
-  `assertExists` / `appendMessage` / `listMessages` pisze do `eva_bot`.
-  Fixture in-memory zostaje w testach. Zamknąć razem z TD-006.
-- **Nie robić przy usuwaniu:** lead Bitrix bez zgody, apply PROD bez zgody,
-  zmiana portu `CHAT_AGENT`, źródło ceny/faktu z LLM.
+- **Slice:** 4 (HTTP + Mastra); zamknięcie 7
+- **Stan:** zamknięte (razem z TD-006)
+- **Aktualnie:** `CHAT_SESSIONS` → `SupabaseChatSessions` przy env (schemat
+  PROD: `text` + `direction`); in-memory w `verify`.
 
 ## TD-005 — Mastra `generate` tylko przy `DEEPSEEK_API_KEY`
 
@@ -98,23 +67,10 @@
 
 ## TD-006 — transkrypt czatu in-memory zamiast `eva_bot` PROD
 
-- **Slice:** 5 (sesja i lead)
-- **Stan:** otwarte
-- **Priorytet:** średni (blokuje debug i kontekst leada w PROD, nie blokuje
-  kontraktu append user/assistant ani bramki zgody)
-- **Kompromis:** `postChatMessage` dopisuje `user` + `assistant` do
-  `InMemoryChatSessions`. Migracja
-  `supabase/migrations/20260912002000_chat_sessions.sql` jest w repo, bez
-  apply na PROD. Brak adaptera Supabase za tym samym kontraktem.
-- **Wpływ:** transkrypt ginie przy restarcie API; CRM dostaje tylko id sesji
-  w `COMMENTS`, a w PROD nie ma wierszy `chat_messages` do odczytu. LLM
-  nadal nie jest magazynem sesji.
-- **Warunek usunięcia:** Nest pisze `chat_sessions` / `chat_messages` przez
-  adapter (`create` / `assertExists` / `appendMessage` / `listMessages`).
-  In-memory zostaje w testach. Zamknąć razem z TD-004.
-- **Nie robić przy usuwaniu:** apply migracji na PROD bez zgody, kopiowanie
-  transkryptu do Bitrix, `crm.lead.add` bez kontaktu i zgody, Slice 6
-  (widget/Sentry).
+- **Slice:** 5 (sesja i lead); zamknięcie 7
+- **Stan:** zamknięte
+- **Aktualnie:** zapis na istniejących tabelach PROD (nie apply
+  `20260912002000_chat_sessions.sql` — inny kształt kolumn). Fixture w teście.
 
 ## TD-007 — `FetchBitrixHttp` tylko przy `BITRIX_WEBHOOK_URL`
 
@@ -150,14 +106,7 @@
 
 ## TD-009 — Origin iframe widgetu vs CORS sklepu
 
-- **Slice:** 6 (widget + snippet)
-- **Stan:** otwarte
-- **Priorytet:** średni (blokuje czat z hostowanego CDN w przeglądarce sklepu)
-- **Kompromis:** `embed.js` wstawia iframe z originu widgetu (Vercel/CDN).
-  `SHOP_CORS_ORIGINS` to tylko `https://evapremium.pl` i `www`. Fetch z
-  iframe ma `Origin` CDN, nie sklepu.
-- **Wpływ:** po wklejeniu snippetu czat z CDN nie przejdzie CORS, dopóki
-  Slice 7 nie doda originu widgetu albo nie osadzi UI w originie sklepu.
-- **Warunek usunięcia:** decyzja w Slice 7 (origin widgetu na liście CORS
-  albo inny sposób osadzenia). Bez apply PROD w Slice 6.
-- **Nie robić przy usuwaniu:** sekrety w snippecie, otwarty CORS `*`.
+- **Slice:** 6 (widget + snippet); zamknięcie 7
+- **Stan:** zamknięte
+- **Aktualnie:** `chatCorsOrigins(WIDGET_ORIGIN)` dokłada HTTPS origin widgetu
+  do listy sklepu. Ustaw `WIDGET_ORIGIN` na VPS po deployu Vercel.

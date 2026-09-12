@@ -4,17 +4,15 @@
 
 Szkielet monorepo (npm workspaces): `api/` (NestJS + Express, Mastra w tym
 samym procesie za portem `CHAT_AGENT`) i `widget/` (React / Vite). Kaskada,
-wycena i context tree zostają serwisami Nest (in-memory). HTTP czatu:
-`POST /v1/sessions`; wiadomości `POST /v1/sessions/:sessionId/messages` jako
-SSE (`text/event-stream`: `delta` z tokenami modelu, `done` z `text` + `data`
-z Nest). Narzędzia wołają te serwisy. DeepSeek za
-adapterem Mastry (`deepseek/deepseek-v4-flash`); w teście stub bez klucza.
-CORS: originy sklepu. Lead Bitrix za `LeadModule` (`crm.lead.add` tylko kontakt +
-zgoda; w teście fake HTTP). Transkrypt: `InMemoryChatSessions` + migracja
-`chat_sessions` / `chat_messages` w repo, bez apply PROD.
-Widget: okno czatu; wycena/miss z payloadu `done`; tekst `generated` z SSE;
-sklep ładuje `embed.js` z originu CDN
-i publiczny `data-eva-widget`. Sentry: `@sentry/node` przy `SENTRY_DSN` na API.
+wycena i context tree: serwisy Nest; przy `SUPABASE_URL` +
+`SUPABASE_SERVICE_ROLE_KEY` katalogi ładują PROD (`evapremium_shop` /
+`eva_bot`) raz przy starcie, bez env zostaje fixture. HTTP czatu:
+`POST /v1/sessions`; wiadomości SSE. Transkrypt: `ChatSessions` — in-memory
+w teście, `eva_bot.chat_sessions` / `chat_messages` (kolumny PROD `text` +
+`direction`) przy Supabase. DeepSeek za adapterem Mastry; stub bez klucza.
+CORS: originy sklepu + opcjonalny `WIDGET_ORIGIN` (HTTPS). Lead Bitrix za
+`LeadModule`. Widget: EvaBot + snippet `embed.js`. Sentry: `@sentry/node`
+przy `SENTRY_DSN` (DSN, nie token użytkownika).
 Poniżej są **zaakceptowane granice MVP**.
 
 Ten dokument jest źródłem prawdy o architekturze wysokiego poziomu.
@@ -58,14 +56,14 @@ serwerowo (nie anon z widgetu).
    Kaskada po `brand_key` / `model_key` / `body_type_*_key` / lata / `record_key`.
    Kategoria cennika: `dealer_pricing_category_key`. Nest mapuje surowe sloty
    tabelą `eva_bot.vehicle_slot_aliases` (`slot_kind`, `alias_normalized`,
-   `canonical_key`, opcjonalny `brand_key` dla modeli). Migracja jest w repo
-   (`supabase/migrations/`); nie zaaplikowana na PROD bez osobnej zgody.
-   W teście: fixture, jeden strzał ze znanymi kluczami → 0 / 1 / N.
+   `canonical_key`, opcjonalny `brand_key` dla modeli). Tabela jest na PROD
+   (migracja `20260911220000_vehicle_slot_aliases.sql`). W teście: fixture,
+   jeden strzał ze znanymi kluczami → 0 / 1 / N.
 2. **Cennik:** `pricing_vehicle_categories`, `pricing_variants`,
    `pricing_category_variants`, `pricing_matrix` (cena = kategoria + wariant +
    `mat_type`). Zakres: wszystkie szablony z tabeli, nie podzbiór „hitów”.
-3. **Context tree:** `eva_bot.context_nodes` (migracja w repo, bez apply PROD).
-   Kolumny: `id`,
+3. **Context tree:** `eva_bot.context_nodes` (na PROD, migracja
+   `20260912001000_context_nodes.sql`). Kolumny: `id`,
    `parent_id` (NULL = korzeń), `slug`, `title`, `body` (puste u gałęzi, treść
    u liścia), `sort_order`, `is_active`. Nest lookup po unikalnym `slug`
    (aktywny liść → `body`, w tym puste seed; gałąź / brak / nieaktywny → miss).
@@ -73,9 +71,11 @@ serwerowo (nie anon z widgetu).
    `zgoda-lead` (klauzula przy telefonie/mailu). **Treść prawną wkleja biznes**
    ze sklepu; agent jej nie generuje. Dalsze FAQ (dostawa, pielęgnacja, …) jako
    kolejne liście.
-4. **Sesja czatu:** `eva_bot.chat_sessions` / `chat_messages` (migracja w repo,
-   bez apply PROD). Nest zapisuje transkrypt za tym samym kontraktem co
-   `InMemoryChatSessions` (create / append / list).
+4. **Sesja czatu:** `eva_bot.chat_sessions` / `chat_messages` — tabele już były
+   na PROD (`text`, `direction` inbound/outbound). Nest zapisuje transkrypt za
+   tym samym kontraktem co `InMemoryChatSessions` (create / append / list).
+   Migracji `20260912002000_chat_sessions.sql` (kolumny `body` / `role`) **nie**
+   stosować — inny kształt niż istniejący schemat.
 
 Nie używać pustej `public.mats` ani katalogu n8n w `public` jako cennika.
 
@@ -107,8 +107,10 @@ LLM nie pisze SQL i nie podaje kwoty spoza wyniku narzędzia.
 
 Sklep wkleja **snippet** (skrypt). Widget z Vercel/CDN woła API Nest na Hetznerze.
 Czat: okno EvaBot; tekst modelu przychodzi SSE (`delta`), wycena/miss z
-zdarzenia `done` (`data` z Nest). CORS: tylko `evapremium.pl` i `www`.
-Publiczny id widgetu w snippecie, nie sekret. Szczegóły: `docs/SECURITY.md`.
+zdarzenia `done` (`data` z Nest). CORS: `https://evapremium.pl`,
+`https://www.evapremium.pl` oraz opcjonalny `WIDGET_ORIGIN` (hostowany
+widget / Vercel). Publiczny id widgetu w snippecie, nie sekret. Szczegóły:
+`docs/SECURITY.md`.
 
 ## LLM
 
@@ -119,8 +121,10 @@ Kontekst implementacji: `docs/references/mastra/`.
 
 ## Hosting
 
-Widget: **statyczny na Vercel/CDN**. NestJS + Mastra: **jeden proces Node na
-Hetznerze**. Snippet sklepu ładuje JS z CDN; czat woła API na Hetznerze.
+Widget: **statyczny na Vercel/CDN**. NestJS + Mastra: **jeden kontener Docker
+na Hetznerze** (obraz z GitHub, `0.0.0.0`, `PORT`). Operacje:
+[`docs/DEPLOY.md`](docs/DEPLOY.md).
+Snippet sklepu ładuje JS z CDN; czat woła API na Hetznerze.
 Nie PaaS i nie serverless. Widget nie jest serwowany z VPS.
 
 ## Późniejsze warstwy (nie implementować w MVP)
@@ -147,7 +151,7 @@ zapisie rozmowy.
 
 - Treść liści `chat-zapis` i `zgoda-lead` — wklejenie ze sklepu, nie projekt
   architektury.
-- Plan wykonania: `docs/exec-plans/active/mvp-tdd.md`.
+- Plan wykonania MVP: `docs/exec-plans/completed/mvp-tdd.md`.
 
 ## Zasady utrzymania
 
@@ -161,8 +165,9 @@ zapisie rozmowy.
 
 - `AGENTS.md`
 - `DOCUMENTATION_STRUCTURE.md`
+- `docs/DEPLOY.md`
 - `docs/design-docs/core-beliefs.md`
 - `docs/SECURITY.md`
-- `docs/exec-plans/active/mvp-tdd.md`
+- `docs/exec-plans/completed/mvp-tdd.md`
 - `docs/references/mastra/INDEX.md`
 - `docs/product-specs/mvp-obsluga-klienta.md`

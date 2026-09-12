@@ -8,7 +8,9 @@ coverage/
 .env
 .env.*
 !.env.example
+docs/provider_configuration.json
 .DS_Store
 Thumbs.db
 *.tsbuildinfo
 .mastra/
+.vercel/

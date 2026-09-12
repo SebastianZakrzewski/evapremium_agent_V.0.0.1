@@ -15,7 +15,7 @@ export class ChatController {
   constructor(private readonly chat: ChatService) {}
 
   @Post('sessions')
-  createSession(): { sessionId: string } {
+  createSession(): Promise<{ sessionId: string }> {
     return this.chat.createSession();
   }
 

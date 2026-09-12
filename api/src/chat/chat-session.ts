@@ -1,3 +1,5 @@
+export const CHAT_SESSIONS = Symbol('CHAT_SESSIONS');
+
 export class UnknownSessionError extends Error {
   constructor() {
     super('unknown session');
@@ -13,31 +15,38 @@ export type ChatMessageRecord = {
   body: string;
 };
 
-export class InMemoryChatSessions {
+export interface ChatSessions {
+  create(): Promise<{ sessionId: string }>;
+  assertExists(sessionId: string): Promise<void>;
+  appendMessage(record: ChatMessageRecord): Promise<void>;
+  listMessages(sessionId: string): Promise<ChatMessageRecord[]>;
+}
+
+export class InMemoryChatSessions implements ChatSessions {
   private readonly ids = new Set<string>();
   private readonly messages: ChatMessageRecord[] = [];
 
   constructor(private readonly createId: () => string) {}
 
-  create(): { sessionId: string } {
+  async create(): Promise<{ sessionId: string }> {
     const sessionId = this.createId();
     this.ids.add(sessionId);
     return { sessionId };
   }
 
-  assertExists(sessionId: string): void {
+  async assertExists(sessionId: string): Promise<void> {
     if (!this.ids.has(sessionId)) {
       throw new UnknownSessionError();
     }
   }
 
-  appendMessage(record: ChatMessageRecord): void {
-    this.assertExists(record.sessionId);
+  async appendMessage(record: ChatMessageRecord): Promise<void> {
+    await this.assertExists(record.sessionId);
     this.messages.push(record);
   }
 
-  listMessages(sessionId: string): ChatMessageRecord[] {
-    this.assertExists(sessionId);
+  async listMessages(sessionId: string): Promise<ChatMessageRecord[]> {
+    await this.assertExists(sessionId);
     return this.messages.filter((row) => row.sessionId === sessionId);
   }
 }

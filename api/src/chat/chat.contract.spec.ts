@@ -23,7 +23,7 @@ import {
 import { TemplateCascadeResolver } from '../templates/template-cascade.resolver';
 import { InMemoryChatSessions, UnknownSessionError } from './chat-session';
 import { postChatMessage } from './post-chat-message';
-import { SHOP_CORS_ORIGINS } from './shop-cors';
+import { chatCorsOrigins } from './shop-cors';
 import { ShopTools } from './shop-tools';
 import { StubChatAgent } from './stub-chat.agent';
 
@@ -44,7 +44,7 @@ describe('chat HTTP contract (tools → Nest services 1–3)', () => {
   const agent = new StubChatAgent(tools);
 
   it('creates a session then quotes via Nest pricing tool', async () => {
-    const { sessionId } = sessions.create();
+    const { sessionId } = await sessions.create();
     const result = await postChatMessage(
       sessions,
       agent,
@@ -59,7 +59,7 @@ describe('chat HTTP contract (tools → Nest services 1–3)', () => {
   });
 
   it('resolves a template through the cascade tool', async () => {
-    const { sessionId } = sessions.create();
+    const { sessionId } = await sessions.create();
     const result = await postChatMessage(
       sessions,
       agent,
@@ -73,7 +73,7 @@ describe('chat HTTP contract (tools → Nest services 1–3)', () => {
   });
 
   it('returns a context leaf and miss without invented copy', async () => {
-    const { sessionId } = sessions.create();
+    const { sessionId } = await sessions.create();
     const hit = await postChatMessage(sessions, agent, sessionId, 'leaf dostawa');
     expect(hit.data).toEqual({
       status: 'hit',
@@ -97,8 +97,8 @@ describe('chat HTTP contract (tools → Nest services 1–3)', () => {
     ).rejects.toBeInstanceOf(UnknownSessionError);
   });
 
-  it('allows only shop CORS origins', () => {
-    expect([...SHOP_CORS_ORIGINS]).toEqual([
+  it('allows shop CORS origins', () => {
+    expect(chatCorsOrigins()).toEqual([
       'https://evapremium.pl',
       'https://www.evapremium.pl',
     ]);
@@ -106,14 +106,14 @@ describe('chat HTTP contract (tools → Nest services 1–3)', () => {
 
   it('persists user and assistant messages on the session', async () => {
     const stored = new InMemoryChatSessions(() => 'session-persist');
-    const { sessionId } = stored.create();
+    const { sessionId } = await stored.create();
     await postChatMessage(
       stored,
       agent,
       sessionId,
       'quote passenger_car komplet-5szt',
     );
-    expect(stored.listMessages(sessionId)).toEqual([
+    expect(await stored.listMessages(sessionId)).toEqual([
       {
         sessionId: 'session-persist',
         role: 'user',

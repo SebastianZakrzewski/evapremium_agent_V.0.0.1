@@ -1,0 +1,12 @@
+services:
+  api:
+    image: evabot-api:git
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: evabot-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - /opt/evabot/api/.env

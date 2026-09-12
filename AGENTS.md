@@ -14,7 +14,7 @@ poznawania projektu, wprowadzania zmian i utrzymywania dokumentacji.
    oraz `docs/product-specs/mvp-obsluga-klienta.md`.
    Przy API, originach, sekretach lub PII: `docs/SECURITY.md`.
 5. Otwórz tylko pozostałe dokumenty związane z wykonywanym zadaniem.
-   Implementacja MVP: `docs/exec-plans/active/mvp-tdd.md`.
+   Implementacja MVP: `docs/exec-plans/completed/mvp-tdd.md`.
    Mastra: `docs/references/mastra/INDEX.md`, potem jeden fragment.
 6. Przed zmianą kodu sprawdź istniejące wzorce i testy.
    Katalog przypadków (wejście / wyjście / logika / krytyczność):
@@ -43,10 +43,9 @@ Większe, wieloetapowe lub ryzykowne zadania powinny otrzymać plan w
 
 Nie twórz infrastruktury planów dla prostych, jednorazowych zmian.
 
-Aktywny plan MVP (`docs/exec-plans/active/mvp-tdd.md`): pętla **jeden niedokończony
-slice → branch → TDD → `verify` → osobny subagent audytu (pass) → STOP na merge**.
-Implementer nie audytuje własnego diffu. Slice’e **(zrobione)** — nie implementuj
-ponownie. Bramka: `.cursor/rules/mvp-tdd-quality-gate.mdc`.
+Plan MVP (`docs/exec-plans/completed/mvp-tdd.md`): slice’e 0–7 zamknięte.
+Nowy zakres to osobny plan w `active/`. Bramka historyczna:
+`.cursor/rules/mvp-tdd-quality-gate.mdc`.
 
 ## Weryfikacja
 

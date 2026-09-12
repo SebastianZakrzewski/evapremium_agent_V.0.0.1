@@ -6,8 +6,8 @@ Standard: [docs/test-cases/README.md](../../README.md)
 Logika zestawu: widget woła Nest (`POST /v1/sessions`, wiadomość SSE —
 kontroler w procesie; Jest nie bootuje Nest 12 ESM, TD-003). Stub agenta
 (DeepSeek poza testem, TD-005) woła narzędzia, które idą w serwisy Slice 1–3.
-CORS origin sklepu. Sesje in-memory (TD-004). Bez Bitrix i bez zapisu w
-Supabase.
+CORS origin sklepu + `WIDGET_ORIGIN`. Sesje: in-memory w teście; PROD przy
+env Supabase. Bez Bitrix w tym zestawie.
 
 | id | Krytyczność | Tytuł |
 | --- | --- | --- |

@@ -81,7 +81,12 @@ Przy wątpliwości wybierz wyższy poziom.
 | Resolver wyceny | [api/pricing/pricing-resolver.md](api/pricing/pricing-resolver.md) | `api/src/pricing/pricing.resolver.spec.ts` |
 | Resolver context tree | [api/context-tree/context-tree-resolver.md](api/context-tree/context-tree-resolver.md) | `api/src/context-tree/context-tree.resolver.spec.ts` |
 | Kontrakt HTTP czatu | [api/chat/chat-http.md](api/chat/chat-http.md) | `api/src/chat/chat.contract.spec.ts` |
+| CORS czatu | [api/chat/cors.md](api/chat/cors.md) | `api/src/chat/shop-cors.spec.ts` |
+| Sesje Supabase | [api/chat/supabase-sessions.md](api/chat/supabase-sessions.md) | `api/src/chat/supabase-chat-sessions.spec.ts` |
 | Resolver leada | [api/lead/lead-resolver.md](api/lead/lead-resolver.md) | `api/src/lead/lead.resolver.spec.ts` |
 | Sentry na API | [api/observability/sentry.md](api/observability/sentry.md) | `api/src/observability/init-sentry.spec.ts` |
+| Adapter szablonów Supabase | [api/templates/supabase-catalog.md](api/templates/supabase-catalog.md) | `api/src/templates/supabase/load-catalog.spec.ts` |
+| Adapter cennika Supabase | [api/pricing/supabase-pricing.md](api/pricing/supabase-pricing.md) | `api/src/pricing/supabase/load-pricing.spec.ts` |
+| Adapter context tree Supabase | [api/context-tree/supabase-nodes.md](api/context-tree/supabase-nodes.md) | `api/src/context-tree/supabase/load-nodes.spec.ts` |
 | Widget czat (wycena i miss) | [widget/chat-ui.md](widget/chat-ui.md) | `widget/src/chat/ChatPanel.test.tsx`, `format-turn.test.ts`, `App.test.tsx` |
 | Snippet sklepu | [widget/snippet.md](widget/snippet.md) | `widget/src/embed/shop-snippet.test.ts` |

@@ -34,7 +34,7 @@ async function collect(
 describe('streamChatMessage', () => {
   it('emits token deltas then done for a streaming agent', async () => {
     const sessions = new InMemoryChatSessions(() => 'session-sse');
-    const { sessionId } = sessions.create();
+    const { sessionId } = await sessions.create();
     const frames = await collect(
       sessions,
       new StreamingAgent(),
@@ -53,7 +53,7 @@ describe('streamChatMessage', () => {
         },
       },
     ]);
-    expect(sessions.listMessages(sessionId).map((row) => row.body)).toEqual([
+    expect((await sessions.listMessages(sessionId)).map((row) => row.body)).toEqual([
       'golf 8 komplet',
       'ab',
     ]);

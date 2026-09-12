@@ -1,8 +1,8 @@
 import type { INestApplication } from '@nestjs/common';
-import { SHOP_CORS_ORIGINS } from './shop-cors';
+import { chatCorsOrigins } from './shop-cors';
 
 export function configureChatHttp(app: INestApplication): void {
   app.enableCors({
-    origin: [...SHOP_CORS_ORIGINS],
+    origin: chatCorsOrigins(process.env.WIDGET_ORIGIN),
   });
 }

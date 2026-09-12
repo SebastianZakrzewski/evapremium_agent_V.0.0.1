@@ -1,0 +1,14 @@
+[Unit]
+Description=EVA bot Nest API
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/evabot/api
+EnvironmentFile=/opt/evabot/api/.env
+ExecStart=/usr/bin/node dist/main.js
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

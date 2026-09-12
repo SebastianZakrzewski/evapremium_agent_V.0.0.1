@@ -4,7 +4,7 @@ Cel: widget na sklepie odpowiada z context tree i podaje wycenę orientacyjną
 z `evapremium_shop`, z leadem w Bitrix przy braku szablonu.
 
 Źródła: `ARCHITECTURE.md`, `docs/product-specs/mvp-obsluga-klienta.md`,
-`docs/SECURITY.md`. Po weryfikacji przenieś ten plik do `completed/`.
+`docs/SECURITY.md`. Slice’e 0–7 zamknięte; ten plik jest w `completed/`.
 
 Zasada: **czerwony test → implementacja → zielony**. Bez testu nie ma fetcha
 ceny, drzewa ani Bitrix.
@@ -60,11 +60,13 @@ Migracja w repo, transkrypt in-memory (TD-006); webhook Fetch tylko z env
 Testy jednostkowe UI na ścieżce wyceny i miss. Osadzenie snippetu. Sentry na API.
 Dług TD-008 (Mastra `generated`+`text`), TD-009 (origin iframe vs CORS sklepu).
 
-## Slice 7 — deploy
+## Slice 7 — deploy (zrobione)
 
-Widget Vercel, API Hetzner, env (DeepSeek, Supabase service, Bitrix). Smoke:
-jedno auto z szablonem → cena orientacyjna; nieznane auto → lead nie wychodzi
-bez zgody.
+Widget Vercel (`https://widget-xi-eight.vercel.app`, rewrite `/v1` → API),
+Nest na Hetzner (`http://46.224.75.64:3000`), env DeepSeek / Supabase service /
+Bitrix. Adaptery za portami; bez env — fixture (`verify`). Smoke: Golf 8 → kwota
+PLN z `pricing_matrix`; lead bez zgody — testy domeny (brak `crm.lead.add`).
+Runbook: `docs/DEPLOY.md`.
 
 ## Definicja końca
 

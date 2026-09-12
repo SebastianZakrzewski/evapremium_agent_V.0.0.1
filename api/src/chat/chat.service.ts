@@ -1,17 +1,21 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { randomUUID } from 'node:crypto';
 import { CHAT_AGENT, type ChatAgent } from './chat-agent.port';
-import { InMemoryChatSessions, UnknownSessionError } from './chat-session';
+import {
+  CHAT_SESSIONS,
+  UnknownSessionError,
+  type ChatSessions,
+} from './chat-session';
 import { postChatMessage } from './post-chat-message';
 import { streamChatMessage } from './stream-chat-message';
 
 @Injectable()
 export class ChatService {
-  private readonly sessions = new InMemoryChatSessions(() => randomUUID());
+  constructor(
+    @Inject(CHAT_AGENT) private readonly agent: ChatAgent,
+    @Inject(CHAT_SESSIONS) private readonly sessions: ChatSessions,
+  ) {}
 
-  constructor(@Inject(CHAT_AGENT) private readonly agent: ChatAgent) {}
-
-  createSession(): { sessionId: string } {
+  createSession(): Promise<{ sessionId: string }> {
     return this.sessions.create();
   }
 
