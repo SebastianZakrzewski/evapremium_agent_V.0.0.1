@@ -19,6 +19,7 @@ env Supabase. Bez Bitrix w tym zestawie.
 | chat-006 | high | Zapis user/assistant na sesji |
 | chat-007 | high | SSE: klatka `delta` |
 | chat-008 | high | SSE: tokeny, potem `done` |
+| chat-009 | low | Health probe CD |
 
 ### chat-001 — Sesja + wycena z narzędzia Nest
 
@@ -83,3 +84,11 @@ env Supabase. Bez Bitrix w tym zestawie.
 - **Logika:** transkrypt assistant to złożony tekst; `data.status` przy `stream()` to `generated`.
 - **Wejście:** agent `stream()` → `a`, `b`; wiadomość `golf 8 komplet`
 - **Wyjście:** dwie klatki `delta`, `done` z `text: 'ab'`; sesja user+assistant
+
+### chat-009 — Health probe CD
+
+- **Kod:** `api/src/chat/api-health.spec.ts` → `it('returns ok with the current CD probe token')`
+- **Krytyczność:** low
+- **Logika:** `GET /v1/health` zwraca stały token, żeby sprawdzić, czy nowy obraz jest na VPS.
+- **Wejście:** `apiHealth()`
+- **Wyjście:** `{ status: 'ok', probe: 'cd-probe-20260912-1555' }`

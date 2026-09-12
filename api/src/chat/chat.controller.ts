@@ -2,17 +2,24 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Param,
   Post,
   Res,
 } from '@nestjs/common';
 import type { Response } from 'express';
+import { apiHealth } from './api-health';
 import { ChatService } from './chat.service';
 import { encodeSse } from './sse';
 
 @Controller('v1')
 export class ChatController {
   constructor(private readonly chat: ChatService) {}
+
+  @Get('health')
+  health(): { status: 'ok'; probe: string } {
+    return apiHealth();
+  }
 
   @Post('sessions')
   createSession(): Promise<{ sessionId: string }> {
