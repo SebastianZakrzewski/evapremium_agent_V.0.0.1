@@ -6,6 +6,6 @@ export type ChatAgentTurn = {
 };
 
 export interface ChatAgent {
-  handle(message: string): Promise<ChatAgentTurn>;
-  stream?(message: string): AsyncIterable<string>;
+  handle(message: string, sessionId?: string): Promise<ChatAgentTurn>;
+  stream?(message: string, sessionId?: string): AsyncIterable<string>;
 }

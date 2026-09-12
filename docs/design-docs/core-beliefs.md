@@ -23,6 +23,10 @@ Aktualizuj, gdy zmieni się trwała zasada projektowa, nie przy każdej funkcji.
 - Dokumentacja ma kompresować kontekst agenta: granice, zakazy, źródła prawdy.
 - Mastra orkiestruje w tym samym procesie co Nest (DeepSeek Flash); NestJS
   egzekwuje HTTP, reguły, Supabase i Bitrix24.
+- Intencja tury: LLM tylko etykieta; `IntentProfile` to pakiet kontekstu
+  wgrywany w runtime. `acceptIntentTransition` filtruje kandydata względem
+  stanu sesji (`allowedTransitions`). Agent ze wszystkimi shop-toolami na raz
+  jest zakazany.
 
 ## Odrzucone na MVP (nie wracać bez nowych faktów)
 

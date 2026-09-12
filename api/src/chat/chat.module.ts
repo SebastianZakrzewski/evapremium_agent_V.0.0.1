@@ -16,6 +16,13 @@ import { MastraChatAgent } from './mastra-chat.agent';
 import { ShopTools } from './shop-tools';
 import { StubChatAgent } from './stub-chat.agent';
 import { SupabaseChatSessions } from './supabase-chat-sessions';
+import { createEvaQualifierAgent } from '../mastra/intents/create-eva-qualifier-agent';
+import { MastraIntentQualifier } from '../mastra/intents/mastra-intent-qualifier';
+import {
+  INTENT_SESSION_STATE,
+  InMemoryIntentSessionState,
+  type IntentSessionState,
+} from '../mastra/intents/intent-session-state';
 
 @Module({
   imports: [
@@ -45,12 +52,20 @@ import { SupabaseChatSessions } from './supabase-chat-sessions';
     },
     ChatService,
     {
+      provide: INTENT_SESSION_STATE,
+      useClass: InMemoryIntentSessionState,
+    },
+    {
       provide: CHAT_AGENT,
-      useFactory: (tools: ShopTools) =>
+      useFactory: (tools: ShopTools, intentState: IntentSessionState) =>
         process.env.DEEPSEEK_API_KEY
-          ? new MastraChatAgent(tools)
+          ? new MastraChatAgent(
+              tools,
+              new MastraIntentQualifier(createEvaQualifierAgent()),
+              intentState,
+            )
           : new StubChatAgent(tools),
-      inject: [ShopTools],
+      inject: [ShopTools, INTENT_SESSION_STATE],
     },
   ],
 })

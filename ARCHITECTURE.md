@@ -41,7 +41,7 @@ Kod w jednym gicie, pakiety `api` i `widget`. Deploy nadal rozdzielony
 | Warstwa | Technologia | Odpowiedzialność |
 | --- | --- | --- |
 | Prezentacja | React, hostowany widget | Snippet na `evapremium.pl`; UI czatu z Waszego originu |
-| Agent / LLM | Mastra + DeepSeek | Orchestracja; język modelu `deepseek-flash` (linia V4 Flash) |
+| Agent / LLM | Mastra + DeepSeek | Czat z kluczem: qualify → `IntentProfile` → agent tury z podzbiorem tooli; `verify` bez klucza: stub |
 | Logika biznesowa | NestJS | Kaskada filtrów, wycena, context tree, utworzenie leada; jedyne I/O do danych i CRM |
 | Dane | Supabase PROD | `evapremium_shop` (szablony, cennik), `eva_bot` (aliasy slotów, sesje, context tree) |
 | CRM | Bitrix24 | Kolejka pracy człowieka (zapis leada z czatu) |
@@ -120,6 +120,28 @@ Dostawca: **DeepSeek**. W Mastrze: `model: "deepseek/deepseek-v4-flash"`, env
 po stronie serwera. Model nie jest źródłem cen ani FAQ. Język MVP: **polski**.
 Kontekst implementacji: `docs/references/mastra/`.
 
+### Workflow intencji
+
+**Zaakceptowane:** każda wiadomość użytkownika ma iść przez workflow Mastry
+(ten sam proces co Nest): kwalifikacja (LLM, bez shop-tooli) → `ShopIntent` →
+w runtime wgranie `IntentProfile` (ustrukturyzowany kontekst: instrukcja +
+tool-e tury). Stany = intencje; `allowedTransitions` na profilu to legalne
+przejścia (mała maszyna stanów). Brak profilu nie otwiera agenta ze
+wszystkimi toolami. Lead Bitrix nie jest tool-em profilu.
+
+**Zaimplementowane:** rejestr `intentProfileFor`; kwalifikator za portem;
+`prepareIntentTurn` składa turę z toolami profilu. Niska pewność: jedno
+`reclassify`, potem `out_of_scope` (zero shop-tooli). Brak profilu / błąd
+kwalifikatora → `out_of_scope`, nie `general_agent`. `MastraChatAgent` przy
+kluczu DeepSeek: qualify → fallback → `acceptIntentTransition` (stan sesji
+w `InMemoryIntentSessionState`) → agent tury. SSE bez zmiany ramek.
+`stream(message, sessionId)`. Lead Bitrix zostaje w Neście. Bez klucza
+`verify` nadal `StubChatAgent`. Studio `evaShopAgent` — pełny katalog
+(playground). Stan intencji nie jest w Supabase.
+
+Szczegół kontraktu: `docs/design-docs/intent-workflow.md`.
+Plan: `docs/exec-plans/completed/intent-workflow.md`.
+
 ## Hosting
 
 Widget: **statyczny na Vercel/CDN**. NestJS + Mastra: **jeden kontener Docker
@@ -154,6 +176,8 @@ zapisie rozmowy.
 - Treść liści `chat-zapis` i `zgoda-lead` — wklejenie ze sklepu, nie projekt
   architektury.
 - Plan wykonania MVP: `docs/exec-plans/completed/mvp-tdd.md`.
+- Które slugi context tree mapują się na `delivery` vs `after_sales` vs
+  `product_info` — przy wypełnianiu profili, nie przy zmianie kaskady.
 
 ## Zasady utrzymania
 
@@ -169,6 +193,8 @@ zapisie rozmowy.
 - `DOCUMENTATION_STRUCTURE.md`
 - `docs/DEPLOY.md`
 - `docs/design-docs/core-beliefs.md`
+- `docs/design-docs/intent-workflow.md`
+- `docs/exec-plans/completed/intent-workflow.md`
 - `docs/SECURITY.md`
 - `docs/exec-plans/completed/mvp-tdd.md`
 - `docs/references/mastra/INDEX.md`

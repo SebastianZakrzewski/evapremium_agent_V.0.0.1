@@ -13,6 +13,19 @@ class StreamingAgent implements ChatAgent {
   }
 }
 
+class RecordingSessionAgent implements ChatAgent {
+  readonly sessionIds: Array<string | undefined> = [];
+
+  handle(): Promise<ChatAgentTurn> {
+    return Promise.resolve({ text: 'x', data: { status: 'generated' } });
+  }
+
+  async *stream(_message: string, sessionId?: string) {
+    this.sessionIds.push(sessionId);
+    yield 'x';
+  }
+}
+
 async function collect(
   sessions: InMemoryChatSessions,
   agent: ChatAgent,
@@ -57,5 +70,13 @@ describe('streamChatMessage', () => {
       'golf 8 komplet',
       'ab',
     ]);
+  });
+
+  it('passes sessionId into the streaming agent', async () => {
+    const sessions = new InMemoryChatSessions(() => 'session-intent');
+    const { sessionId } = await sessions.create();
+    const agent = new RecordingSessionAgent();
+    await collect(sessions, agent, sessionId, 'kolejna wiadomosc');
+    expect(agent.sessionIds).toEqual(['session-intent']);
   });
 });

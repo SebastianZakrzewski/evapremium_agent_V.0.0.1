@@ -9,7 +9,7 @@ export async function postChatMessage(
 ): Promise<{ sessionId: string } & ChatAgentTurn> {
   await sessions.assertExists(sessionId);
   await sessions.appendMessage({ sessionId, role: 'user', body: message });
-  const turn = await agent.handle(message);
+  const turn = await agent.handle(message, sessionId);
   await sessions.appendMessage({ sessionId, role: 'assistant', body: turn.text });
   return { sessionId, ...turn };
 }

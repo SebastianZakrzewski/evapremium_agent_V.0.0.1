@@ -34,6 +34,7 @@ docs/test-cases/
 │   ├── context-tree/         ← serwis liści FAQ / porty
 │   ├── chat/                 ← kontrakt HTTP czatu
 │   ├── lead/                 ← Bitrix lead / fake HTTP
+│   ├── mastra/               ← IntentProfile / workflow intencji
 │   └── observability/        ← Sentry na API
 ├── deploy/                   ← skrypt aktualizacji kontenera na VPS
 └── widget/                   ← UI widgetu i snippet sklepu
@@ -81,6 +82,11 @@ Przy wątpliwości wybierz wyższy poziom.
 | Resolver kaskady | [api/templates/template-cascade-resolver.md](api/templates/template-cascade-resolver.md) | `api/src/templates/template-cascade.resolver.spec.ts` |
 | Resolver wyceny | [api/pricing/pricing-resolver.md](api/pricing/pricing-resolver.md) | `api/src/pricing/pricing.resolver.spec.ts` |
 | Resolver context tree | [api/context-tree/context-tree-resolver.md](api/context-tree/context-tree-resolver.md) | `api/src/context-tree/context-tree.resolver.spec.ts` |
+| IntentProfile (rejestr) | [api/mastra/intent-profiles.md](api/mastra/intent-profiles.md) | `api/src/mastra/intents/intent-profile.spec.ts` |
+| Kwalifikator intencji | [api/mastra/intent-qualifier.md](api/mastra/intent-qualifier.md) | `api/src/mastra/intents/intent-qualifier.spec.ts` |
+| Gałąź tury (tool-e) | [api/mastra/intent-turn.md](api/mastra/intent-turn.md) | `api/src/mastra/intents/prepare-intent-turn.spec.ts` |
+| Fallback intencji i lead | [api/mastra/intent-fallback.md](api/mastra/intent-fallback.md) | `api/src/mastra/intents/intent-fallback.spec.ts` |
+| Pamięć intencji sesji | [api/mastra/intent-session-memory.md](api/mastra/intent-session-memory.md) | `api/src/mastra/intents/accept-intent-transition.spec.ts` |
 | Kontrakt HTTP czatu | [api/chat/chat-http.md](api/chat/chat-http.md) | `api/src/chat/chat.contract.spec.ts` |
 | CORS czatu | [api/chat/cors.md](api/chat/cors.md) | `api/src/chat/shop-cors.spec.ts` |
 | Sesje Supabase | [api/chat/supabase-sessions.md](api/chat/supabase-sessions.md) | `api/src/chat/supabase-chat-sessions.spec.ts` |

@@ -13,7 +13,7 @@ export async function* streamChatMessage(
 
   if (agent.stream) {
     let text = '';
-    for await (const chunk of agent.stream(message)) {
+    for await (const chunk of agent.stream(message, sessionId)) {
       if (!chunk) {
         continue;
       }
@@ -26,7 +26,7 @@ export async function* streamChatMessage(
     return;
   }
 
-  const turn = await agent.handle(message);
+  const turn = await agent.handle(message, sessionId);
   await sessions.appendMessage({ sessionId, role: 'assistant', body: turn.text });
   yield { event: 'done', data: { sessionId, ...turn } };
 }

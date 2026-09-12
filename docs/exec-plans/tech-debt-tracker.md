@@ -110,3 +110,17 @@
 - **Stan:** zamknięte
 - **Aktualnie:** `chatCorsOrigins(WIDGET_ORIGIN)` dokłada HTTPS origin widgetu
   do listy sklepu. Ustaw `WIDGET_ORIGIN` na VPS po deployu Vercel.
+
+## Intent workflow — Slice 1–4
+
+Slice 1–4 **nie dodają** świadomego długu poza TD-003/TD-005 (Jest bez
+`MastraChatAgent`) oraz TD-010.
+
+## TD-010 — `allowedTransitions` bez stanu sesji w `ChatAgent`
+
+- **Slice:** intent-workflow 4; domknięcie: pamięć in-process
+- **Stan:** zamknięte (egzekucja krawędzi)
+- **Aktualnie:** `acceptIntentTransition` + `InMemoryIntentSessionState`;
+  `ChatAgent.stream(message, sessionId)`. Fallback niskiej pewności omija
+  filtr. Stan ginie przy restarcie procesu (nie w `chat_sessions`).
+

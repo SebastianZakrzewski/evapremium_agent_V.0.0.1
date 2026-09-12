@@ -19,6 +19,7 @@ env Supabase. Bez Bitrix w tym zestawie.
 | chat-006 | high | Zapis user/assistant na sesji |
 | chat-007 | high | SSE: klatka `delta` |
 | chat-008 | high | SSE: tokeny, potem `done` |
+| chat-010 | medium | SSE przekazuje sessionId do agenta |
 | chat-009 | low | Health probe CD |
 
 ### chat-001 — Sesja + wycena z narzędzia Nest
@@ -84,6 +85,14 @@ env Supabase. Bez Bitrix w tym zestawie.
 - **Logika:** transkrypt assistant to złożony tekst; `data.status` przy `stream()` to `generated`.
 - **Wejście:** agent `stream()` → `a`, `b`; wiadomość `golf 8 komplet`
 - **Wyjście:** dwie klatki `delta`, `done` z `text: 'ab'`; sesja user+assistant
+
+### chat-010 — SSE przekazuje sessionId do agenta
+
+- **Kod:** `api/src/chat/stream-chat-message.spec.ts` → `it('passes sessionId into the streaming agent')`
+- **Krytyczność:** medium
+- **Logika:** pamięć intencji wymaga `sessionId` przy `stream`; ramki SSE bez zmiany.
+- **Wejście:** sesja `session-intent`, wiadomość `kolejna wiadomosc`
+- **Wyjście:** agent dostał `session-intent`
 
 ### chat-009 — Health probe CD
 

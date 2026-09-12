@@ -15,6 +15,8 @@ poznawania projektu, wprowadzania zmian i utrzymywania dokumentacji.
    Przy API, originach, sekretach lub PII: `docs/SECURITY.md`.
 5. Otwórz tylko pozostałe dokumenty związane z wykonywanym zadaniem.
    Implementacja MVP: `docs/exec-plans/completed/mvp-tdd.md`.
+   Workflow intencji: `docs/exec-plans/completed/intent-workflow.md`,
+   `docs/design-docs/intent-workflow.md`.
    Mastra: `docs/references/mastra/INDEX.md`, potem jeden fragment.
 6. Przed zmianą kodu sprawdź istniejące wzorce i testy.
    Katalog przypadków (wejście / wyjście / logika / krytyczność):

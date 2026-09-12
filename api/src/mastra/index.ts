@@ -24,6 +24,17 @@ import {
   InMemoryTemplateCatalog,
 } from '../templates/in-memory/in-memory-catalogs';
 import { createEvaMastraAgent } from './create-eva-mastra-agent';
+import { createEvaQualifierAgent } from './intents/create-eva-qualifier-agent';
+import { createIntentWorkflow } from './intents/create-intent-workflow';
+import { MastraIntentQualifier } from './intents/mastra-intent-qualifier';
+import { StubIntentQualifier } from './intents/stub-intent-qualifier';
+import type { IntentQualifier } from './intents/intent-qualifier';
+
+function studioQualifier(): IntentQualifier {
+  return process.env.DEEPSEEK_API_KEY
+    ? new MastraIntentQualifier(createEvaQualifierAgent())
+    : new StubIntentQualifier();
+}
 
 function studioShopTools(): ShopTools {
   return new ShopTools(
@@ -43,5 +54,9 @@ function studioShopTools(): ShopTools {
 export const mastra = new Mastra({
   agents: {
     evaShopAgent: createEvaMastraAgent(studioShopTools()),
+    evaIntentQualifier: createEvaQualifierAgent(),
+  },
+  workflows: {
+    evaIntentWorkflow: createIntentWorkflow(studioQualifier()),
   },
 });
