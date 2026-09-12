@@ -1,4 +1,5 @@
 import type { ChatApi, ChatTurn } from './chat-api';
+import { consumeChatSse } from './consume-chat-sse';
 
 export function createHttpChatApi(baseUrl: string): ChatApi {
   const root = baseUrl.replace(/\/$/, '');
@@ -11,16 +12,16 @@ export function createHttpChatApi(baseUrl: string): ChatApi {
       }
       return (await response.json()) as { sessionId: string };
     },
-    async postMessage(sessionId: string, message: string) {
+    async postMessage(sessionId, message, onDelta) {
       const response = await fetch(`${root}/v1/sessions/${sessionId}/messages`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'text/event-stream',
+        },
         body: JSON.stringify({ message }),
       });
-      if (!response.ok) {
-        throw new Error('message_post_failed');
-      }
-      return (await response.json()) as ChatTurn;
+      return (await consumeChatSse(response, onDelta)) as ChatTurn;
     },
   };
 }

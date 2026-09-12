@@ -11,5 +11,9 @@ export type ChatTurn = {
 
 export type ChatApi = {
   createSession: () => Promise<{ sessionId: string }>;
-  postMessage: (sessionId: string, message: string) => Promise<ChatTurn>;
+  postMessage: (
+    sessionId: string,
+    message: string,
+    onDelta?: (text: string) => void,
+  ) => Promise<ChatTurn>;
 };
