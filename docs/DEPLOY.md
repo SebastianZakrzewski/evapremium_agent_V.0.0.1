@@ -27,6 +27,17 @@ na Vercel).
 Rola PostgREST `authenticator` musi mieć `eva_bot` w `pgrst.db_schemas`
 (oprócz `evapremium_shop`).
 
+## CD (GitHub Actions → Hetzner)
+
+Po pushu na `main` (albo `workflow_dispatch`) job `verify` odpala
+`npm run verify`, potem SSH przebudowuje obraz:
+`deploy/update-container.sh` w `/opt/evabot-src`.
+
+Sekrety repo (GitHub → Settings → Secrets): `HETZNER_HOST`, `HETZNER_USER`,
+`HETZNER_SSH_KEY` (klucz prywatny ed25519 tylko do deployu; publiczny w
+`authorized_keys` na VPS). Klucz nie jest w gicie. Env API nadal tylko w
+`/opt/evabot/api/.env`.
+
 ## Widget (Vercel)
 
 - Root: `widget`

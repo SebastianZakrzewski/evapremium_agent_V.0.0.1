@@ -35,6 +35,7 @@ docs/test-cases/
 │   ├── chat/                 ← kontrakt HTTP czatu
 │   ├── lead/                 ← Bitrix lead / fake HTTP
 │   └── observability/        ← Sentry na API
+├── deploy/                   ← skrypt aktualizacji kontenera na VPS
 └── widget/                   ← UI widgetu i snippet sklepu
 ```
 
@@ -90,3 +91,4 @@ Przy wątpliwości wybierz wyższy poziom.
 | Adapter context tree Supabase | [api/context-tree/supabase-nodes.md](api/context-tree/supabase-nodes.md) | `api/src/context-tree/supabase/load-nodes.spec.ts` |
 | Widget czat (wycena i miss) | [widget/chat-ui.md](widget/chat-ui.md) | `widget/src/chat/ChatPanel.test.tsx`, `format-turn.test.ts`, `App.test.tsx` |
 | Snippet sklepu | [widget/snippet.md](widget/snippet.md) | `widget/src/embed/shop-snippet.test.ts` |
+| Aktualizacja kontenera API | [deploy/update-container.md](deploy/update-container.md) | `deploy/update-container.test.mjs` |

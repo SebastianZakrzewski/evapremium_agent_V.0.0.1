@@ -1,0 +1,45 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: hetzner-api-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run verify
+
+  deploy:
+    needs: verify
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Hetzner image
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: ${{ secrets.HETZNER_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          command_timeout: 20m
+          script_stop: true
+          script: |
+            set -euo pipefail
+            test -d /opt/evabot-src
+            git -C /opt/evabot-src fetch origin main
+            git -C /opt/evabot-src reset --hard origin/main
+            bash /opt/evabot-src/deploy/update-container.sh
+            curl -fsS -o /dev/null -X POST http://127.0.0.1:3000/v1/sessions

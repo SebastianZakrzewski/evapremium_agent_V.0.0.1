@@ -122,7 +122,8 @@ Kontekst implementacji: `docs/references/mastra/`.
 ## Hosting
 
 Widget: **statyczny na Vercel/CDN**. NestJS + Mastra: **jeden kontener Docker
-na Hetznerze** (obraz z GitHub, `0.0.0.0`, `PORT`). Operacje:
+na Hetznerze** (obraz z GitHub, `0.0.0.0`, `PORT`). Push na `main` → GitHub
+Actions (`verify`, potem SSH i `deploy/update-container.sh`). Operacje:
 [`docs/DEPLOY.md`](docs/DEPLOY.md).
 Snippet sklepu ładuje JS z CDN; czat woła API na Hetznerze.
 Nie PaaS i nie serverless. Widget nie jest serwowany z VPS.

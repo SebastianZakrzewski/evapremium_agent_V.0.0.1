@@ -8,6 +8,8 @@ Klucze DeepSeek, Supabase (service), Bitrix oraz `SENTRY_DSN` — tylko na
 serwerze (Nest na Hetznerze). Nigdy w widgecie ani w snippecie.
 Lokalna lista sekretów: `docs/provider_configuration.json` (gitignore);
 szablon: `docs/provider_configuration.example.json`.
+CD: `HETZNER_SSH_KEY` tylko w GitHub Actions secrets; na VPS wyłącznie
+publiczny odpowiednik w `authorized_keys`. Nie commituj klucza prywatnego.
 
 ## Publiczne API czatu (MVP)
 

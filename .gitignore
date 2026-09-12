@@ -14,3 +14,6 @@ Thumbs.db
 *.tsbuildinfo
 .mastra/
 .vercel/
+*.pem
+id_ed25519
+id_ed25519.pub
