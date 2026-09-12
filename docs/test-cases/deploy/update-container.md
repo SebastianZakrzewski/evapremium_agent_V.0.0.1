@@ -16,4 +16,4 @@ Logika zestawu: obraz Dockera buduje się z klona repo; sekrety zostają w
 - **Krytyczność:** high
 - **Logika:** CD na VPS nie może wklejać kluczy do `docker build`; musi podmienić kontener z `/opt/evabot/api/.env`.
 - **Wejście:** treść `deploy/update-container.sh`
-- **Wyjście:** `docker build` + `docker run --env-file` na porcie 3000; brak `password` / kluczy API w pliku
+- **Wyjście:** `docker build` + `docker run --env-file` na porcie 3000; pętla gotowości `GET /v1/health`; brak `password` / kluczy API w pliku

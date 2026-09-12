@@ -35,11 +35,9 @@ jobs:
           username: ${{ secrets.HETZNER_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
           command_timeout: 20m
-          script_stop: true
           script: |
             set -euo pipefail
             test -d /opt/evabot-src
             git -C /opt/evabot-src fetch origin main
             git -C /opt/evabot-src reset --hard origin/main
             bash /opt/evabot-src/deploy/update-container.sh
-            curl -fsS -o /dev/null -X POST http://127.0.0.1:3000/v1/sessions

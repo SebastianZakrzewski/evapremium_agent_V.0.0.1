@@ -15,5 +15,7 @@ test('rebuilds the named image from the clone root and keeps secrets in env-file
   assert.match(script, /\/opt\/evabot\/api\/\.env/);
   assert.match(script, /--env-file "\$ENV_FILE"/);
   assert.match(script, /-p 3000:3000/);
+  assert.match(script, /\/v1\/health/);
+  assert.match(script, /seq 1 30/);
   assert.doesNotMatch(script, /password|SERVICE_ROLE|DEEPSEEK|BITRIX/i);
 });
