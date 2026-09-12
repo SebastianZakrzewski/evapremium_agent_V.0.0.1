@@ -14,6 +14,7 @@ Nie kopiuj tu całego korpusu. Otwórz **jeden** fragment do zadania.
 | Stream czatu | `streaming.txt` |
 | Historia wątku (Mastra Memory) | `memory.txt` |
 | Sentry exporter | `sentry.txt` |
+| Editor / prompt-blocki | kanon mastra.ai (`/docs/editor/prompts`) |
 
 Pełna dokumentacja: https://mastra.ai/docs
 Nasza architektura (Nest w tym samym procesie, narzędzia wołają serwisy Nest): `ARCHITECTURE.md`.

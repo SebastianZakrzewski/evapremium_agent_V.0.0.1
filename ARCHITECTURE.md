@@ -41,7 +41,7 @@ Kod w jednym gicie, pakiety `api` i `widget`. Deploy nadal rozdzielony
 | Warstwa | Technologia | Odpowiedzialność |
 | --- | --- | --- |
 | Prezentacja | React, hostowany widget | Snippet na `evapremium.pl`; UI czatu z Waszego originu |
-| Agent / LLM | Mastra + DeepSeek | Czat z kluczem: qualify → `IntentProfile` → agent tury z podzbiorem tooli; `verify` bez klucza: stub |
+| Agent / LLM | Mastra + DeepSeek | Czat z kluczem: qualify → `IntentProfile` → ten sam `evaShopAgent` (`RequestContext.intent`, podzbiór tooli); `verify` bez klucza: stub |
 | Logika biznesowa | NestJS | Kaskada filtrów, wycena, context tree, utworzenie leada; jedyne I/O do danych i CRM |
 | Dane | Supabase PROD | `evapremium_shop` (szablony, cennik), `eva_bot` (aliasy slotów, sesje, context tree) |
 | CRM | Bitrix24 | Kolejka pracy człowieka (zapis leada z czatu) |
@@ -134,10 +134,12 @@ wszystkimi toolami. Lead Bitrix nie jest tool-em profilu.
 `reclassify`, potem `out_of_scope` (zero shop-tooli). Brak profilu / błąd
 kwalifikatora → `out_of_scope`, nie `general_agent`. `MastraChatAgent` przy
 kluczu DeepSeek: qualify → fallback → `acceptIntentTransition` (stan sesji
-w `InMemoryIntentSessionState`) → agent tury. SSE bez zmiany ramek.
-`stream(message, sessionId)`. Lead Bitrix zostaje w Neście. Bez klucza
-`verify` nadal `StubChatAgent`. Studio `evaShopAgent` — pełny katalog
-(playground). Stan intencji nie jest w Supabase.
+w `InMemoryIntentSessionState`) → **ten sam** `evaShopAgent` z instancji
+Mastry (`createEvaMastra`). Per-intent: `RequestContext.intent`; instructions
+i mapa tooli z profilu (Studio: prompt-block / `{{intent}}`). SSE bez zmiany
+ramek. `stream(message, sessionId)`. Lead Bitrix zostaje w Neście. Bez klucza
+`verify` nadal `StubChatAgent`. Editor + LibSQL (`.mastra/editor.db`). Stan
+intencji nie jest w Supabase.
 
 Szczegół kontraktu: `docs/design-docs/intent-workflow.md`.
 Plan: `docs/exec-plans/completed/intent-workflow.md`.

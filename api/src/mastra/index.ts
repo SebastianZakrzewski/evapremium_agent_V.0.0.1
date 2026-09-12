@@ -1,4 +1,3 @@
-import { Mastra } from '@mastra/core';
 import { ShopTools } from '../chat/shop-tools';
 import { ContextTreeResolver } from '../context-tree/context-tree.resolver';
 import { CONTEXT_TREE_NODES } from '../context-tree/in-memory/context-tree-fixture';
@@ -23,18 +22,7 @@ import {
   InMemoryAliasCatalog,
   InMemoryTemplateCatalog,
 } from '../templates/in-memory/in-memory-catalogs';
-import { createEvaMastraAgent } from './create-eva-mastra-agent';
-import { createEvaQualifierAgent } from './intents/create-eva-qualifier-agent';
-import { createIntentWorkflow } from './intents/create-intent-workflow';
-import { MastraIntentQualifier } from './intents/mastra-intent-qualifier';
-import { StubIntentQualifier } from './intents/stub-intent-qualifier';
-import type { IntentQualifier } from './intents/intent-qualifier';
-
-function studioQualifier(): IntentQualifier {
-  return process.env.DEEPSEEK_API_KEY
-    ? new MastraIntentQualifier(createEvaQualifierAgent())
-    : new StubIntentQualifier();
-}
+import { createEvaMastra } from './create-eva-mastra';
 
 function studioShopTools(): ShopTools {
   return new ShopTools(
@@ -51,12 +39,4 @@ function studioShopTools(): ShopTools {
   );
 }
 
-export const mastra = new Mastra({
-  agents: {
-    evaShopAgent: createEvaMastraAgent(studioShopTools()),
-    evaIntentQualifier: createEvaQualifierAgent(),
-  },
-  workflows: {
-    evaIntentWorkflow: createIntentWorkflow(studioQualifier()),
-  },
-});
+export const mastra = createEvaMastra(studioShopTools());

@@ -110,9 +110,14 @@ Kwalifikator: structured output `ShopIntent` + `confidence`. Próg
 pustą mapą tooli. Brak profilu, `general_agent` i wyjątek qualify →
 `out_of_scope`. Lead nie jest tool-em.
 
-Gałąź składa agenta tury: instructions bazowe EVA + `profile.instructions` +
-`profile.context`; `tools` przecięte z rejestrem Mastry (nieznane id = błąd
-testu, nie cichy drop). HTTP SSE bez zmiany.
+Gałąź **nie** tworzy nowego `Agent` co turę. `createEvaMastra` rejestruje
+jeden `evaShopAgent` (Editor włączony). `MastraChatAgent` woła
+`mastra.getAgent('evaShopAgent')` i podaje `RequestContext` z
+`intent` = zaakceptowany `ShopIntent`. Domyślny system prompt tury to nadal
+`assembleTurnInstructions` (baza EVA + `profile.context` +
+`profile.instructions`); tool-e tury z `selectTurnTools`. W Studio ten sam
+klucz `intent` interpoluje prompt-blocki (`{{intent}}`, display conditions).
+HTTP SSE bez zmiany. Nieznane id toola = błąd testu, nie cichy drop.
 
 Sesja HTTP trzyma bieżący `ShopIntent` w `IntentSessionState` (Map w
 procesie). `prepareIntentTurn(..., { currentIntent })` po fallbacku woła

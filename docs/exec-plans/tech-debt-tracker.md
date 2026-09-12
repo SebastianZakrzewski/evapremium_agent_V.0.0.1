@@ -55,8 +55,9 @@
 - **Stan:** otwarte
 - **Priorytet:** niski (CI ma zostać bez klucza i bez sieci do DeepSeek)
 - **Kompromis:** `ChatModule` wiąże `CHAT_AGENT` z `StubChatAgent`, gdy brak
-  `DEEPSEEK_API_KEY`; `MastraChatAgent` + `createEvaMastraAgent`
-  (`deepseek/deepseek-v4-flash`, `createTool` → `ShopTools`) tylko z kluczem.
+  `DEEPSEEK_API_KEY`; `MastraChatAgent` + `createEvaMastra` /
+  `createEvaMastraAgent` (`deepseek/deepseek-v4-flash`, `createTool` →
+  `ShopTools`, `RequestContext.intent`) tylko z kluczem.
   `verify` nie woła `agent.stream`.
 - **Wpływ:** produkcyjna ścieżka tekstu modelu i tool-calling Mastry nie jest
   w czerwonym teście; strzeżony jest kontrakt narzędzi Nest przez stub.

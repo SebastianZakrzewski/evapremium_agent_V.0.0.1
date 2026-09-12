@@ -1,14 +1,14 @@
 import type { ChatAgent, ChatAgentTurn } from './chat-agent.port';
-import { createEvaTurnAgent } from '../mastra/create-eva-mastra-agent';
+import type { Agent } from '@mastra/core/agent';
 import { logIntentTurnToConsole } from '../mastra/intents/intent-turn-log';
 import type { IntentQualifier } from '../mastra/intents/intent-qualifier';
 import { prepareIntentTurn } from '../mastra/intents/prepare-intent-turn';
 import type { IntentSessionState } from '../mastra/intents/intent-session-state';
-import { ShopTools } from './shop-tools';
+import { createEvaTurnRequestContext } from '../mastra/eva-turn-request-context';
 
 export class MastraChatAgent implements ChatAgent {
   constructor(
-    private readonly shopTools: ShopTools,
+    private readonly agent: Pick<Agent, 'stream'>,
     private readonly qualifier: IntentQualifier,
     private readonly intentState: IntentSessionState,
   ) {}
@@ -38,9 +38,9 @@ export class MastraChatAgent implements ChatAgent {
     if (sessionId !== undefined) {
       this.intentState.set(sessionId, prepared.intent);
     }
-    const agent = createEvaTurnAgent(this.shopTools, prepared);
-    const output = await agent.stream(message, {
+    const output = await this.agent.stream(message, {
       maxSteps: prepared.profile.execution.maxToolCalls,
+      requestContext: createEvaTurnRequestContext(prepared.intent),
     });
     for await (const chunk of output.textStream) {
       if (typeof chunk === 'string' && chunk.length > 0) {

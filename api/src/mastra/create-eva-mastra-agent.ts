@@ -2,12 +2,15 @@ import { Agent } from '@mastra/core/agent';
 import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import type { ShopTools } from '../chat/shop-tools';
-import type { PreparedTurn } from './intents/prepare-intent-turn';
-import { EVA_TURN_BASE_INSTRUCTIONS } from './intents/prepare-intent-turn';
-import { selectTurnTools } from './intents/select-turn-tools';
-import type { ShopToolId } from './intents/schema';
+import {
+  instructionsForRequestContext,
+  toolsForRequestContext,
+} from './eva-turn-request-context';
+import { shopIntentSchema, type ShopToolId } from './intents/schema';
 
 export const DEEPSEEK_MASTRA_MODEL = 'deepseek/deepseek-v4-flash';
+export const EVA_SHOP_AGENT_ID = 'eva-shop-agent';
+export const EVA_SHOP_AGENT_KEY = 'evaShopAgent' as const;
 
 function shopToolCatalog(tools: ShopTools) {
   return {
@@ -46,24 +49,17 @@ function shopToolCatalog(tools: ShopTools) {
 }
 
 export function createEvaMastraAgent(tools: ShopTools): Agent {
+  const catalog = shopToolCatalog(tools);
   return new Agent({
-    id: 'eva-shop-agent',
+    id: EVA_SHOP_AGENT_ID,
     name: 'EVA Premium',
-    instructions: EVA_TURN_BASE_INSTRUCTIONS,
+    instructions: ({ requestContext }) =>
+      instructionsForRequestContext(requestContext),
     model: DEEPSEEK_MASTRA_MODEL,
-    tools: shopToolCatalog(tools),
-  });
-}
-
-export function createEvaTurnAgent(
-  tools: ShopTools,
-  prepared: PreparedTurn,
-): Agent {
-  return new Agent({
-    id: `eva-shop-${prepared.intent}`,
-    name: 'EVA Premium',
-    instructions: prepared.instructions,
-    model: DEEPSEEK_MASTRA_MODEL,
-    tools: selectTurnTools(shopToolCatalog(tools), prepared.toolIds),
+    tools: ({ requestContext }) =>
+      toolsForRequestContext(catalog, requestContext),
+    requestContextSchema: z.object({
+      intent: shopIntentSchema.optional(),
+    }),
   });
 }
