@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { CHAT_AGENT, type ChatAgent } from './chat-agent.port';
 import { InMemoryChatSessions, UnknownSessionError } from './chat-session';
 import { postChatMessage } from './post-chat-message';
+import { streamChatMessage } from './stream-chat-message';
 
 @Injectable()
 export class ChatService {
@@ -17,6 +18,17 @@ export class ChatService {
   async postMessage(sessionId: string, message: string) {
     try {
       return await postChatMessage(this.sessions, this.agent, sessionId, message);
+    } catch (error) {
+      if (error instanceof UnknownSessionError) {
+        throw new NotFoundException(error.message);
+      }
+      throw error;
+    }
+  }
+
+  async *streamMessage(sessionId: string, message: string) {
+    try {
+      yield* streamChatMessage(this.sessions, this.agent, sessionId, message);
     } catch (error) {
       if (error instanceof UnknownSessionError) {
         throw new NotFoundException(error.message);

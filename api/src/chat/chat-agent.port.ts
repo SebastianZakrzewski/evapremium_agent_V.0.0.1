@@ -7,4 +7,5 @@ export type ChatAgentTurn = {
 
 export interface ChatAgent {
   handle(message: string): Promise<ChatAgentTurn>;
+  stream?(message: string): AsyncIterable<string>;
 }

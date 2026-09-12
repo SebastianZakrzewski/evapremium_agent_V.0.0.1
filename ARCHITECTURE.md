@@ -5,12 +5,15 @@
 Szkielet monorepo (npm workspaces): `api/` (NestJS + Express, Mastra w tym
 samym procesie za portem `CHAT_AGENT`) i `widget/` (React / Vite). Kaskada,
 wycena i context tree zostają serwisami Nest (in-memory). HTTP czatu:
-`POST /v1/sessions` i wiadomości; narzędzia wołają te serwisy. DeepSeek za
+`POST /v1/sessions`; wiadomości `POST /v1/sessions/:sessionId/messages` jako
+SSE (`text/event-stream`: `delta` z tokenami modelu, `done` z `text` + `data`
+z Nest). Narzędzia wołają te serwisy. DeepSeek za
 adapterem Mastry (`deepseek/deepseek-v4-flash`); w teście stub bez klucza.
 CORS: originy sklepu. Lead Bitrix za `LeadModule` (`crm.lead.add` tylko kontakt +
 zgoda; w teście fake HTTP). Transkrypt: `InMemoryChatSessions` + migracja
 `chat_sessions` / `chat_messages` w repo, bez apply PROD.
-Widget: UI wyceny/miss z payloadu API; sklep ładuje `embed.js` z originu CDN
+Widget: okno czatu; wycena/miss z payloadu `done`; tekst `generated` z SSE;
+sklep ładuje `embed.js` z originu CDN
 i publiczny `data-eva-widget`. Sentry: `@sentry/node` przy `SENTRY_DSN` na API.
 Poniżej są **zaakceptowane granice MVP**.
 
@@ -103,8 +106,9 @@ LLM nie pisze SQL i nie podaje kwoty spoza wyniku narzędzia.
 ## Widget
 
 Sklep wkleja **snippet** (skrypt). Widget z Vercel/CDN woła API Nest na Hetznerze.
-CORS: tylko `evapremium.pl` i `www`. Publiczny id widgetu w snippecie, nie sekret.
-Szczegóły: `docs/SECURITY.md`.
+Czat: okno EvaBot; tekst modelu przychodzi SSE (`delta`), wycena/miss z
+zdarzenia `done` (`data` z Nest). CORS: tylko `evapremium.pl` i `www`.
+Publiczny id widgetu w snippecie, nie sekret. Szczegóły: `docs/SECURITY.md`.
 
 ## LLM
 

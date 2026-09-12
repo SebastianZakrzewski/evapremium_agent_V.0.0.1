@@ -3,10 +3,11 @@
 Kod: `api/src/chat/chat.contract.spec.ts`  
 Standard: [docs/test-cases/README.md](../../README.md)
 
-Logika zestawu: widget woła Nest (`POST /v1/sessions`, wiadomość — kontroler
-w procesie; Jest nie bootuje Nest 12 ESM, TD-003). Stub agenta (DeepSeek poza
-testem, TD-005) woła narzędzia, które idą w serwisy Slice 1–3. CORS origin
-sklepu. Sesje in-memory (TD-004). Bez Bitrix i bez zapisu w Supabase.
+Logika zestawu: widget woła Nest (`POST /v1/sessions`, wiadomość SSE —
+kontroler w procesie; Jest nie bootuje Nest 12 ESM, TD-003). Stub agenta
+(DeepSeek poza testem, TD-005) woła narzędzia, które idą w serwisy Slice 1–3.
+CORS origin sklepu. Sesje in-memory (TD-004). Bez Bitrix i bez zapisu w
+Supabase.
 
 | id | Krytyczność | Tytuł |
 | --- | --- | --- |
@@ -16,6 +17,8 @@ sklepu. Sesje in-memory (TD-004). Bez Bitrix i bez zapisu w Supabase.
 | chat-004 | high | Nieznana sesja → 404 |
 | chat-005 | medium | CORS origin sklepu |
 | chat-006 | high | Zapis user/assistant na sesji |
+| chat-007 | high | SSE: klatka `delta` |
+| chat-008 | high | SSE: tokeny, potem `done` |
 
 ### chat-001 — Sesja + wycena z narzędzia Nest
 
@@ -64,3 +67,19 @@ sklepu. Sesje in-memory (TD-004). Bez Bitrix i bez zapisu w Supabase.
 - **Logika:** transkrypt zostaje przy sesji (in-memory / przyszły `eva_bot`); nie idzie do Bitrix.
 - **Wejście:** `session-persist` + `quote passenger_car komplet-5szt`
 - **Wyjście:** dwa rekordy `user` / `assistant` (`quoted`)
+
+### chat-007 — SSE: klatka `delta`
+
+- **Kod:** `api/src/chat/sse.spec.ts` → `it('encodes a text delta frame for the widget stream')`
+- **Krytyczność:** high
+- **Logika:** widget czyta tokeny modelu z `event: delta`, nie z jednego JSON-a.
+- **Wejście:** `{ event: 'delta', data: { text: 'Komplet' } }`
+- **Wyjście:** `event: delta\ndata: {"text":"Komplet"}\n\n`
+
+### chat-008 — SSE: tokeny, potem `done`
+
+- **Kod:** `api/src/chat/stream-chat-message.spec.ts` → `it('emits token deltas then done for a streaming agent')`
+- **Krytyczność:** high
+- **Logika:** transkrypt assistant to złożony tekst; `data.status` przy `stream()` to `generated`.
+- **Wejście:** agent `stream()` → `a`, `b`; wiadomość `golf 8 komplet`
+- **Wyjście:** dwie klatki `delta`, `done` z `text: 'ab'`; sesja user+assistant

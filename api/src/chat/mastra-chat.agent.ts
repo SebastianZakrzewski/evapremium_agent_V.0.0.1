@@ -11,11 +11,19 @@ export class MastraChatAgent implements ChatAgent {
   }
 
   async handle(message: string): Promise<ChatAgentTurn> {
-    const result = await this.agent.generate(message);
-    const text =
-      typeof result === 'object' && result !== null && 'text' in result
-        ? String(result.text)
-        : String(result);
+    let text = '';
+    for await (const chunk of this.stream(message)) {
+      text += chunk;
+    }
     return { text, data: { status: 'generated' } };
+  }
+
+  async *stream(message: string): AsyncIterable<string> {
+    const output = await this.agent.stream(message);
+    for await (const chunk of output.textStream) {
+      if (typeof chunk === 'string' && chunk.length > 0) {
+        yield chunk;
+      }
+    }
   }
 }
