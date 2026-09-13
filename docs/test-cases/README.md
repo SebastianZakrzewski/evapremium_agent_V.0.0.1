@@ -33,6 +33,7 @@ docs/test-cases/
 │   ├── pricing/              ← serwis wyceny / porty
 │   ├── context-tree/         ← serwis liści FAQ / porty
 │   ├── chat/                 ← kontrakt HTTP czatu
+│   ├── agent-events/         ← zdarzenia domenowe dashboardu
 │   ├── lead/                 ← Bitrix lead / fake HTTP
 │   ├── mastra/               ← IntentProfile / workflow intencji
 │   └── observability/        ← Sentry na API
@@ -95,6 +96,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Query orderBy Studio | [api/mastra/coerce-mastra-query.md](api/mastra/coerce-mastra-query.md) | `api/src/mastra/coerce-mastra-query.spec.ts` |
 | Agent czatu Mastra | [api/chat/mastra-chat-agent.md](api/chat/mastra-chat-agent.md) | `api/src/chat/mastra-chat.agent.spec.ts` |
 | Kontrakt HTTP czatu | [api/chat/chat-http.md](api/chat/chat-http.md) | `api/src/chat/chat.contract.spec.ts` |
+| Zdarzenia domenowe agenta | [api/agent-events/agent-events.md](api/agent-events/agent-events.md) | `api/src/agent-events/agent-events.spec.ts` |
 | CORS czatu | [api/chat/cors.md](api/chat/cors.md) | `api/src/chat/shop-cors.spec.ts` |
 | Sesje Supabase | [api/chat/supabase-sessions.md](api/chat/supabase-sessions.md) | `api/src/chat/supabase-chat-sessions.spec.ts` |
 | Resolver leada | [api/lead/lead-resolver.md](api/lead/lead-resolver.md) | `api/src/lead/lead.resolver.spec.ts` |

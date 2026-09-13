@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AgentEventsModule } from '../agent-events/agent-events.module';
 import {
   BitrixLeadClient,
   FakeBitrixHttp,
@@ -7,6 +8,7 @@ import {
 import { BITRIX_LEAD_CLIENT, LeadService } from './lead.service';
 
 @Module({
+  imports: [AgentEventsModule],
   providers: [
     {
       provide: BITRIX_LEAD_CLIENT,

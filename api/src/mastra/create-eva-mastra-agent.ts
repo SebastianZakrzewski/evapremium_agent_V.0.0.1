@@ -1,6 +1,8 @@
 import { Agent } from '@mastra/core/agent';
 import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
+import type { AgentEventSink } from '../agent-events/agent-event';
+import { executeShopTool } from '../agent-events/execute-shop-tool';
 import type { ShopTools } from '../chat/shop-tools';
 import {
   instructionsForRequestContext,
@@ -12,7 +14,7 @@ export const DEEPSEEK_MASTRA_MODEL = 'deepseek/deepseek-v4-flash';
 export const EVA_SHOP_AGENT_ID = 'eva-shop-agent';
 export const EVA_SHOP_AGENT_KEY = 'evaShopAgent' as const;
 
-function shopToolCatalog(tools: ShopTools) {
+function shopToolCatalog(tools: ShopTools, events?: AgentEventSink) {
   return {
     'resolve-template': createTool({
       id: 'resolve-template',
@@ -25,7 +27,10 @@ function shopToolCatalog(tools: ShopTools) {
         year: z.number().optional(),
         recordKey: z.string().optional(),
       }),
-      execute: async (input) => tools.resolveTemplate(input),
+      execute: async (input) =>
+        executeShopTool(events, 'resolve-template', () =>
+          tools.resolveTemplate(input),
+        ),
     }),
     'quote-price': createTool({
       id: 'quote-price',
@@ -36,20 +41,25 @@ function shopToolCatalog(tools: ShopTools) {
         variantKey: z.string(),
         matType: z.enum(['3d-with-rims', 'classic', 'single']).optional(),
       }),
-      execute: async (input) => tools.quotePrice(input),
+      execute: async (input) =>
+        executeShopTool(events, 'quote-price', () => tools.quotePrice(input)),
     }),
     'lookup-leaf': createTool({
       id: 'lookup-leaf',
       description:
         'Return context tree leaf body by slug. Miss means no fact — do not invent policy.',
       inputSchema: z.object({ slug: z.string() }),
-      execute: async ({ slug }) => tools.lookupLeaf(slug),
+      execute: async ({ slug }) =>
+        executeShopTool(events, 'lookup-leaf', () => tools.lookupLeaf(slug)),
     }),
   } satisfies Record<ShopToolId, ReturnType<typeof createTool>>;
 }
 
-export function createEvaMastraAgent(tools: ShopTools): Agent {
-  const catalog = shopToolCatalog(tools);
+export function createEvaMastraAgent(
+  tools: ShopTools,
+  events?: AgentEventSink,
+): Agent {
+  const catalog = shopToolCatalog(tools, events);
   return new Agent({
     id: EVA_SHOP_AGENT_ID,
     name: 'EVA Premium',

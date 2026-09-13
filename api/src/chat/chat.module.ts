@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
+import { AGENT_EVENTS, type AgentEventSink } from '../agent-events/agent-event';
+import { AgentEventsModule } from '../agent-events/agent-events.module';
 import { ContextTreeModule } from '../context-tree/context-tree.module';
 import { ContextTreeService } from '../context-tree/context-tree.service';
 import { PricingModule } from '../pricing/pricing.module';
@@ -30,6 +32,7 @@ import {
 
 @Module({
   imports: [
+    AgentEventsModule,
     TemplateCascadeModule,
     PricingModule,
     ContextTreeModule,
@@ -43,8 +46,14 @@ import {
         templates: TemplateCascadeService,
         pricing: PricingService,
         contextTree: ContextTreeService,
-      ) => new ShopTools(templates, pricing, contextTree),
-      inject: [TemplateCascadeService, PricingService, ContextTreeService],
+        events: AgentEventSink,
+      ) => new ShopTools(templates, pricing, contextTree, events),
+      inject: [
+        TemplateCascadeService,
+        PricingService,
+        ContextTreeService,
+        AGENT_EVENTS,
+      ],
     },
     {
       provide: CHAT_SESSIONS,
@@ -61,11 +70,11 @@ import {
     },
     {
       provide: EVA_MASTRA,
-      useFactory: (tools: ShopTools) =>
+      useFactory: (tools: ShopTools, events: AgentEventSink) =>
         process.env.DEEPSEEK_API_KEY
-          ? createEvaMastra(tools)
+          ? createEvaMastra(tools, undefined, events)
           : undefined,
-      inject: [ShopTools],
+      inject: [ShopTools, AGENT_EVENTS],
     },
     {
       provide: CHAT_AGENT,
@@ -73,6 +82,7 @@ import {
         mastra: Mastra | undefined,
         tools: ShopTools,
         intentState: IntentSessionState,
+        events: AgentEventSink,
       ) => {
         if (!mastra) {
           return new StubChatAgent(tools);
@@ -81,9 +91,10 @@ import {
           mastra.getAgent(EVA_SHOP_AGENT_KEY),
           new MastraIntentQualifier(createEvaQualifierAgent()),
           intentState,
+          events,
         );
       },
-      inject: [EVA_MASTRA, ShopTools, INTENT_SESSION_STATE],
+      inject: [EVA_MASTRA, ShopTools, INTENT_SESSION_STATE, AGENT_EVENTS],
     },
   ],
   exports: [EVA_MASTRA],

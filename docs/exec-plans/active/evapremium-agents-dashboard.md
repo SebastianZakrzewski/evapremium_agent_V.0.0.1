@@ -10,6 +10,12 @@ Zasada: **jeden slice na iterację**; czerwony test → kod → `npm run verify`
 Bez testu nie ma zapisu eventu, API odczytu ani ekranu KPI. Merge na `main`
 przed następnym slice. Apply migracji na PROD tylko za zgodą.
 
+UI: nowoczesny, minimalistyczny panel w duchu interfejsów OpenAI / ChatGPT —
+dużo przestrzeni, mało ornamentu, czytelna typografia, spokojna paleta,
+bez ciężkiego „admin chrome”. Dotyczy Slice 4–5 (ekrany przeglądu i sesji).
+Implementacja front-endu (Slice 4–5) w Cursorze: model **GPT 5.6 sol**
+(`gpt-5.6-sol-high`). Nie dotyczy modelu agenta Eva w Nest.
+
 Nazwa tabeli eventów **nie jest decyzją produktową**. Roboczo:
 `eva_bot.agent_events` (append-only). Kształt JSON payloadu ustala Slice 1
 w teście, byle były typy ze specyfikacji.
@@ -19,7 +25,7 @@ w teście, byle były typy ze specyfikacji.
 Checkout, konwersja sklepu, A/B widgetu, Studio, kolejka leadów, RAG, role
 użytkowników, alerty, CSV, apply PROD bez zgody.
 
-## Slice 1 — port zdarzeń i emisja (in-memory)
+## Slice 1 — port zdarzeń i emisja (in-memory) (zrobione)
 
 Test: po kaskadzie 0/1/N, wycenie z macierzy, hicie/missie drzewa, próbie
 leada (zgoda vs brak) oraz akceptacji intencji pojawia się event danego typu;
@@ -45,14 +51,16 @@ Kod: wąskie GET-y w Nest. Token ≠ `MASTRA_STUDIO_TOKEN`.
 Test: przy znanych eventach UI (lub test renderu) pokazuje liczby czterech
 hipotez i skrót naruszeń.
 Kod: workspace `dashboard/` (React), osobny origin. `npm run verify` obejmuje
-nowy pakiet. Auth sekretem. Bez listy sesji w tym slice, jeśli nie jest
-potrzebna do samego przeglądu — lista jest Slice 5.
+nowy pakiet. Auth sekretem. Wygląd zgodny z zasadą UI powyżej. Bez listy
+sesji w tym slice, jeśli nie jest potrzebna do samego przeglądu — lista
+jest Slice 5.
 
 ## Slice 5 — lista sesji i widok sesji
 
 Test: znaczniki z eventów, nie z tekstu; widok sesji składa transkrypt
 `direction`/`text` z osią eventów w czasie.
-Kod: dwa ekrany ze specyfikacji. Bez full-text, bez CSV.
+Kod: dwa ekrany ze specyfikacji, ten sam język wizualny co przegląd doby.
+Bez full-text, bez CSV.
 
 ## Slice 6 — deploy Vercel
 

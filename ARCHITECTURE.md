@@ -18,6 +18,7 @@ CORS: localhost Studio. Lead Bitrix za
 `LeadModule`. Widget: EvaBot + snippet `embed.js`. Sentry: `@sentry/nestjs`
 przy `SENTRY_DSN` (`instrument.ts` przed Nest, `SentryGlobalFilter`; awarie
 SSE przez `reportUnexpectedError`). DSN, nie token użytkownika.
+Dashboard operatora: emisja eventów domenowych in-memory (bez HTTP odczytu).
 Poniżej są **zaakceptowane granice MVP**.
 
 Ten dokument jest źródłem prawdy o architekturze wysokiego poziomu.
@@ -168,12 +169,15 @@ Actions (`verify`, potem SSH i `deploy/update-container.sh`). Operacje:
 Snippet sklepu ładuje JS z CDN; czat woła API na Hetznerze.
 Nie PaaS i nie serverless. Widget nie jest serwowany z VPS.
 
-## Dashboard operatora (zaakceptowane, niezaimplementowane)
+## Dashboard operatora (emisja in-memory)
 
 Osobny produkt KPI: pakiet `dashboard/` na **Vercel** (inny origin niż widget
-sklepu). Nie Mastra Studio (`/mastra`) i nie kolejka Bitrix. Nest zapisuje
-zdarzenia domenowe w `eva_bot` i wystawia odczyt za `DASHBOARD_TOKEN`.
-Zachowanie: `docs/product-specs/evapremium-agents-dashboard.md`.
+sklepu). Nie Mastra Studio (`/mastra`) i nie kolejka Bitrix. Nest emituje
+zdarzenia domenowe (`intent_accepted`, `cascade_resolved`, `quote_issued`,
+`context_hit` / `context_miss`, `lead_attempted`, `tool_failed`) za portem
+`AGENT_EVENTS` (adapter in-memory). Payload bez treści wiadomości. HTTP
+odczytu KPI — Slice 3. Zachowanie:
+`docs/product-specs/evapremium-agents-dashboard.md`.
 Plan: `docs/exec-plans/active/evapremium-agents-dashboard.md`.
 Konwersja sklepu i lift widgetu — poza tym zakresem.
 

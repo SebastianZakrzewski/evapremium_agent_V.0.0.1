@@ -7,6 +7,7 @@ import { DuckDBStore } from '@mastra/duckdb';
 import { MastraEditor } from '@mastra/editor';
 import { LibSQLStore } from '@mastra/libsql';
 import { MastraStorageExporter, Observability, SamplingStrategyType } from '@mastra/observability';
+import type { AgentEventSink } from '../agent-events/agent-event';
 import type { ShopTools } from '../chat/shop-tools';
 import {
   createEvaMastraAgent,
@@ -58,6 +59,7 @@ export type CreateEvaMastraOptions = {
 export function createEvaMastra(
   tools: ShopTools,
   options?: CreateEvaMastraOptions,
+  events?: AgentEventSink,
 ): Mastra {
   const storageUrl =
     options?.storageUrl ??
@@ -99,7 +101,7 @@ export function createEvaMastra(
     }),
     ...(auth ? { server: { auth } } : {}),
     agents: {
-      [EVA_SHOP_AGENT_KEY]: createEvaMastraAgent(tools),
+      [EVA_SHOP_AGENT_KEY]: createEvaMastraAgent(tools, events),
       evaIntentQualifier: createEvaQualifierAgent(),
     },
     workflows: {
