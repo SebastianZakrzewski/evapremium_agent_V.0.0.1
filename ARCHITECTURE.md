@@ -222,6 +222,8 @@ zapisie rozmowy.
 - Dashboard operatora: `docs/exec-plans/active/evapremium-agents-dashboard.md`.
 - Które slugi context tree mapują się na `delivery` vs `after_sales` vs
   `product_info` — przy wypełnianiu profili, nie przy zmianie kaskady.
+- RAG na FAQ: nie w kodzie. Mechanizm: `docs/design-docs/context-tree-rag.md`.
+  Plan slice’ów: `docs/exec-plans/active/context-tree-rag.md`.
 
 ## Zasady utrzymania
 

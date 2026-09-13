@@ -81,6 +81,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Kaskada szablonu (domena) | [api/domain/template-cascade.md](api/domain/template-cascade.md) | `api/src/domain/template-cascade.spec.ts` |
 | Wycena (domena) | [api/domain/pricing.md](api/domain/pricing.md) | `api/src/domain/pricing.spec.ts` |
 | Context tree (domena) | [api/domain/context-tree.md](api/domain/context-tree.md) | `api/src/domain/context-tree.spec.ts` |
+| Wyszukiwanie liści (domena) | [api/domain/context-leaf-search.md](api/domain/context-leaf-search.md) | `api/src/domain/context-leaf-search.spec.ts` |
 | Lead Bitrix (domena) | [api/domain/lead.md](api/domain/lead.md) | `api/src/domain/lead.spec.ts` |
 | Resolver kaskady | [api/templates/template-cascade-resolver.md](api/templates/template-cascade-resolver.md) | `api/src/templates/template-cascade.resolver.spec.ts` |
 | Resolver wyceny | [api/pricing/pricing-resolver.md](api/pricing/pricing-resolver.md) | `api/src/pricing/pricing.resolver.spec.ts` |
