@@ -103,7 +103,7 @@ execute `search-leaves` zwraca JSON slugów; stub bez klucza DeepSeek nie
 woła embeddera sieciowego (kontrakt Slice 2). Prompt profilu: najpierw
 `search-leaves` gdy slug niepewny, potem `lookup-leaf`; nie cytować nic
 spoza hit `lookup-leaf`; puste wyszukiwanie = miss.
-Kod: `createTool` w `create-eva-mastra-agent.ts` → `ShopTools.searchLeaves`
+Kod: `createTool` w `api/src/mastra/tools/search-leaves.ts` → `ShopTools.searchLeaves`
 (Nest). `prepare-intent-turn` / `profiles.ts`. Bez zmiany ramek SSE. Agent
 Mastry bez pola `memory.embedder` / `vectors`. DeepSeek tylko czat.
 

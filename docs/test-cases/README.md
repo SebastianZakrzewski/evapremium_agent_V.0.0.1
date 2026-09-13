@@ -93,6 +93,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Pamięć intencji sesji | [api/mastra/intent-session-memory.md](api/mastra/intent-session-memory.md) | `api/src/mastra/intents/accept-intent-transition.spec.ts` |
 | Log tury intencji | [api/mastra/intent-turn-log.md](api/mastra/intent-turn-log.md) | `api/src/mastra/intents/intent-turn-log.spec.ts` |
 | Request context tury | [api/mastra/eva-turn-request-context.md](api/mastra/eva-turn-request-context.md) | `api/src/mastra/eva-turn-request-context.spec.ts` |
+| Katalog shop-tooli Mastry | [api/mastra/shop-tool-catalog.md](api/mastra/shop-tool-catalog.md) | `api/src/mastra/tools/shop-tool-catalog.spec.ts` |
 | Prompt-blocks tury | [api/mastra/prompt-block-instructions.md](api/mastra/prompt-block-instructions.md) | `api/src/mastra/prompt-block-instructions.spec.ts` |
 | HTTP Mastry (Studio) | [api/mastra/studio-http.md](api/mastra/studio-http.md) | `api/src/mastra/studio-http.spec.ts` |
 | Ścieżka DuckDB observability | [api/mastra/mastra-observability-path.md](api/mastra/mastra-observability-path.md) | `api/src/mastra/mastra-observability-path.spec.ts` |

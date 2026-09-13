@@ -14,6 +14,7 @@ export function mastraHttpModules() {
       inject: [EVA_MASTRA],
       useFactory: (mastra: Mastra) => ({
         mastra,
+        tools: mastra.listTools(),
         prefix: MASTRA_HTTP_PREFIX,
         auth: { enabled: true, allowQueryApiKey: false },
       }),

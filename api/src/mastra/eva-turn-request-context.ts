@@ -10,6 +10,7 @@ import {
 } from './prompt-block-instructions';
 
 export const EVA_TURN_INTENT_KEY = 'intent' as const;
+export const MASTRA_IS_STUDIO_KEY = 'mastra__isStudio' as const;
 
 export type EvaTurnRequestContext = {
   intent: ShopIntent;
@@ -48,12 +49,19 @@ export async function instructionsForRequestContext(
 
 export function toolsForRequestContext<T>(
   catalog: Record<string, T>,
-  requestContext: {
-    get: (key: typeof EVA_TURN_INTENT_KEY) => ShopIntent | undefined;
-  },
+  requestContext: Pick<RequestContext, 'get'>,
 ): Record<string, T> {
+  const intent = requestContext.get(EVA_TURN_INTENT_KEY) as
+    | ShopIntent
+    | undefined;
+  const isStudio = requestContext.get(MASTRA_IS_STUDIO_KEY) === true;
+
+  if (isStudio && intent === undefined) {
+    return catalog;
+  }
+
   return selectTurnTools(
     catalog,
-    profileOrOutOfScope(shopIntentFromContext(requestContext)).tools,
+    profileOrOutOfScope(intent ?? 'out_of_scope').tools,
   );
 }

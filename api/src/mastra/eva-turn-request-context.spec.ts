@@ -2,6 +2,7 @@ import { RequestContext } from '@mastra/core/request-context';
 import {
   createEvaTurnRequestContext,
   instructionsForRequestContext,
+  MASTRA_IS_STUDIO_KEY,
   shopIntentFromContext,
   toolsForRequestContext,
 } from './eva-turn-request-context';
@@ -75,6 +76,31 @@ describe('eva turn request context', () => {
     expect(tools).not.toHaveProperty('quote-price');
     expect(Object.keys(tools).sort()).toEqual(
       ['lookup-leaf', 'resolve-template', 'search-leaves'].sort(),
+    );
+  });
+
+  it('keeps production chat without intent on out_of_scope tools', () => {
+    const ctx = new RequestContext<{ intent?: 'pricing' }>();
+
+    expect(Object.keys(toolsForRequestContext(catalog, ctx))).toEqual([]);
+  });
+
+  it('exposes the full catalog in Studio when intent is unset', () => {
+    const ctx = new RequestContext();
+    ctx.set(MASTRA_IS_STUDIO_KEY, true);
+
+    expect(Object.keys(toolsForRequestContext(catalog, ctx)).sort()).toEqual(
+      Object.keys(catalog).sort(),
+    );
+  });
+
+  it('still filters Studio tools when a request-context preset sets intent', () => {
+    const ctx = new RequestContext();
+    ctx.set('intent', 'pricing');
+    ctx.set(MASTRA_IS_STUDIO_KEY, true);
+
+    expect(Object.keys(toolsForRequestContext(catalog, ctx)).sort()).toEqual(
+      ['quote-price', 'resolve-template'].sort(),
     );
   });
 });

@@ -13,6 +13,9 @@ instancji `Agent`. Brak klucza = `out_of_scope`.
 | ctx-003 | critical | pricing: instructions + quote-price |
 | ctx-004 | critical | product_info bez quote-price |
 | ctx-005 | high | opublikowane prompt-blocks zastępują prompt profilu |
+| ctx-006 | high | czat bez intent → zero shop-tooli |
+| ctx-007 | high | Studio bez presetu → pełny katalog |
+| ctx-008 | high | Studio z presetem intent → filtr profilu |
 
 ### ctx-001 — intent w request context
 
@@ -26,7 +29,7 @@ instancji `Agent`. Brak klucza = `out_of_scope`.
 
 - **Kod:** `api/src/mastra/eva-turn-request-context.spec.ts` → `it('defaults missing intent to out_of_scope')`
 - **Krytyczność:** high
-- **Logika:** Playground bez JSON context nie dostaje pełnego katalogu tooli.
+- **Logika:** `shopIntentFromContext` bez klucza = `out_of_scope`; mapa tooli w czacie produkcyjnym zostaje pusta (ctx-006).
 - **Wejście:** pusty `RequestContext`
 - **Wyjście:** `shopIntentFromContext` → `out_of_scope`
 
@@ -53,3 +56,27 @@ instancji `Agent`. Brak klucza = `out_of_scope`.
 - **Logika:** Czat i Studio mają ten sam tekst co Editor; tool-e zostają z profilu.
 - **Wejście:** context `pricing` + mock `getEditor().prompt`
 - **Wyjście:** `'prompt ze Studio'`, nie `assembleTurnInstructions`
+
+### ctx-006 — czat bez intent → zero shop-tooli
+
+- **Kod:** `api/src/mastra/eva-turn-request-context.spec.ts` → `it('keeps production chat without intent on out_of_scope tools')`
+- **Krytyczność:** high
+- **Logika:** Produkcja bez `intent` nie dostaje pełnego katalogu — tylko `out_of_scope` (pusta mapa).
+- **Wejście:** pusty `RequestContext` bez `mastra__isStudio`
+- **Wyjście:** `toolsForRequestContext` → `{}`
+
+### ctx-007 — Studio bez presetu → pełny katalog
+
+- **Kod:** `api/src/mastra/eva-turn-request-context.spec.ts` → `it('exposes the full catalog in Studio when intent is unset')`
+- **Krytyczność:** high
+- **Logika:** Studio ustawia `mastra__isStudio`; bez presetu `intent` agent i `/tools` pokazują cały katalog projektu.
+- **Wejście:** `RequestContext` z `mastra__isStudio: true`, bez `intent`
+- **Wyjście:** wszystkie klucze katalogu shop-tooli
+
+### ctx-008 — Studio z presetem intent → filtr profilu
+
+- **Kod:** `api/src/mastra/eva-turn-request-context.spec.ts` → `it('still filters Studio tools when a request-context preset sets intent')`
+- **Krytyczność:** high
+- **Logika:** Preset `pricing` w Studio nie otwiera pełnego katalogu — zostaje filtr profilu.
+- **Wejście:** `intent: pricing`, `mastra__isStudio: true`
+- **Wyjście:** `quote-price`, `resolve-template`

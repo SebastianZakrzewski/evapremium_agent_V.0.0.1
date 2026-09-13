@@ -13,6 +13,7 @@ import {
   createEvaMastraAgent,
   EVA_SHOP_AGENT_KEY,
 } from './create-eva-mastra-agent';
+import { createShopToolCatalog, mastraInstanceToolRegistry } from './tools';
 import { resolveMastraObservabilityPath } from './mastra-observability-path';
 import { createEvaQualifierAgent } from './intents/create-eva-qualifier-agent';
 import { createIntentWorkflow } from './intents/create-intent-workflow';
@@ -73,6 +74,7 @@ export function createEvaMastra(
   ensureFileStorageDir(storageUrl);
   ensureFileStorageDir(`file:${observabilityPath}`);
   const auth = studioAuth();
+  const shopTools = createShopToolCatalog(tools, events);
   return new Mastra({
     storage: new MastraCompositeStore({
       id: 'eva-mastra-storage',
@@ -100,8 +102,9 @@ export function createEvaMastra(
       },
     }),
     ...(auth ? { server: { auth } } : {}),
+    ...mastraInstanceToolRegistry(shopTools),
     agents: {
-      [EVA_SHOP_AGENT_KEY]: createEvaMastraAgent(tools, events),
+      [EVA_SHOP_AGENT_KEY]: createEvaMastraAgent(shopTools),
       evaIntentQualifier: createEvaQualifierAgent(),
     },
     workflows: {

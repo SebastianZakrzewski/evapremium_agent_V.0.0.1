@@ -75,7 +75,7 @@ zostają na każdym profilu sklepowym.
 
 ## Mapowanie tooli (to repo)
 
-Id w `tools` = id `createTool` z `createEvaMastraAgent`, execute → Nest.
+Id w `tools` = id `createTool` z `api/src/mastra/tools/`, execute → Nest.
 
 | `ShopIntent` | Tool-e tury | Rola |
 | --- | --- | --- |

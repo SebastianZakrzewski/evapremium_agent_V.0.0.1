@@ -23,6 +23,7 @@ import {
   InMemoryTemplateCatalog,
 } from '../templates/in-memory/in-memory-catalogs';
 import { createEvaMastra } from './create-eva-mastra';
+import { createShopToolCatalog } from './tools';
 
 function studioShopTools(): ShopTools {
   return new ShopTools(
@@ -39,4 +40,6 @@ function studioShopTools(): ShopTools {
   );
 }
 
-export const mastra = createEvaMastra(studioShopTools());
+const studioTools = studioShopTools();
+export const tools = createShopToolCatalog(studioTools);
+export const mastra = createEvaMastra(studioTools);
