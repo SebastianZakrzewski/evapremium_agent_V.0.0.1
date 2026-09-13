@@ -32,7 +32,9 @@ Nie jest to publiczny czat. Montaż tylko gdy `DEEPSEEK_API_KEY` **i**
 UI Studio na VPS: port **4111**, HTTP basic (`eva` / `MASTRA_STUDIO_TOKEN`);
 Caddy dokłada Bearer do `/mastra`. Ruch jest HTTP do czasu TLS. Nie wystawiać
 `/mastra` w Caddy sklepu bez auth. Token tylko w `/opt/evabot/api/.env`. Plik LibSQL Mastry
-na hoście (`/opt/evabot/mastra`), nie w obrazie Dockera.
+na hoście (`/opt/evabot/mastra`), nie w obrazie Dockera. DuckDB observability
+ten sam katalog (`observability.duckdb`); może zawierać ślady tur — wolumen
+nie jest publiczny.
 
 ## Dashboard operatora (zaakceptowane, niezaimplementowane)
 

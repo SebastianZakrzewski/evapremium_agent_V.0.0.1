@@ -12,6 +12,7 @@ services:
       - /opt/evabot/api/.env
     environment:
       MASTRA_STORAGE_URL: file:/data/mastra.db
+      MASTRA_OBSERVABILITY_PATH: /data/observability.duckdb
     volumes:
       - /opt/evabot/mastra:/data
 

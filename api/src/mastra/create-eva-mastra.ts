@@ -2,6 +2,8 @@ import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { Mastra } from '@mastra/core';
 import { SimpleAuth } from '@mastra/core/server';
+import { MastraCompositeStore } from '@mastra/core/storage';
+import { DuckDBStore } from '@mastra/duckdb';
 import { MastraEditor } from '@mastra/editor';
 import { LibSQLStore } from '@mastra/libsql';
 import { MastraStorageExporter, Observability, SamplingStrategyType } from '@mastra/observability';
@@ -10,6 +12,7 @@ import {
   createEvaMastraAgent,
   EVA_SHOP_AGENT_KEY,
 } from './create-eva-mastra-agent';
+import { resolveMastraObservabilityPath } from './mastra-observability-path';
 import { createEvaQualifierAgent } from './intents/create-eva-qualifier-agent';
 import { createIntentWorkflow } from './intents/create-intent-workflow';
 import type { IntentQualifier } from './intents/intent-qualifier';
@@ -49,6 +52,7 @@ function studioAuth() {
 
 export type CreateEvaMastraOptions = {
   storageUrl?: string;
+  observabilityPath?: string;
 };
 
 export function createEvaMastra(
@@ -59,12 +63,29 @@ export function createEvaMastra(
     options?.storageUrl ??
     process.env.MASTRA_STORAGE_URL ??
     DEFAULT_MASTRA_STORAGE_URL;
+  const observabilityPath = resolveMastraObservabilityPath({
+    storageUrl,
+    observabilityPath: options?.observabilityPath,
+    env: process.env,
+  });
   ensureFileStorageDir(storageUrl);
+  ensureFileStorageDir(`file:${observabilityPath}`);
   const auth = studioAuth();
   return new Mastra({
-    storage: new LibSQLStore({
+    storage: new MastraCompositeStore({
       id: 'eva-mastra-storage',
-      url: storageUrl,
+      default: new LibSQLStore({
+        id: 'eva-mastra-libsql',
+        url: storageUrl,
+      }),
+      domains: {
+        observability: new DuckDBStore({
+          id: 'eva-mastra-observability',
+          path: observabilityPath,
+          memoryLimit: '512MB',
+          threads: 1,
+        }).observability,
+      },
     }),
     editor: new MastraEditor(),
     observability: new Observability({

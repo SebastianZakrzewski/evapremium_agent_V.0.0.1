@@ -25,6 +25,7 @@ Aktualizuj, gdy zmieni się trwała zasada projektowa, nie przy każdej funkcji.
   egzekwuje HTTP, reguły, Supabase i Bitrix24.
 - Panel KPI operatora (Vercel) nie jest Mastra Studio i nie zastępuje kolejki
   Bitrix; fakty do KPI pochodzą z eventów Nest, nie z tekstu LLM.
+- Wykresy Studio Observability: DuckDB, nie LibSQL (Editor zostaje w LibSQL).
 - Intencja tury: LLM tylko etykieta; `IntentProfile` to pakiet kontekstu
   wgrywany w runtime. `acceptIntentTransition` filtruje kandydata względem
   stanu sesji (`allowedTransitions`). Agent ze wszystkimi shop-toolami na raz

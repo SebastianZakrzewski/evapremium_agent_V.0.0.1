@@ -50,7 +50,7 @@ niezaimplementowany (osobny origin Vercel).
 | Logika biznesowa | NestJS | Kaskada filtrów, wycena, context tree, utworzenie leada; jedyne I/O do danych i CRM |
 | Dane | Supabase PROD | `evapremium_shop` (szablony, cennik), `eva_bot` (aliasy slotów, sesje, context tree) |
 | CRM | Bitrix24 | Kolejka pracy człowieka (zapis leada z czatu) |
-| Obserwowalność | Sentry + Mastra traces | Błędy Nest (Sentry DSN). Traces/Editor: LibSQL. Listowanie feedbacku Studio: pusta lista (LibSQL nie ma `listFeedback`) |
+| Obserwowalność | Sentry + Mastra Studio | Błędy Nest (Sentry DSN). Editor/pamięć Mastry: LibSQL. Wykresy, discovery, feedback Studio: DuckDB (plik obok LibSQL na wolumenie hosta) |
 | Jakość | TDD | Test najpierw, potem implementacja |
 
 ## Źródła danych
@@ -146,7 +146,10 @@ i mapa tooli z profilu. System prompt: opublikowane prompt-blocks Editora
 SSE bez zmiany
 ramek. `stream(message, sessionId)`. Lead Bitrix zostaje w Neście. Bez klucza
 `verify` nadal `StubChatAgent`. Editor + LibSQL (lokalnie `.mastra/editor.db`;
-produkcja `MASTRA_STORAGE_URL=file:/data/mastra.db` na wolumenie hosta). Przy
+produkcja `MASTRA_STORAGE_URL=file:/data/mastra.db` na wolumenie hosta).
+Studio Observability: DuckDB (`observability.duckdb` obok LibSQL;
+`MASTRA_OBSERVABILITY_PATH` na VPS `/data/observability.duckdb`) przez
+`MastraCompositeStore`. LibSQL nie serwuje metryk. Przy
 `MASTRA_STUDIO_TOKEN` Nest montuje `/mastra` (`@mastra/nestjs`, SimpleAuth).
 Studio na VPS: obraz `evabot-studio` (Caddy `:4111`, basic auth, proxy
 `/mastra` → Nest `:3000`, wstrzyknięty Bearer). Browser same-origin, bez tunelu.

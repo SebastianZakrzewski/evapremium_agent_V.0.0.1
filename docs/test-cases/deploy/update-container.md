@@ -9,7 +9,7 @@ Logika zestawu: obraz Dockera buduje się z klona repo; sekrety zostają w
 | id | Krytyczność | Tytuł |
 | --- | --- | --- |
 | deploy-001 | high | Rebuild z env-file, bez sekretów w skrypcie |
-| deploy-002 | high | Wolumen LibSQL Mastry, bez tokenu Studio w skrypcie |
+| deploy-002 | high | Wolumen LibSQL + DuckDB Mastry, bez tokenu Studio w skrypcie |
 | deploy-003 | high | Drugi obraz Studio na 4111, bez sekretów w skrypcie |
 
 ### deploy-001 — Rebuild z env-file, bez sekretów w skrypcie
@@ -20,13 +20,13 @@ Logika zestawu: obraz Dockera buduje się z klona repo; sekrety zostają w
 - **Wejście:** treść `deploy/update-container.sh`
 - **Wyjście:** `docker build` + `docker run --env-file` na porcie 3000; pętla gotowości `GET /v1/health`; brak `password` / kluczy API w pliku
 
-### deploy-002 — Wolumen LibSQL Mastry, bez tokenu Studio w skrypcie
+### deploy-002 — Wolumen LibSQL + DuckDB Mastry, bez tokenu Studio w skrypcie
 
 - **Kod:** `deploy/update-container.test.mjs` → `persists Mastra LibSQL on a host volume without embedding secrets`
 - **Krytyczność:** high
-- **Logika:** traces i Editor nie mogą ginąć przy `docker rm`; ścieżka w kontenerze jest stała, token Studio zostaje w `--env-file`.
+- **Logika:** Editor i wykresy Studio nie mogą ginąć przy `docker rm`; ścieżki w kontenerze stałe, token Studio zostaje w `--env-file`.
 - **Wejście:** treść `deploy/update-container.sh`
-- **Wyjście:** host `/opt/evabot/mastra` → `/data`; `MASTRA_STORAGE_URL=file:/data/mastra.db`; brak `MASTRA_STUDIO_TOKEN` w skrypcie
+- **Wyjście:** host `/opt/evabot/mastra` → `/data`; `MASTRA_STORAGE_URL=file:/data/mastra.db`; `MASTRA_OBSERVABILITY_PATH=/data/observability.duckdb`; brak `MASTRA_STUDIO_TOKEN` w skrypcie
 
 ### deploy-003 — Drugi obraz Studio na 4111, bez sekretów w skrypcie
 

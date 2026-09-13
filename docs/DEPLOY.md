@@ -23,7 +23,8 @@ Env: `DEEPSEEK_API_KEY`, `BITRIX_WEBHOOK_URL`, `SUPABASE_URL`
 Opcjonalnie Studio: `MASTRA_STUDIO_TOKEN` (Bearer + hasło basic `eva`),
 `EVA_STUDIO_PUBLIC_HOST` (IP/domena w pasku przeglądarki). HTTP Mastry
 `/mastra` zostaje na Neście. LibSQL: host `/opt/evabot/mastra` →
-`file:/data/mastra.db`. UI: `http://46.224.75.64:4111` (login `eva`, hasło =
+`file:/data/mastra.db`. DuckDB: `MASTRA_OBSERVABILITY_PATH=/data/observability.duckdb`
+(ten sam wolumen). UI: `http://46.224.75.64:4111` (login `eva`, hasło =
 token). Caddy wstrzykuje Bearer; tunel SSH nie jest potrzebny.
 
 `npm run studio:prod` zostaje do lokalnego UI przeciwko tunelowi.

@@ -91,6 +91,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Request context tury | [api/mastra/eva-turn-request-context.md](api/mastra/eva-turn-request-context.md) | `api/src/mastra/eva-turn-request-context.spec.ts` |
 | Prompt-blocks tury | [api/mastra/prompt-block-instructions.md](api/mastra/prompt-block-instructions.md) | `api/src/mastra/prompt-block-instructions.spec.ts` |
 | HTTP Mastry (Studio) | [api/mastra/studio-http.md](api/mastra/studio-http.md) | `api/src/mastra/studio-http.spec.ts` |
+| Ścieżka DuckDB observability | [api/mastra/mastra-observability-path.md](api/mastra/mastra-observability-path.md) | `api/src/mastra/mastra-observability-path.spec.ts` |
 | Query orderBy Studio | [api/mastra/coerce-mastra-query.md](api/mastra/coerce-mastra-query.md) | `api/src/mastra/coerce-mastra-query.spec.ts` |
 | Agent czatu Mastra | [api/chat/mastra-chat-agent.md](api/chat/mastra-chat-agent.md) | `api/src/chat/mastra-chat.agent.spec.ts` |
 | Kontrakt HTTP czatu | [api/chat/chat-http.md](api/chat/chat-http.md) | `api/src/chat/chat.contract.spec.ts` |

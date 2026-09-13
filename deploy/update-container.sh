@@ -24,6 +24,7 @@ docker run -d --name "$NAME" --restart unless-stopped \
   -v "$DATA_DIR:/data" \
   --env-file "$ENV_FILE" \
   -e MASTRA_STORAGE_URL=file:/data/mastra.db \
+  -e MASTRA_OBSERVABILITY_PATH=/data/observability.duckdb \
   "$IMAGE" >/dev/null
 
 for _ in $(seq 1 30); do

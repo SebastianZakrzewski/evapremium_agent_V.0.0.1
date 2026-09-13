@@ -125,3 +125,13 @@ Slice 1–4 **nie dodają** świadomego długu poza TD-003/TD-005 (Jest bez
   `ChatAgent.stream(message, sessionId)`. Fallback niskiej pewności omija
   filtr. Stan ginie przy restarcie procesu (nie w `chat_sessions`).
 
+## TD-011 — DuckDB jako observability na VPS (nie ClickHouse)
+
+- **Stan:** otwarte
+- **Priorytet:** niski
+- **Kompromis:** Mastra poleca DuckDB do dev, ClickHouse do produkcji. EVA
+  ma jednego agenta na Hetznerze; DuckDB to drugi plik na `/opt/evabot/mastra`.
+- **Wpływ:** duży ruch / wiele procesów może zaciąć plik DuckDB; wtedy
+  ClickHouse.
+- **Nie robić przy usuwaniu:** LibSQL jako magazyn metryk Studio.
+

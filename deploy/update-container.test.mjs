@@ -24,6 +24,10 @@ test('persists Mastra LibSQL on a host volume without embedding secrets', () => 
   assert.match(script, /\/opt\/evabot\/mastra/);
   assert.match(script, /-v "\$DATA_DIR:\/data"/);
   assert.match(script, /-e MASTRA_STORAGE_URL=file:\/data\/mastra\.db/);
+  assert.match(
+    script,
+    /-e MASTRA_OBSERVABILITY_PATH=\/data\/observability\.duckdb/,
+  );
   assert.doesNotMatch(script, /MASTRA_STUDIO_TOKEN/);
 });
 
