@@ -70,7 +70,7 @@ Kod: `CONTEXT_LEAF_SEARCH` / `TEXT_EMBEDDER` analogicznie do
 `ContextTreeService` (lub cienki serwis obok) ma `searchLeaves(query: string)`.
 Bez migracji, bez `createTool`, bez embeddera na instancji Mastry.
 
-## Slice 3 — pgvector w `eva_bot` + ingest z liści
+## Slice 3 — pgvector w `eva_bot` + ingest z liści (zrobione)
 
 Test: adapter mapuje wiersze indeksu na kontrakt Slice 1; ingest aktywnego
 liścia z body zapisuje wektor; ponowny ingest tego samego sluga nadpisuje;
