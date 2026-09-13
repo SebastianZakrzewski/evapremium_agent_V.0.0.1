@@ -12,6 +12,7 @@ instancji `Agent`. Brak klucza = `out_of_scope`.
 | ctx-002 | high | brak intent → out_of_scope |
 | ctx-003 | critical | pricing: instructions + quote-price |
 | ctx-004 | critical | product_info bez quote-price |
+| ctx-005 | high | opublikowane prompt-blocks zastępują prompt profilu |
 
 ### ctx-001 — intent w request context
 
@@ -33,7 +34,7 @@ instancji `Agent`. Brak klucza = `out_of_scope`.
 
 - **Kod:** `api/src/mastra/eva-turn-request-context.spec.ts` → `it('resolves pricing instructions and quote-price from request context')`
 - **Krytyczność:** critical
-- **Logika:** System prompt tury = `assembleTurnInstructions(pricing)`; tool `quote-price` jest na mapie.
+- **Logika:** Bez Editora system prompt tury = `assembleTurnInstructions(pricing)`; tool `quote-price` jest na mapie.
 - **Wejście:** context `intent: pricing`, katalog 3 tooli
 - **Wyjście:** instructions identyczne ze złożeniem profilu; klucze `quote-price`, `resolve-template`
 
@@ -44,3 +45,11 @@ instancji `Agent`. Brak klucza = `out_of_scope`.
 - **Logika:** Kwota nie może być wywołana na Q&A — tool nie ma w mapie z contextu.
 - **Wejście:** `intent: product_info`
 - **Wyjście:** brak `quote-price`; są `resolve-template` i `lookup-leaf`
+
+### ctx-005 — opublikowane prompt-blocks zastępują prompt profilu
+
+- **Kod:** `api/src/mastra/eva-turn-request-context.spec.ts` → `it('uses published prompt-blocks instead of the intent profile prompt')`
+- **Krytyczność:** high
+- **Logika:** Czat i Studio mają ten sam tekst co Editor; tool-e zostają z profilu.
+- **Wejście:** context `pricing` + mock `getEditor().prompt`
+- **Wyjście:** `'prompt ze Studio'`, nie `assembleTurnInstructions`

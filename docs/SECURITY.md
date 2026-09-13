@@ -4,8 +4,11 @@ Aktualizuj przy zmianie originów, sekretów, PII lub integracji.
 
 ## Sekrety
 
-Klucze DeepSeek, Supabase (service), Bitrix oraz `SENTRY_DSN` — tylko na
-serwerze (Nest na Hetznerze). Nigdy w widgecie ani w snippecie.
+Klucze DeepSeek, Supabase (service), Bitrix, `SENTRY_DSN` oraz
+`DASHBOARD_TOKEN` — nie w widgecie ani w snippecie.
+`DASHBOARD_TOKEN` ≠ `MASTRA_STUDIO_TOKEN`. Nest trzyma token do weryfikacji
+odczytu; projekt Vercel dashboardu może trzymać ten sam sekret w env
+(operator), nigdy w publicznym czacie.
 Lokalna lista sekretów: `docs/provider_configuration.json` (gitignore);
 szablon: `docs/provider_configuration.example.json`.
 CD: `HETZNER_SSH_KEY` tylko w GitHub Actions secrets; na VPS wyłącznie
@@ -26,8 +29,18 @@ Nie jest to publiczny czat. Montaż tylko gdy `DEEPSEEK_API_KEY` **i**
 `MASTRA_STUDIO_TOKEN`. Auth: nagłówek `Authorization: Bearer <token>`
 (SimpleAuth). Bez `?apiKey=` w query. CORS: `localhost` / `127.0.0.1` porty
 4111 i 3000; opcjonalnie `MASTRA_STUDIO_ORIGIN` (HTTPS albo localhost).
-Dostęp do produkcji: tunel SSH na `127.0.0.1:3000`, nie otwierać `/mastra`
-w Caddy bez auth. Token tylko w `/opt/evabot/api/.env`.
+UI Studio na VPS: port **4111**, HTTP basic (`eva` / `MASTRA_STUDIO_TOKEN`);
+Caddy dokłada Bearer do `/mastra`. Ruch jest HTTP do czasu TLS. Nie wystawiać
+`/mastra` w Caddy sklepu bez auth. Token tylko w `/opt/evabot/api/.env`. Plik LibSQL Mastry
+na hoście (`/opt/evabot/mastra`), nie w obrazie Dockera.
+
+## Dashboard operatora (zaakceptowane, niezaimplementowane)
+
+Odczyt transkryptu i eventów: HTTPS origin dashboardu na Vercel + nagłówek
+`Authorization: Bearer` z `DASHBOARD_TOKEN`. CORS: `DASHBOARD_ORIGIN`, nie
+originy sklepu i nie Studio. Treści wiadomości nie logować (jak czat publiczny).
+Widget nie woła tych tras. Sekret wpisuje operator albo env projektu Vercel
+dashboardu — nie snippet sklepu i nie `MASTRA_STUDIO_TOKEN`.
 
 ## Dane
 

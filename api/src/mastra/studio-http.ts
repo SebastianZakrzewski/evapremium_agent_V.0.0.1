@@ -1,4 +1,31 @@
 export const MASTRA_HTTP_PREFIX = '/mastra';
+export const MASTRA_FEEDBACK_LIST_PATH = `${MASTRA_HTTP_PREFIX}/observability/feedback`;
+
+export function isMastraFeedbackListRequest(
+  method: string,
+  path: string,
+): boolean {
+  const pathname = path.split('?')[0]?.replace(/\/$/, '') ?? '';
+  return method.toUpperCase() === 'GET' && pathname === MASTRA_FEEDBACK_LIST_PATH;
+}
+
+export function emptyMastraFeedbackList(mode?: string): {
+  feedback: [];
+  pagination?: {
+    total: number;
+    page: number;
+    perPage: number;
+    hasMore: boolean;
+  };
+} {
+  if (mode === 'delta') {
+    return { feedback: [] };
+  }
+  return {
+    feedback: [],
+    pagination: { total: 0, page: 0, perPage: 10, hasMore: false },
+  };
+}
 
 export function shouldMountMastraHttp(
   env: Record<string, string | undefined>,

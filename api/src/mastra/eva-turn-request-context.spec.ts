@@ -28,15 +28,42 @@ describe('eva turn request context', () => {
     expect(shopIntentFromContext(ctx)).toBe('out_of_scope');
   });
 
-  it('resolves pricing instructions and quote-price from request context', () => {
+  it('resolves pricing instructions and quote-price from request context', async () => {
     const ctx = createEvaTurnRequestContext('pricing');
     const profile = profileOrOutOfScope('pricing');
 
-    expect(instructionsForRequestContext(ctx)).toBe(
+    expect(await instructionsForRequestContext(ctx)).toBe(
       assembleTurnInstructions(profile),
     );
     expect(Object.keys(toolsForRequestContext(catalog, ctx)).sort()).toEqual(
       ['quote-price', 'resolve-template'].sort(),
+    );
+  });
+
+  it('uses published prompt-blocks instead of the intent profile prompt', async () => {
+    const ctx = createEvaTurnRequestContext('pricing');
+    const mastra = {
+      getEditor: () => ({
+        prompt: {
+          listResolved: async () => ({
+            promptBlocks: [{ id: 'evapremium-agent-v-0-0-1' }],
+          }),
+          preview: async (
+            blocks: Array<{ id: string }>,
+            context: Record<string, unknown>,
+          ) => {
+            expect(blocks).toEqual([
+              { type: 'prompt_block_ref', id: 'evapremium-agent-v-0-0-1' },
+            ]);
+            expect(context).toEqual({ intent: 'pricing' });
+            return 'prompt ze Studio';
+          },
+        },
+      }),
+    };
+
+    await expect(instructionsForRequestContext(ctx, mastra)).resolves.toBe(
+      'prompt ze Studio',
     );
   });
 

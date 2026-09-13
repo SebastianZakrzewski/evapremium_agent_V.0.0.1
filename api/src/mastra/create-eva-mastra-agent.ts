@@ -53,8 +53,8 @@ export function createEvaMastraAgent(tools: ShopTools): Agent {
   return new Agent({
     id: EVA_SHOP_AGENT_ID,
     name: 'EVA Premium',
-    instructions: ({ requestContext }) =>
-      instructionsForRequestContext(requestContext),
+    instructions: ({ requestContext, mastra }) =>
+      instructionsForRequestContext(requestContext, mastra),
     model: DEEPSEEK_MASTRA_MODEL,
     tools: ({ requestContext }) =>
       toolsForRequestContext(catalog, requestContext),

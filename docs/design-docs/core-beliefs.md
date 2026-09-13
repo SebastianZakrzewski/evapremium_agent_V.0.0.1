@@ -23,6 +23,8 @@ Aktualizuj, gdy zmieni się trwała zasada projektowa, nie przy każdej funkcji.
 - Dokumentacja ma kompresować kontekst agenta: granice, zakazy, źródła prawdy.
 - Mastra orkiestruje w tym samym procesie co Nest (DeepSeek Flash); NestJS
   egzekwuje HTTP, reguły, Supabase i Bitrix24.
+- Panel KPI operatora (Vercel) nie jest Mastra Studio i nie zastępuje kolejki
+  Bitrix; fakty do KPI pochodzą z eventów Nest, nie z tekstu LLM.
 - Intencja tury: LLM tylko etykieta; `IntentProfile` to pakiet kontekstu
   wgrywany w runtime. `acceptIntentTransition` filtruje kandydata względem
   stanu sesji (`allowedTransitions`). Agent ze wszystkimi shop-toolami na raz
@@ -35,7 +37,10 @@ Aktualizuj, gdy zmieni się trwała zasada projektowa, nie przy każdej funkcji.
 - Ceny lub FAQ ze scrapingu strony.
 - Identyfikacja auta po VIN / rejestracji.
 - Konsultant na żywo w tym samym czacie.
-- Własny panel leadów, sam e-mail jako kolejka, n8n jako hop do Bitrix na MVP.
+- Własny panel leadów, sam e-mail jako kolejka, n8n jako hop do Bitrix na MVP
+  (dashboard KPI nie jest kolejką).
+- KPI sprzedaży / lift konwersji w dashboardzie agenta, dopóki nie ma mostu
+  sesji czatu do zamówienia i eksperymentu na sklepie.
 - Nest jako serverless (np. Vercel Functions) na MVP.
 - PaaS (Railway / Render / Fly) zamiast Hetznera na MVP.
 - Pliki widgetu z Hetznera na MVP (zostają na Vercel/CDN).

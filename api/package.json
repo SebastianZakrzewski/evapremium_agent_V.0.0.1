@@ -9,7 +9,8 @@
     "start:prod": "node dist/main.js",
     "test": "jest",
     "lint": "eslint \"src/**/*.ts\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "studio:prod": "node scripts/studio-prod.mjs"
   },
   "dependencies": {
     "@mastra/core": "^1.66.0",

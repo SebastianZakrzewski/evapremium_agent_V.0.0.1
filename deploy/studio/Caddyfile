@@ -1,0 +1,15 @@
+:4111 {
+	basic_auth {
+		eva {$STUDIO_BASIC_HASH}
+	}
+
+	handle /mastra* {
+		reverse_proxy host.docker.internal:3000 {
+			header_up Authorization "Bearer {$MASTRA_STUDIO_TOKEN}"
+		}
+	}
+
+	handle {
+		reverse_proxy 127.0.0.1:4112
+	}
+}

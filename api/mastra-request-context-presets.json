@@ -1,0 +1,7 @@
+{
+  "product_info": { "intent": "product_info" },
+  "pricing": { "intent": "pricing" },
+  "delivery": { "intent": "delivery" },
+  "after_sales": { "intent": "after_sales" },
+  "out_of_scope": { "intent": "out_of_scope" }
+}

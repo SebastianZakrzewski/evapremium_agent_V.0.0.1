@@ -3,6 +3,11 @@ import { profileOrOutOfScope } from './intents/intent-fallback';
 import { assembleTurnInstructions } from './intents/prepare-intent-turn';
 import { selectTurnTools } from './intents/select-turn-tools';
 import type { ShopIntent } from './intents/schema';
+import {
+  instructionsFromPublishedPromptBlocks,
+  promptBlockReaderFromMastra,
+  type MastraWithPromptEditor,
+} from './prompt-block-instructions';
 
 export const EVA_TURN_INTENT_KEY = 'intent' as const;
 
@@ -24,12 +29,21 @@ export function shopIntentFromContext(requestContext: {
   return requestContext.get(EVA_TURN_INTENT_KEY) ?? 'out_of_scope';
 }
 
-export function instructionsForRequestContext(requestContext: {
-  get: (key: typeof EVA_TURN_INTENT_KEY) => ShopIntent | undefined;
-}): string {
-  return assembleTurnInstructions(
-    profileOrOutOfScope(shopIntentFromContext(requestContext)),
+export async function instructionsForRequestContext(
+  requestContext: {
+    get: (key: typeof EVA_TURN_INTENT_KEY) => ShopIntent | undefined;
+  },
+  mastra?: MastraWithPromptEditor,
+): Promise<string> {
+  const intent = shopIntentFromContext(requestContext);
+  const fromBlocks = await instructionsFromPublishedPromptBlocks(
+    promptBlockReaderFromMastra(mastra),
+    intent,
   );
+  if (fromBlocks) {
+    return fromBlocks;
+  }
+  return assembleTurnInstructions(profileOrOutOfScope(intent));
 }
 
 export function toolsForRequestContext<T>(

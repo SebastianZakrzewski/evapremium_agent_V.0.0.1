@@ -10,6 +10,7 @@ DeepSeek + tokenem. CORS Studio to localhost (i HTTPS extra), nie dowolne HTTP.
 | studio-http-001 | high | Montaż tylko z kluczem i tokenem |
 | studio-http-002 | high | CORS localhost gdy HTTP włączony |
 | studio-http-003 | high | Extra HTTPS OK, publiczne HTTP nie |
+| studio-http-004 | medium | GET feedback → pusta lista (LibSQL) |
 
 ### studio-http-001 — Montaż tylko z kluczem i tokenem
 
@@ -34,3 +35,11 @@ DeepSeek + tokenem. CORS Studio to localhost (i HTTPS extra), nie dowolne HTTP.
 - **Logika:** `MASTRA_STUDIO_ORIGIN` nie może otworzyć CORS na `http://evil`.
 - **Wejście:** `https://studio.example.com/` vs `http://evil.example.com`
 - **Wyjście:** HTTPS w liście; HTTP obce nie
+
+### studio-http-004 — GET feedback → pusta lista (LibSQL)
+
+- **Kod:** `api/src/mastra/studio-http.spec.ts` → `it('returns an empty feedback page because LibSQL cannot list feedback')`
+- **Krytyczność:** medium
+- **Logika:** Studio polluje `/mastra/observability/feedback`; LibSQL rzuca 500; zwracamy pustą stronę.
+- **Wejście:** GET vs POST; `mode=delta`
+- **Wyjście:** GET match; POST nie; `{ feedback: [] }` + pagination albo sam `feedback` w delta

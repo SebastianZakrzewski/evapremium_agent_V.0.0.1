@@ -1,0 +1,15 @@
+FROM caddy:2.10-alpine AS caddy
+
+FROM node:22-bookworm-slim
+COPY --from=caddy /usr/bin/caddy /usr/bin/caddy
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends curl \
+  && rm -rf /var/lib/apt/lists/* \
+  && npm install -g mastra@1.29.0
+WORKDIR /app
+COPY api/mastra-request-context-presets.json /app/mastra-request-context-presets.json
+COPY deploy/studio/Caddyfile /etc/caddy/Caddyfile
+COPY deploy/studio/start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+EXPOSE 4111
+CMD ["/app/start.sh"]

@@ -10,3 +10,26 @@ services:
       - "3000:3000"
     env_file:
       - /opt/evabot/api/.env
+    environment:
+      MASTRA_STORAGE_URL: file:/data/mastra.db
+    volumes:
+      - /opt/evabot/mastra:/data
+
+  studio:
+    image: evabot-studio:git
+    build:
+      context: ..
+      dockerfile: Dockerfile.studio
+    container_name: evabot-studio
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "4111:4111"
+    env_file:
+      - /opt/evabot/api/.env
+    environment:
+      MASTRA_STUDIO_PUBLIC_HOST: ${EVA_STUDIO_PUBLIC_HOST:-46.224.75.64}
+      MASTRA_STUDIO_PUBLIC_PORT: "4111"
+    depends_on:
+      - api

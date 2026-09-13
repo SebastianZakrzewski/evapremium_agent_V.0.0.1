@@ -14,26 +14,19 @@ Sekrety zostają w `/opt/evabot/api/.env` (nie w obrazie).
 1. `git clone` repo do `/opt/evabot-src` (gałąź `main`).
 2. `docker build -t evabot-api:git /opt/evabot-src`
 3. Zatrzymaj stary `systemd evabot-api` (Node na hoście).
-4. `docker run -d --name evabot-api --restart unless-stopped -p 3000:3000 --env-file /opt/evabot/api/.env evabot-api:git`
+4. `docker run` API `:3000` + Studio `:4111` (`deploy/update-container.sh`).
 
 Env: `DEEPSEEK_API_KEY`, `BITRIX_WEBHOOK_URL`, `SUPABASE_URL`
 (`https://kmepxyervpeujwvgdqtm.supabase.co`), `SUPABASE_SERVICE_ROLE_KEY`,
 `WIDGET_ORIGIN` (HTTPS origin Vercel, bez slasha), `PORT=3000`,
 `SENTRY_DSN` (adres ingest projektu, nie token `sntryu_`).
-Opcjonalnie Studio: `MASTRA_STUDIO_TOKEN` (Bearer), wtedy HTTP Mastry
-`/mastra`. Tunel:
+Opcjonalnie Studio: `MASTRA_STUDIO_TOKEN` (Bearer + hasło basic `eva`),
+`EVA_STUDIO_PUBLIC_HOST` (IP/domena w pasku przeglądarki). HTTP Mastry
+`/mastra` zostaje na Neście. LibSQL: host `/opt/evabot/mastra` →
+`file:/data/mastra.db`. UI: `http://46.224.75.64:4111` (login `eva`, hasło =
+token). Caddy wstrzykuje Bearer; tunel SSH nie jest potrzebny.
 
-```bash
-ssh -L 3000:127.0.0.1:3000 -i ~/.ssh/id_rsa root@46.224.75.64
-```
-
-Lokalnie (Nest na `:3000`, UI Studio na `:4111`, żeby nie zająć portu API):
-
-```bash
-npx mastra studio --port 4111 --url http://localhost:3000 --server-api-prefix /mastra
-```
-i w Settings nagłówek `Authorization: Bearer <MASTRA_STUDIO_TOKEN>`.
-Request context: `{"intent":"pricing"}` (albo inny `ShopIntent`).
+`npm run studio:prod` zostaje do lokalnego UI przeciwko tunelowi.
 
 Proces w kontenerze słucha na `0.0.0.0`. HTTPS (Caddy/nginx + domena) jest
 potrzebny, żeby widget z Vercel wołał API bez mixed content (dziś rewrite `/v1`

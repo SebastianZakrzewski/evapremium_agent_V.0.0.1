@@ -17,6 +17,8 @@ poznawania projektu, wprowadzania zmian i utrzymywania dokumentacji.
    Implementacja MVP: `docs/exec-plans/completed/mvp-tdd.md`.
    Workflow intencji: `docs/exec-plans/completed/intent-workflow.md`,
    `docs/design-docs/intent-workflow.md`.
+   Dashboard operatora: `docs/product-specs/evapremium-agents-dashboard.md`,
+   `docs/exec-plans/active/evapremium-agents-dashboard.md`.
    Mastra: `docs/references/mastra/INDEX.md`, potem jeden fragment.
 6. Przed zmianą kodu sprawdź istniejące wzorce i testy.
    Katalog przypadków (wejście / wyjście / logika / krytyczność):
@@ -46,7 +48,8 @@ Większe, wieloetapowe lub ryzykowne zadania powinny otrzymać plan w
 Nie twórz infrastruktury planów dla prostych, jednorazowych zmian.
 
 Plan MVP (`docs/exec-plans/completed/mvp-tdd.md`): slice’e 0–7 zamknięte.
-Nowy zakres to osobny plan w `active/`. Bramka historyczna:
+Dashboard operatora: `docs/exec-plans/active/evapremium-agents-dashboard.md`
+(jeden slice na iterację). Bramka historyczna MVP agenta:
 `.cursor/rules/mvp-tdd-quality-gate.mdc`.
 
 ## Weryfikacja

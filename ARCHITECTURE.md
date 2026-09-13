@@ -11,8 +11,10 @@ wycena i context tree: serwisy Nest; przy `SUPABASE_URL` +
 w teście, `eva_bot.chat_sessions` / `chat_messages` (kolumny PROD `text` +
 `direction`) przy Supabase. DeepSeek za adapterem Mastry; stub bez klucza.
 CORS: originy sklepu + opcjonalny `WIDGET_ORIGIN` (HTTPS). Przy
-`MASTRA_STUDIO_TOKEN` + DeepSeek: HTTP Mastry pod `/mastra` (SimpleAuth,
-nie publiczny czat). CORS: localhost Studio. Lead Bitrix za
+`MASTRA_STUDIO_TOKEN` + DeepSeek: HTTP Mastry pod `/mastra` (SimpleAuth).
+Studio: drugi kontener (`Dockerfile.studio`) na `:4111` (Caddy basic auth +
+proxy `/mastra` na Nest). System prompt tury: opublikowane prompt-blocks.
+CORS: localhost Studio. Lead Bitrix za
 `LeadModule`. Widget: EvaBot + snippet `embed.js`. Sentry: `@sentry/nestjs`
 przy `SENTRY_DSN` (`instrument.ts` przed Nest, `SentryGlobalFilter`; awarie
 SSE przez `reportUnexpectedError`). DSN, nie token użytkownika.
@@ -38,16 +40,17 @@ Mastra → NestJS; NestJS → Supabase; NestJS → Bitrix24 (leady).
 LLM nie sięga do bazy ani nie jest źródłem cen ani polityki sklepu.
 
 Kod w jednym gicie, pakiety `api` i `widget`. Deploy nadal rozdzielony
-(Nest na Hetznerze, widget na Vercel/CDN).
+(Nest na Hetznerze, widget na Vercel/CDN). Pakiet `dashboard/` — zaakceptowany,
+niezaimplementowany (osobny origin Vercel).
 
 | Warstwa | Technologia | Odpowiedzialność |
 | --- | --- | --- |
 | Prezentacja | React, hostowany widget | Snippet na `evapremium.pl`; UI czatu z Waszego originu |
-| Agent / LLM | Mastra + DeepSeek | Czat z kluczem: qualify → `IntentProfile` → ten sam `evaShopAgent` (`RequestContext.intent`, podzbiór tooli); `verify` bez klucza: stub. Studio: `mastra studio --url` + prefix `/mastra` |
+| Agent / LLM | Mastra + DeepSeek | Czat z kluczem: qualify → `IntentProfile` → ten sam `evaShopAgent` (`RequestContext.intent`, podzbiór tooli); `verify` bez klucza: stub. Studio: kontener `evabot-studio` (`:4111` → `/mastra` na Nest) |
 | Logika biznesowa | NestJS | Kaskada filtrów, wycena, context tree, utworzenie leada; jedyne I/O do danych i CRM |
 | Dane | Supabase PROD | `evapremium_shop` (szablony, cennik), `eva_bot` (aliasy slotów, sesje, context tree) |
 | CRM | Bitrix24 | Kolejka pracy człowieka (zapis leada z czatu) |
-| Obserwowalność | Sentry + Mastra traces | Błędy Nest (Sentry DSN). Traces Studio w LibSQL (`.mastra/editor.db`) |
+| Obserwowalność | Sentry + Mastra traces | Błędy Nest (Sentry DSN). Traces/Editor: LibSQL. Listowanie feedbacku Studio: pusta lista (LibSQL nie ma `listFeedback`) |
 | Jakość | TDD | Test najpierw, potem implementacja |
 
 ## Źródła danych
@@ -138,25 +141,38 @@ kwalifikatora → `out_of_scope`, nie `general_agent`. `MastraChatAgent` przy
 kluczu DeepSeek: qualify → fallback → `acceptIntentTransition` (stan sesji
 w `InMemoryIntentSessionState`) → **ten sam** `evaShopAgent` z instancji
 Mastry (`createEvaMastra`). Per-intent: `RequestContext.intent`; instructions
-i mapa tooli z profilu (Studio: prompt-block / `{{intent}}`). SSE bez zmiany
+i mapa tooli z profilu. System prompt: opublikowane prompt-blocks Editora
+(`{{intent}}` w display conditions); brak bloków → złożenie z `IntentProfile`.
+SSE bez zmiany
 ramek. `stream(message, sessionId)`. Lead Bitrix zostaje w Neście. Bez klucza
-`verify` nadal `StubChatAgent`. Editor + LibSQL (`.mastra/editor.db`). Przy
+`verify` nadal `StubChatAgent`. Editor + LibSQL (lokalnie `.mastra/editor.db`;
+produkcja `MASTRA_STORAGE_URL=file:/data/mastra.db` na wolumenie hosta). Przy
 `MASTRA_STUDIO_TOKEN` Nest montuje `/mastra` (`@mastra/nestjs`, SimpleAuth).
-Studio: `mastra studio --url` + prefix `/mastra` + `Authorization: Bearer`.
-Do Hetznera: SSH tunnel na `127.0.0.1:3000`, nie publiczny `/mastra`. Stan
-intencji nie jest w Supabase.
+Studio na VPS: obraz `evabot-studio` (Caddy `:4111`, basic auth, proxy
+`/mastra` → Nest `:3000`, wstrzyknięty Bearer). Browser same-origin, bez tunelu.
+Stan intencji nie jest w Supabase.
 
 Szczegół kontraktu: `docs/design-docs/intent-workflow.md`.
 Plan: `docs/exec-plans/completed/intent-workflow.md`.
 
 ## Hosting
 
-Widget: **statyczny na Vercel/CDN**. NestJS + Mastra: **jeden kontener Docker
-na Hetznerze** (obraz z GitHub, `0.0.0.0`, `PORT`). Push na `main` → GitHub
+Widget: **statyczny na Vercel/CDN**. NestJS + Mastra: **kontener API** na
+Hetznerze; **osobny kontener Studio** (`Dockerfile.studio`, port 4111).
+Obraz z GitHub, `0.0.0.0`, `PORT`. Push na `main` → GitHub
 Actions (`verify`, potem SSH i `deploy/update-container.sh`). Operacje:
 [`docs/DEPLOY.md`](docs/DEPLOY.md).
 Snippet sklepu ładuje JS z CDN; czat woła API na Hetznerze.
 Nie PaaS i nie serverless. Widget nie jest serwowany z VPS.
+
+## Dashboard operatora (zaakceptowane, niezaimplementowane)
+
+Osobny produkt KPI: pakiet `dashboard/` na **Vercel** (inny origin niż widget
+sklepu). Nie Mastra Studio (`/mastra`) i nie kolejka Bitrix. Nest zapisuje
+zdarzenia domenowe w `eva_bot` i wystawia odczyt za `DASHBOARD_TOKEN`.
+Zachowanie: `docs/product-specs/evapremium-agents-dashboard.md`.
+Plan: `docs/exec-plans/active/evapremium-agents-dashboard.md`.
+Konwersja sklepu i lift widgetu — poza tym zakresem.
 
 ## Późniejsze warstwy (nie implementować w MVP)
 
@@ -183,6 +199,7 @@ zapisie rozmowy.
 - Treść liści `chat-zapis` i `zgoda-lead` — wklejenie ze sklepu, nie projekt
   architektury.
 - Plan wykonania MVP: `docs/exec-plans/completed/mvp-tdd.md`.
+- Dashboard operatora: `docs/exec-plans/active/evapremium-agents-dashboard.md`.
 - Które slugi context tree mapują się na `delivery` vs `after_sales` vs
   `product_info` — przy wypełnianiu profili, nie przy zmianie kaskady.
 
@@ -206,3 +223,5 @@ zapisie rozmowy.
 - `docs/exec-plans/completed/mvp-tdd.md`
 - `docs/references/mastra/INDEX.md`
 - `docs/product-specs/mvp-obsluga-klienta.md`
+- `docs/product-specs/evapremium-agents-dashboard.md`
+- `docs/exec-plans/active/evapremium-agents-dashboard.md`

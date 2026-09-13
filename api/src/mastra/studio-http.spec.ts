@@ -1,5 +1,7 @@
 import {
   MASTRA_HTTP_PREFIX,
+  emptyMastraFeedbackList,
+  isMastraFeedbackListRequest,
   mastraStudioCorsOrigins,
   shouldMountMastraHttp,
 } from './studio-http';
@@ -20,6 +22,20 @@ describe('Mastra Studio HTTP gate', () => {
       }),
     ).toBe(true);
     expect(MASTRA_HTTP_PREFIX).toBe('/mastra');
+  });
+
+  it('returns an empty feedback page because LibSQL cannot list feedback', () => {
+    expect(isMastraFeedbackListRequest('GET', '/mastra/observability/feedback')).toBe(
+      true,
+    );
+    expect(
+      isMastraFeedbackListRequest('POST', '/mastra/observability/feedback'),
+    ).toBe(false);
+    expect(emptyMastraFeedbackList()).toEqual({
+      feedback: [],
+      pagination: { total: 0, page: 0, perPage: 10, hasMore: false },
+    });
+    expect(emptyMastraFeedbackList('delta')).toEqual({ feedback: [] });
   });
 
   it('adds localhost Studio origins only when HTTP is enabled', () => {

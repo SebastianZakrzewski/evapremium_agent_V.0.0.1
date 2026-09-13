@@ -89,7 +89,9 @@ Przy wątpliwości wybierz wyższy poziom.
 | Pamięć intencji sesji | [api/mastra/intent-session-memory.md](api/mastra/intent-session-memory.md) | `api/src/mastra/intents/accept-intent-transition.spec.ts` |
 | Log tury intencji | [api/mastra/intent-turn-log.md](api/mastra/intent-turn-log.md) | `api/src/mastra/intents/intent-turn-log.spec.ts` |
 | Request context tury | [api/mastra/eva-turn-request-context.md](api/mastra/eva-turn-request-context.md) | `api/src/mastra/eva-turn-request-context.spec.ts` |
+| Prompt-blocks tury | [api/mastra/prompt-block-instructions.md](api/mastra/prompt-block-instructions.md) | `api/src/mastra/prompt-block-instructions.spec.ts` |
 | HTTP Mastry (Studio) | [api/mastra/studio-http.md](api/mastra/studio-http.md) | `api/src/mastra/studio-http.spec.ts` |
+| Query orderBy Studio | [api/mastra/coerce-mastra-query.md](api/mastra/coerce-mastra-query.md) | `api/src/mastra/coerce-mastra-query.spec.ts` |
 | Agent czatu Mastra | [api/chat/mastra-chat-agent.md](api/chat/mastra-chat-agent.md) | `api/src/chat/mastra-chat.agent.spec.ts` |
 | Kontrakt HTTP czatu | [api/chat/chat-http.md](api/chat/chat-http.md) | `api/src/chat/chat.contract.spec.ts` |
 | CORS czatu | [api/chat/cors.md](api/chat/cors.md) | `api/src/chat/shop-cors.spec.ts` |
@@ -102,3 +104,5 @@ Przy wątpliwości wybierz wyższy poziom.
 | Widget czat (wycena i miss) | [widget/chat-ui.md](widget/chat-ui.md) | `widget/src/chat/ChatPanel.test.tsx`, `format-turn.test.ts`, `App.test.tsx` |
 | Snippet sklepu | [widget/snippet.md](widget/snippet.md) | `widget/src/embed/shop-snippet.test.ts` |
 | Aktualizacja kontenera API | [deploy/update-container.md](deploy/update-container.md) | `deploy/update-container.test.mjs` |
+| Obraz Docker Studio | [deploy/studio-image.md](deploy/studio-image.md) | `deploy/studio.test.mjs` |
+| Studio → Nest produkcyjny | [api/mastra/studio-prod.md](api/mastra/studio-prod.md) | `api/scripts/studio-prod.test.mjs` |
