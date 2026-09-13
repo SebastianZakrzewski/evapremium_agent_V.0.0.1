@@ -36,13 +36,15 @@ na hoście (`/opt/evabot/mastra`), nie w obrazie Dockera. DuckDB observability
 ten sam katalog (`observability.duckdb`); może zawierać ślady tur — wolumen
 nie jest publiczny.
 
-## Dashboard operatora (zaakceptowane, niezaimplementowane)
+## Dashboard operatora (HTTP odczytu)
 
-Odczyt transkryptu i eventów: HTTPS origin dashboardu na Vercel + nagłówek
-`Authorization: Bearer` z `DASHBOARD_TOKEN`. CORS: `DASHBOARD_ORIGIN`, nie
-originy sklepu i nie Studio. Treści wiadomości nie logować (jak czat publiczny).
-Widget nie woła tych tras. Sekret wpisuje operator albo env projektu Vercel
-dashboardu — nie snippet sklepu i nie `MASTRA_STUDIO_TOKEN`.
+Odczyt transkryptu i eventów: `GET /v1/dashboard/*` na Neście. HTTPS origin
+dashboardu (`DASHBOARD_ORIGIN`; localhost HTTP tylko lokalnie) + nagłówek
+`Authorization: Bearer` z `DASHBOARD_TOKEN`. CORS tych tras: wyłącznie
+`DASHBOARD_ORIGIN`, nie originy sklepu i nie Studio. Brak tokenu lub token
+równy `MASTRA_STUDIO_TOKEN` → 401. Treści wiadomości nie logować (jak czat
+publiczny). Widget nie woła tych tras. Sekret wpisuje operator albo env
+projektu Vercel dashboardu — nie snippet sklepu i nie `MASTRA_STUDIO_TOKEN`.
 
 ## Dane
 

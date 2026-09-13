@@ -18,8 +18,8 @@ CORS: localhost Studio. Lead Bitrix za
 `LeadModule`. Widget: EvaBot + snippet `embed.js`. Sentry: `@sentry/nestjs`
 przy `SENTRY_DSN` (`instrument.ts` przed Nest, `SentryGlobalFilter`; awarie
 SSE przez `reportUnexpectedError`). DSN, nie token użytkownika.
-Dashboard operatora: eventy domenowe in-memory albo `eva_bot.agent_events`
-(bez apply PROD w tej zmianie; bez HTTP odczytu).
+Dashboard operatora: eventy domenowe in-memory albo `eva_bot.agent_events`;
+odczyt `GET /v1/dashboard/*` za `DASHBOARD_TOKEN` (UI Vercel — kolejny slice).
 Poniżej są **zaakceptowane granice MVP**.
 
 Ten dokument jest źródłem prawdy o architekturze wysokiego poziomu.
@@ -170,15 +170,15 @@ Actions (`verify`, potem SSH i `deploy/update-container.sh`). Operacje:
 Snippet sklepu ładuje JS z CDN; czat woła API na Hetznerze.
 Nie PaaS i nie serverless. Widget nie jest serwowany z VPS.
 
-## Dashboard operatora (eventy in-memory lub `eva_bot`)
+## Dashboard operatora (eventy + HTTP odczytu)
 
 Osobny produkt KPI: pakiet `dashboard/` na **Vercel** (inny origin niż widget
-sklepu). Nie Mastra Studio (`/mastra`) i nie kolejka Bitrix. Nest emituje
-zdarzenia domenowe (`intent_accepted`, `cascade_resolved`, `quote_issued`,
-`context_hit` / `context_miss`, `lead_attempted`, `tool_failed`) za portem
-`AGENT_EVENTS`. Bez env Supabase: in-memory. Przy service role: tabela
-`eva_bot.agent_events` (migracja w repo, apply PROD tylko za zgodą). Payload
-bez treści wiadomości. HTTP odczytu KPI — Slice 3. Zachowanie:
+sklepu) — UI jeszcze nie w tym slice. Nie Mastra Studio (`/mastra`) i nie
+kolejka Bitrix. Nest emituje zdarzenia domenowe za portem `AGENT_EVENTS`
+(in-memory albo `eva_bot.agent_events`). Odczyt: `GET /v1/dashboard/summary`,
+`/sessions`, `/sessions/:id` za `DASHBOARD_TOKEN`; CORS tylko
+`DASHBOARD_ORIGIN`. Payload eventów bez treści wiadomości. KPI doby z
+eventów, nie z tekstu agenta. Zachowanie:
 `docs/product-specs/evapremium-agents-dashboard.md`.
 Plan: `docs/exec-plans/active/evapremium-agents-dashboard.md`.
 Konwersja sklepu i lift widgetu — poza tym zakresem.

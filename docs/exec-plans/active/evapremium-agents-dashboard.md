@@ -39,7 +39,7 @@ Test: ten sam kontrakt co in-memory, zapis do tabeli (fixture / fake store);
 odczyt listy po `session_id` i zakresie czasu.
 Kod: migracja w repozytorium; adapter Supabase za portem. **Bez apply na PROD.**
 
-## Slice 3 — API odczytu
+## Slice 3 — API odczytu (zrobione)
 
 Test: bez `Authorization: Bearer` → 401; z `DASHBOARD_TOKEN` → podsumowanie
 doby, lista sesji ze znacznikami, jedna sesja (wiadomości + eventy). Origin

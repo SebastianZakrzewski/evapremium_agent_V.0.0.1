@@ -97,6 +97,6 @@ import {
       inject: [EVA_MASTRA, ShopTools, INTENT_SESSION_STATE, AGENT_EVENTS],
     },
   ],
-  exports: [EVA_MASTRA],
+  exports: [EVA_MASTRA, CHAT_SESSIONS],
 })
 export class ChatModule {}
