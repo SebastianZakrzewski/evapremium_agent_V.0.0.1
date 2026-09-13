@@ -84,7 +84,7 @@ czatu (schemat = migracja). **Bez apply na PROD.** Sekret connection stringa
 i klucz embeddera tylko na API (Hetzner / `.env`), wpis w `SECURITY.md`.
 Korekta `core-beliefs`: RAG na FAQ wyłącznie jako wyszukiwanie sluga w Nest.
 
-## Slice 4 — tool sklepu i event
+## Slice 4 — tool sklepu i event (zrobione)
 
 Test: `ShopTools.searchLeaves` emituje event (np. `context_search`) z
 `slugs` + czy cokolwiek przekroczyło próg; **bez** treści FAQ w paylodzie;
