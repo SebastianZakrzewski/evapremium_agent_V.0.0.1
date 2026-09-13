@@ -29,4 +29,20 @@ describe('runLeafIngest', () => {
       { slug: 'dostawa', vector: [1, 0, 0, 0] },
     ]);
   });
+
+  it('loads nodes from the catalog loader instead of the fixture', async () => {
+    const loadNodes = jest.fn().mockResolvedValue([]);
+    const store = new InMemoryContextLeafEmbeddings();
+    await expect(
+      runLeafIngest(
+        { OPENAI_API_KEY: 'sk-test', DATABASE_URL: 'postgres://local' },
+        {
+          loadNodes,
+          embedder: new MapTextEmbedder({}),
+          store,
+        },
+      ),
+    ).resolves.toEqual({ written: 0, skipped: false });
+    expect(loadNodes).toHaveBeenCalled();
+  });
 });

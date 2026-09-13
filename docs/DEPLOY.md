@@ -24,7 +24,8 @@ Opcjonalnie RAG FAQ (Nest, nie widget): `OPENAI_API_KEY` (`text-embedding-3-smal
 `DATABASE_URL` (Postgres/pgvector). Migracja
 `20260913220000_context_node_embeddings.sql` **nie** apply na PROD bez zgody.
 Po apply: `npm run ingest:leaves --workspace api` (wymaga `nest build` /
-`dist` przy pełnym zapisie; bez env skrypt wychodzi ze skip).
+`dist`; ładuje `eva_bot.context_nodes` gdy jest Supabase env, inaczej
+fixture). Bez env skrypt wychodzi ze skip).
 Opcjonalnie Studio: `MASTRA_STUDIO_TOKEN` (Bearer + hasło basic `eva`),
 `EVA_STUDIO_PUBLIC_HOST` (IP/domena w pasku przeglądarki). HTTP Mastry
 `/mastra` zostaje na Neście. LibSQL: host `/opt/evabot/mastra` →

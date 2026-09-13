@@ -17,6 +17,7 @@ Bez apply PROD.
 | leaf-emb-003 | high | Adapter SQL mapuje wiersze na `{ slug, vector }` |
 | leaf-emb-004 | high | OpenAI small zwraca wektor z mocka HTTP |
 | leaf-emb-005 | high | Ingest skryptu skip bez env |
+| leaf-emb-006 | high | Ingest ładuje katalog, nie tylko fixture |
 
 ### leaf-emb-001 — Kwalifikacja ingestu pomija gałąź i puste seed
 
@@ -57,4 +58,13 @@ Bez apply PROD.
 - **Logika:** `verify` bez `OPENAI_API_KEY` / `DATABASE_URL` nie woła sieci.
 - **Wejście:** puste env
 - **Wyjście:** `{ written: 0, skipped: true }` / `leafIngestEnabled` false
+
+### leaf-emb-006 — Ingest ładuje katalog, nie tylko fixture
+
+- **Kod:** `api/src/context-tree/embeddings/run-ingest.spec.ts` → `it('loads nodes from the catalog loader instead of the fixture')`
+- **Krytyczność:** high
+- **Logika:** po apply PROD skrypt ma indeksować `context_nodes`, nie sam fixture.
+- **Wejście:** env + `loadNodes` zwraca `[]`
+- **Wyjście:** loader wywołany; `written: 0`
+
 
