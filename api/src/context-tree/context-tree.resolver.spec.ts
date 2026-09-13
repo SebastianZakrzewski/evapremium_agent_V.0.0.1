@@ -28,23 +28,23 @@ describe('ContextTreeResolver', () => {
     expect(resolver.lookupLeaf('info')).toEqual({ status: 'miss' });
   });
 
-  it('returns dostawa slug through stub embedder and in-memory vectors', () => {
+  it('returns dostawa slug through stub embedder and in-memory vectors', async () => {
     const searching = new ContextTreeResolver(
       new InMemoryContextNodeCatalog(CONTEXT_TREE_NODES),
       new MapTextEmbedder(CONTEXT_LEAF_SEARCH_QUERIES),
       new InMemoryContextLeafVectors(CONTEXT_LEAF_SEARCH_FIXTURE),
     );
-    const matches = searching.searchLeaves('kiedy wyślecie dywaniki');
+    const matches = await searching.searchLeaves('kiedy wyślecie dywaniki');
     expect(matches).toEqual([{ slug: 'dostawa', score: expect.any(Number) }]);
     expect(matches[0]).not.toHaveProperty('body');
   });
 
-  it('returns empty when embedder is missing', () => {
+  it('returns empty when embedder is missing', async () => {
     const searching = new ContextTreeResolver(
       new InMemoryContextNodeCatalog(CONTEXT_TREE_NODES),
       new NullTextEmbedder(),
       new InMemoryContextLeafVectors(CONTEXT_LEAF_SEARCH_FIXTURE),
     );
-    expect(searching.searchLeaves('kiedy wyślecie dywaniki')).toEqual([]);
+    expect(await searching.searchLeaves('kiedy wyślecie dywaniki')).toEqual([]);
   });
 });

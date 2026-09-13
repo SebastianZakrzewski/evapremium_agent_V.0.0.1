@@ -48,6 +48,9 @@ Aktualizuj, gdy zmieni się trwała zasada projektowa, nie przy każdej funkcji.
 - Otwarte CORS albo sekret API w JavaScript widgecie.
 - Osobny proces Mastry albo widget bijący w Mastrę / LLM.
 - LLM piszący SQL, kwotę albo id szablonu.
-- Embeddings / RAG na FAQ albo na szablonach na MVP.
+- RAG na szablonach / cenniku albo chunk FAQ w prompcie. Wyszukiwanie sluga
+  FAQ (`search-leaves` → Nest → pgvector) jest dozwolone po MVP; `body`
+  nadal tylko z `lookup-leaf`.
+- Embeddings Mastry (Memory / semantic recall transkryptu).
 - Wielojęzyczność agenta albo drugie drzewo EN na MVP.
 - Cisza w UI przy zapisie transkryptu / leada albo pełny CMP zanim czat wstanie.

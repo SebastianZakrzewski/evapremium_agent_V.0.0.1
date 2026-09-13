@@ -29,14 +29,14 @@ export class ContextTreeResolver {
     return lookupContextLeaf(slug, this.nodes.list());
   }
 
-  searchLeaves(query: string): ContextLeafSearchHit[] {
-    const queryVector = this.embedder.embed(query);
+  async searchLeaves(query: string): Promise<ContextLeafSearchHit[]> {
+    const queryVector = await this.embedder.embed(query);
     if (queryVector === null) {
       return [];
     }
     return searchContextLeaves(
       queryVector,
-      this.vectors.list(),
+      await this.vectors.list(),
       this.nodes.list(),
       SEARCH_THRESHOLD,
     );

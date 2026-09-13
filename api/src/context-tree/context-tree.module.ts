@@ -13,6 +13,9 @@ import { ContextTreeService } from './context-tree.service';
 import type { DataStore } from '../supabase/data-store';
 import { DATA_STORE, SupabaseModule } from '../supabase/supabase.module';
 import { loadContextNodes } from './supabase/load-nodes';
+import { createPostgresContextLeafEmbeddings } from './embeddings/create-postgres-embeddings';
+import { EmbeddingStoreVectors } from './embeddings/store-vectors';
+import { OpenAiTextEmbedder } from './embeddings/openai-text-embedder';
 
 @Module({
   imports: [SupabaseModule],
@@ -27,12 +30,24 @@ import { loadContextNodes } from './supabase/load-nodes';
     },
     {
       provide: TEXT_EMBEDDER,
-      useFactory: () => new NullTextEmbedder(),
+      useFactory: () => {
+        const apiKey = process.env.OPENAI_API_KEY?.trim();
+        return apiKey
+          ? new OpenAiTextEmbedder(apiKey)
+          : new NullTextEmbedder();
+      },
     },
     {
       provide: CONTEXT_LEAF_VECTORS,
-      useFactory: () =>
-        new InMemoryContextLeafVectors(CONTEXT_LEAF_SEARCH_FIXTURE),
+      useFactory: () => {
+        const databaseUrl = process.env.DATABASE_URL?.trim();
+        if (databaseUrl) {
+          return new EmbeddingStoreVectors(
+            createPostgresContextLeafEmbeddings(databaseUrl),
+          );
+        }
+        return new InMemoryContextLeafVectors(CONTEXT_LEAF_SEARCH_FIXTURE);
+      },
     },
     ContextTreeService,
   ],

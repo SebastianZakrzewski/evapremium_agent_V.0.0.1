@@ -4,7 +4,9 @@ Aktualizuj przy zmianie originów, sekretów, PII lub integracji.
 
 ## Sekrety
 
-Klucze DeepSeek, Supabase (service), Bitrix, `SENTRY_DSN` oraz
+Klucze DeepSeek, OpenAI (`OPENAI_API_KEY` — embedding `text-embedding-3-small`
+w Nest, nie w widgecie), Supabase (service), `DATABASE_URL` (pgvector,
+tylko API), Bitrix, `SENTRY_DSN` oraz
 `DASHBOARD_TOKEN` — nie w widgecie ani w snippecie.
 `DASHBOARD_TOKEN` ≠ `MASTRA_STUDIO_TOKEN`. Nest trzyma token do weryfikacji
 odczytu; projekt Vercel dashboardu może trzymać ten sam sekret w env
@@ -50,8 +52,9 @@ później env projektu Vercel dashboardu) — nie snippet sklepu i nie
 
 ## Dane
 
-Sesje: `eva_bot` w PROD. Katalog/cennik: `evapremium_shop`. Nest: klucz
-service, nie anon z widgetu.
+Sesje: `eva_bot` w PROD. Katalog/cennik: `evapremium_shop`. Indeks wektorów
+FAQ: `eva_bot.context_node_embeddings` (pomocniczy; fakt = `context_nodes`).
+Nest: klucz service / `DATABASE_URL`, nie anon z widgetu.
 
 Tekst klauzuli i informacji o czacie: liście `zgoda-lead` i `chat-zapis` w
 `eva_bot.context_nodes`, nie prompt.

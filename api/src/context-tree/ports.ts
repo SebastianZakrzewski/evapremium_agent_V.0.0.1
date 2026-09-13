@@ -10,9 +10,9 @@ export interface ContextNodeCatalog {
 }
 
 export interface TextEmbedder {
-  embed(text: string): number[] | null;
+  embed(text: string): Promise<number[] | null> | number[] | null;
 }
 
 export interface ContextLeafVectorIndex {
-  list(): ContextLeafVector[];
+  list(): Promise<ContextLeafVector[]> | ContextLeafVector[];
 }
