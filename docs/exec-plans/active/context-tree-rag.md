@@ -49,7 +49,7 @@ embedder). Embedding w konfiguracji agenta Mastry. Drugi proces Mastry.
 Widget bijący w wektory. Apply PROD / nowy sekret na Hetznerze bez zgody.
 Nowy model czatu Eva.
 
-## Slice 1 — kontrakt wyszukiwania (domena, in-memory)
+## Slice 1 — kontrakt wyszukiwania (domena, in-memory) (zrobione)
 
 Test: znana parafraza (`kiedy wyślecie dywaniki`) przy fixture liścia
 `dostawa` zwraca ten slug ze score ≥ próg; nieznany temat / gałąź /
