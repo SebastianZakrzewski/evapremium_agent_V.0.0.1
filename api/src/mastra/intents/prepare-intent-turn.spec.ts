@@ -45,6 +45,22 @@ describe('prepareIntentTurn', () => {
     );
   });
 
+  it('gives delivery search-leaves and lookup-leaf without quote-price', async () => {
+    const turn = await prepareIntentTurn(
+      qualifier,
+      'Jaki jest termin dostawy?',
+    );
+    const tools = selectTurnTools(shopCatalog, turn.toolIds);
+
+    expect(turn.intent).toBe('delivery');
+    expect(Object.keys(tools).sort()).toEqual(
+      ['lookup-leaf', 'search-leaves'].sort(),
+    );
+    expect(turn.instructions).toContain('search-leaves');
+    expect(turn.instructions).toContain('Miss');
+    expect(tools).not.toHaveProperty('quote-price');
+  });
+
   it('throws when a profile tool is missing from the catalog', () => {
     expect(() =>
       selectTurnTools({ 'lookup-leaf': { id: 'lookup-leaf' } }, [

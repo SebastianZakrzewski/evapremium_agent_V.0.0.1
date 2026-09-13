@@ -10,6 +10,7 @@ Nest. `quote-price` tylko na `pricing`. SSE bez zmiany (`stream-chat-message.spe
 | turn-001 | critical | pricing: resolve-template + quote-price |
 | turn-002 | critical | product_info bez quote-price |
 | turn-003 | high | Brak id w katalogu → błąd, nie cichy drop |
+| turn-004 | critical | delivery: search-leaves + lookup-leaf |
 
 ### turn-001 — pricing: resolve-template + quote-price
 
@@ -26,6 +27,14 @@ Nest. `quote-price` tylko na `pricing`. SSE bez zmiany (`stream-chat-message.spe
 - **Logika:** Kwota nie może być wywołana na Q&A — tool nie ma w mapie tury.
 - **Wejście:** `Czy dywaniki pasują do Golfa 8?`
 - **Wyjście:** `intent: product_info`, brak `quote-price`, są `resolve-template`, `lookup-leaf` i `search-leaves`
+
+### turn-004 — delivery: search-leaves + lookup-leaf
+
+- **Kod:** `api/src/mastra/intents/prepare-intent-turn.spec.ts` → `it('gives delivery search-leaves and lookup-leaf without quote-price')`
+- **Krytyczność:** critical
+- **Logika:** FAQ dostawy ma wyszukiwanie sluga i lookup; bez kwoty. Puste search = miss.
+- **Wejście:** `Jaki jest termin dostawy?`
+- **Wyjście:** tool-e `search-leaves` i `lookup-leaf`; instrukcja zawiera miss / search-leaves
 
 ### turn-003 — Brak id w katalogu → błąd, nie cichy drop
 

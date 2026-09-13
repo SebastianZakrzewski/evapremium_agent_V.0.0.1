@@ -52,5 +52,9 @@ describe('intentProfileFor', () => {
     expect(intentProfileFor('pricing')?.tools).toEqual(
       expect.arrayContaining(['resolve-template', 'quote-price']),
     );
+    expect(intentProfileFor('pricing')?.tools).not.toContain('search-leaves');
+    expect(intentProfileFor('delivery')?.tools.sort()).toEqual(
+      ['lookup-leaf', 'search-leaves'].sort(),
+    );
   });
 });
