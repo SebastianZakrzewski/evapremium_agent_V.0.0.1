@@ -80,7 +80,13 @@ serwerowo (nie anon z widgetu).
    `parent_id` (NULL = korzeń), `slug`, `title`, `body` (puste u gałęzi, treść
    u liścia), `sort_order`, `is_active`. Nest lookup po unikalnym `slug`
    (aktywny liść → `body`, w tym puste seed; gałąź / brak / nieaktywny → miss).
-   W procesie: fixture in-memory za portem (jak kaskada i wycena). **Bez RAG.** Wymagane liście na start: `chat-zapis` (informacja o transkrypcie),
+   W procesie: fixture in-memory za portem (jak kaskada i wycena).
+   Pomocniczy indeks `eva_bot.context_node_embeddings` (`vector(1536)`,
+   migracja `20260913220000_context_node_embeddings.sql` w repo, **bez apply
+   PROD**). Nest: `OPENAI_API_KEY` → `text-embedding-3-small`; `DATABASE_URL`
+   → pgvector. Bez klucza / URL: stub, puste wyszukiwanie. Fakt nadal
+   `lookup-leaf` po slugu; wektory nie zwracają `body`. Tool Mastry
+   `search-leaves` jeszcze nie. Wymagane liście na start: `chat-zapis` (informacja o transkrypcie),
    `zgoda-lead` (klauzula przy telefonie/mailu). **Treść prawną wkleja biznes**
    ze sklepu; agent jej nie generuje. Dalsze FAQ (dostawa, pielęgnacja, …) jako
    kolejne liście.
@@ -197,8 +203,8 @@ Konwersja sklepu i lift widgetu — poza tym zakresem.
 ## Późniejsze warstwy (nie implementować w MVP)
 
 Sprzedaż w czacie, koszyk, zwroty, VIN, live-handoff, pełne konto klienta,
-RAG na context tree. Narzędzia i integracje dokładane, gdy pojawi się konkretna
-potrzeba.
+chunki FAQ w prompcie, RAG na szablonach/cenniku. Narzędzia i integracje
+dokładane, gdy pojawi się konkretna potrzeba.
 
 ## Sesja czatu
 
@@ -222,8 +228,10 @@ zapisie rozmowy.
 - Dashboard operatora: `docs/exec-plans/active/evapremium-agents-dashboard.md`.
 - Które slugi context tree mapują się na `delivery` vs `after_sales` vs
   `product_info` — przy wypełnianiu profili, nie przy zmianie kaskady.
-- RAG na FAQ: nie w kodzie. Mechanizm: `docs/design-docs/context-tree-rag.md`.
-  Plan slice’ów: `docs/exec-plans/active/context-tree-rag.md`.
+- RAG FAQ: indeks i embedder Nest w kodzie; tool Mastry i ingest-skrypt
+  w kolejnych slice’ach. Mechanizm: `docs/design-docs/context-tree-rag.md`.
+  Plan: `docs/exec-plans/active/context-tree-rag.md`. Apply pgvector na PROD
+  tylko za zgodą.
 
 ## Zasady utrzymania
 
