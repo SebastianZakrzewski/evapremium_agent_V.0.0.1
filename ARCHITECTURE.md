@@ -45,9 +45,10 @@ Mastra → NestJS; NestJS → Supabase; NestJS → Bitrix24 (leady).
 LLM nie sięga do bazy ani nie jest źródłem cen ani polityki sklepu.
 
 Kod w jednym gicie, pakiety `api`, `widget` i `dashboard`. Deploy nadal
-rozdzielony (Nest na Hetznerze, widget na Vercel/CDN). `dashboard/` ma trzy
-widoki operatora na nawigacji hash i docelowo osobny origin Vercel; wdrożenie
-panelu jest późniejszym slice'em.
+rozdzielony: Nest na Hetznerze; widget i dashboard jako **osobne** originy
+Vercel. SPA dashboardu nie robi rewrite `/v1` na VPS. Projektu Vercel
+dashboardu i env Hetzner `DASHBOARD_*` **nie** założono w tej serii;
+apply za zgodą, nie kolejnym slice'em planu.
 
 | Warstwa | Technologia | Odpowiedzialność |
 | --- | --- | --- |
@@ -172,7 +173,9 @@ Obraz z GitHub, `0.0.0.0`, `PORT`. Push na `main` → GitHub
 Actions (`verify`, potem SSH i `deploy/update-container.sh`). Operacje:
 [`docs/DEPLOY.md`](docs/DEPLOY.md).
 Snippet sklepu ładuje JS z CDN; czat woła API na Hetznerze.
-Nie PaaS i nie serverless. Widget nie jest serwowany z VPS.
+Pakiet `dashboard/` jest spakowany pod osobny origin Vercel (SPA, bez rewrite
+`/v1` na VPS); projektu Vercel i env Hetzner `DASHBOARD_*` **nie** założono
+w tej serii. Nie PaaS i nie serverless. Widget nie jest serwowany z VPS.
 
 ## Dashboard operatora (eventy + HTTP odczytu)
 

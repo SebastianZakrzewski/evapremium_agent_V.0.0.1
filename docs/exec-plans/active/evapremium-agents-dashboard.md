@@ -62,7 +62,7 @@ Test: znaczniki z eventów, nie z tekstu; widok sesji składa transkrypt
 Kod: dwa ekrany ze specyfikacji, ten sam język wizualny co przegląd doby.
 Bez full-text, bez CSV.
 
-## Slice 6 — deploy Vercel
+## Slice 6 — deploy Vercel (zrobione; bez apply PROD)
 
 Osobny projekt Vercel (inny origin niż widget sklepu). Env: URL API Hetzner,
 origin dashboardu po stronie Nest (`DASHBOARD_ORIGIN`), `DASHBOARD_TOKEN` na

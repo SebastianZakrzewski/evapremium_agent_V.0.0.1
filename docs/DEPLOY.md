@@ -56,6 +56,28 @@ Sekrety repo (GitHub → Settings → Secrets): `HETZNER_HOST`, `HETZNER_USER`,
   (alias produkcyjny widgetu Vercel). API: `http://46.224.75.64:3000`
   (rewrite `/v1` na Vercel → ten host). HTTPS API — gdy będzie domena.
 
+## Dashboard operatora (lokalnie; Vercel bez apply)
+
+Pakiet `dashboard/` — **osobny** projekt Vercel (inny origin niż widget).
+W tej serii **nie** tworzono projektu Vercel i **nie** ustawiano env na
+Hetznerze. Migracja `eva_bot.agent_events` jest w repo; apply PROD tylko
+za zgodą.
+
+Lokalny smoke:
+
+1. W `api/.env`: `DASHBOARD_TOKEN` (≠ `MASTRA_STUDIO_TOKEN`),
+   `DASHBOARD_ORIGIN=http://localhost:5174`.
+2. `npm run start:dev --workspace api`
+3. `npm run dev --workspace dashboard` (port 5174, proxy `/v1` → Nest).
+4. Wklej token w bramce. Przegląd doby, lista sesji, widok sesji.
+
+Gdy będzie zgoda na Vercel: root `dashboard`, build `npm run build`.
+Env build: `VITE_API_BASE_URL=https://<api-host>` (publiczny URL Nest, nie
+service role). `DASHBOARD_TOKEN` operator wkleja w UI albo trzyma poza
+snippetem sklepu. Nest: `DASHBOARD_ORIGIN` = origin projektu Vercel.
+`dashboard/vercel.json` **nie** robi rewrite `/v1` na Hetzner (Bearer z
+przeglądarki operatora, nie jak widget).
+
 ## Smoke
 
 - Auto z szablonem w PROD → wycena z `pricing_matrix` (aktywny katalog).

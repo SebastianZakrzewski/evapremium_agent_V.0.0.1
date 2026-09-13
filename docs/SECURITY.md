@@ -43,8 +43,10 @@ dashboardu (`DASHBOARD_ORIGIN`; localhost HTTP tylko lokalnie) + nagłówek
 `Authorization: Bearer` z `DASHBOARD_TOKEN`. CORS tych tras: wyłącznie
 `DASHBOARD_ORIGIN`, nie originy sklepu i nie Studio. Brak tokenu lub token
 równy `MASTRA_STUDIO_TOKEN` → 401. Treści wiadomości nie logować (jak czat
-publiczny). Widget nie woła tych tras. Sekret wpisuje operator albo env
-projektu Vercel dashboardu — nie snippet sklepu i nie `MASTRA_STUDIO_TOKEN`.
+publiczny). Widget nie woła tych tras. Sekret wpisuje operator w UI (albo
+później env projektu Vercel dashboardu) — nie snippet sklepu i nie
+`MASTRA_STUDIO_TOKEN`. `VITE_API_BASE_URL` to publiczny URL Nest, nie sekret.
+`dashboard/vercel.json` nie proxy’uje `/v1` na Hetzner.
 
 ## Dane
 
