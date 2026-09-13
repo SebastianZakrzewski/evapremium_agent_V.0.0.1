@@ -25,7 +25,7 @@ Nest. `quote-price` tylko na `pricing`. SSE bez zmiany (`stream-chat-message.spe
 - **Krytyczność:** critical
 - **Logika:** Kwota nie może być wywołana na Q&A — tool nie ma w mapie tury.
 - **Wejście:** `Czy dywaniki pasują do Golfa 8?`
-- **Wyjście:** `intent: product_info`, brak `quote-price`, są `resolve-template` i `lookup-leaf`
+- **Wyjście:** `intent: product_info`, brak `quote-price`, są `resolve-template`, `lookup-leaf` i `search-leaves`
 
 ### turn-003 — Brak id w katalogu → błąd, nie cichy drop
 

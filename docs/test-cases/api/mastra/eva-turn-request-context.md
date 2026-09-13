@@ -44,7 +44,7 @@ instancji `Agent`. Brak klucza = `out_of_scope`.
 - **Krytyczność:** critical
 - **Logika:** Kwota nie może być wywołana na Q&A — tool nie ma w mapie z contextu.
 - **Wejście:** `intent: product_info`
-- **Wyjście:** brak `quote-price`; są `resolve-template` i `lookup-leaf`
+- **Wyjście:** brak `quote-price`; są `resolve-template`, `lookup-leaf` i `search-leaves`
 
 ### ctx-005 — opublikowane prompt-blocks zastępują prompt profilu
 

@@ -11,9 +11,13 @@ describe('intentProfileFor', () => {
     expect(profile?.id).toBe('product_info');
     expect(profile?.context.trim().length).toBeGreaterThan(0);
     expect(profile?.tools).toEqual(
-      expect.arrayContaining(['resolve-template', 'lookup-leaf']),
+      expect.arrayContaining([
+        'resolve-template',
+        'lookup-leaf',
+        'search-leaves',
+      ]),
     );
-    expect(profile?.tools).toHaveLength(2);
+    expect(profile?.tools).toHaveLength(3);
     for (const tool of profile?.tools ?? []) {
       expect(allowedTools.has(tool)).toBe(true);
     }

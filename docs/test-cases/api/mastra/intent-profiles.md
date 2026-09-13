@@ -3,7 +3,7 @@
 Kod: `api/src/mastra/intents/intent-profile.spec.ts`
 
 Logika zestawu: `intentProfileFor` zwraca wypełniony profil znanej intencji;
-narzędzia ⊆ id Nest (`resolve-template`, `quote-price`, `lookup-leaf`);
+narzędzia ⊆ id Nest (`resolve-template`, `quote-price`, `lookup-leaf`, `search-leaves`);
 nieznany klucz → `undefined`.
 
 | id | Krytyczność | Tytuł |
@@ -18,7 +18,7 @@ nieznany klucz → `undefined`.
 - **Krytyczność:** high
 - **Logika:** Gałąź produktu ma kaskadę i liść, nie macierz cen — kwota nie wycieka na Q&A.
 - **Wejście:** `'product_info'`
-- **Wyjście:** profil `id=product_info`, niepusty `context`, `tools` = `resolve-template` + `lookup-leaf`, bez `quote-price`
+- **Wyjście:** profil `id=product_info`, niepusty `context`, `tools` = `resolve-template` + `lookup-leaf` + `search-leaves`, bez `quote-price`
 
 ### intent-002 — Nieznany intent → undefined
 

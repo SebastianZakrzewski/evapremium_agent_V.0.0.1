@@ -360,6 +360,7 @@ function eventLabel(type: SessionEvent['type']): string {
     quote_issued: 'Wydano wycenę',
     context_hit: 'Trafienie w drzewie',
     context_miss: 'Brak w drzewie',
+    context_search: 'Wyszukiwanie liścia',
     lead_attempted: 'Próba utworzenia leada',
     tool_failed: 'Błąd narzędzia',
   };
@@ -377,6 +378,10 @@ function eventDetail(event: SessionEvent): string | null {
     case 'context_hit':
     case 'context_miss':
       return typeof event.payload.slug === 'string' ? event.payload.slug : null;
+    case 'context_search':
+      return Array.isArray(event.payload.slugs)
+        ? event.payload.slugs.join(', ')
+        : null;
     case 'lead_attempted':
       return typeof event.payload.outcome === 'string'
         ? event.payload.outcome

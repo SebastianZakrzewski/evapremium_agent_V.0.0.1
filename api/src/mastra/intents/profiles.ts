@@ -39,8 +39,12 @@ export class ProductInfoIntentProfile implements IntentProfile {
   readonly context =
     'Q&A o ofercie EvaPremium: dopasowanie dywaników EVA pod model auta, komplet, materiał, wymiary, karta produktu.';
   readonly instructions =
-    'Prezentuj produkt i odpowiadaj na pytania. Nie zmyślaj katalogu. Dopasowanie auta tylko toolem resolve-template. Przy status many dopytaj i wywołaj tool ponownie — nie wybieraj nowszej generacji. one to tożsamość szablonu, nie stan magazynu. Fakty oferty tylko z lookup-leaf. Nie zgaduj VIN. Bez kwoty.';
-  readonly tools: ShopToolId[] = ['resolve-template', 'lookup-leaf'];
+    'Prezentuj produkt i odpowiadaj na pytania. Nie zmyślaj katalogu. Dopasowanie auta tylko toolem resolve-template. Przy status many dopytaj i wywołaj tool ponownie — nie wybieraj nowszej generacji. one to tożsamość szablonu, nie stan magazynu. Fakty oferty tylko z lookup-leaf. Niepewny slug: search-leaves, potem lookup-leaf. Nie zgaduj VIN. Bez kwoty.';
+  readonly tools: ShopToolId[] = [
+    'resolve-template',
+    'lookup-leaf',
+    'search-leaves',
+  ];
   readonly execution = defaultExecution;
   readonly permissions = shopPermissions([
     'present_product',
@@ -75,8 +79,8 @@ export class DeliveryIntentProfile implements IntentProfile {
   readonly context =
     'Dostawa i terminy wyłącznie z liści context tree (lookup-leaf).';
   readonly instructions =
-    'Odpowiadaj tylko z lookup-leaf. Miss = brak faktu, nie zgaduj polityki dostawy.';
-  readonly tools: ShopToolId[] = ['lookup-leaf'];
+    'Odpowiadaj tylko z lookup-leaf. Niepewny slug: search-leaves, potem lookup-leaf. Miss = brak faktu, nie zgaduj polityki dostawy.';
+  readonly tools: ShopToolId[] = ['lookup-leaf', 'search-leaves'];
   readonly execution = defaultExecution;
   readonly permissions = shopPermissions(['answer_delivery']);
   readonly routing: IntentRouting = {
@@ -91,8 +95,8 @@ export class AfterSalesIntentProfile implements IntentProfile {
   readonly context =
     'Pielęgnacja, gwarancja, montaż — fakty z liści context tree.';
   readonly instructions =
-    'Odpowiadaj tylko z lookup-leaf. Miss = brak faktu; nie obiecuj kontaktu bez leada Nest.';
-  readonly tools: ShopToolId[] = ['lookup-leaf'];
+    'Odpowiadaj tylko z lookup-leaf. Niepewny slug: search-leaves, potem lookup-leaf. Miss = brak faktu; nie obiecuj kontaktu bez leada Nest.';
+  readonly tools: ShopToolId[] = ['lookup-leaf', 'search-leaves'];
   readonly execution = defaultExecution;
   readonly permissions = shopPermissions(['answer_after_sales']);
   readonly routing: IntentRouting = {

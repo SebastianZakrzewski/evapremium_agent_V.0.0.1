@@ -4,6 +4,7 @@ export const AGENT_EVENT_TYPES = [
   'quote_issued',
   'context_hit',
   'context_miss',
+  'context_search',
   'lead_attempted',
   'tool_failed',
 ] as const;

@@ -4,6 +4,7 @@ export const SHOP_TOOL_IDS = [
   'resolve-template',
   'quote-price',
   'lookup-leaf',
+  'search-leaves',
 ] as const;
 
 export type ShopToolId = (typeof SHOP_TOOL_IDS)[number];

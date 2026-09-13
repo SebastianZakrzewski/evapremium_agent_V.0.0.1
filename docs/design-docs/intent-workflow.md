@@ -79,10 +79,10 @@ Id w `tools` = id `createTool` z `createEvaMastraAgent`, execute → Nest.
 
 | `ShopIntent` | Tool-e tury | Rola |
 | --- | --- | --- |
-| `product_info` | `resolve-template`, `lookup-leaf` | Dopasowanie auta (kaskada) + fakty produktu z liścia |
+| `product_info` | `resolve-template`, `lookup-leaf`, `search-leaves` | Dopasowanie auta (kaskada) + fakty produktu z liścia |
 | `pricing` | `resolve-template`, `quote-price` | Szablon, potem jedna kwota z macierzy |
-| `delivery` | `lookup-leaf` | Liście dostawy / terminów (slug z drzewa) |
-| `after_sales` | `lookup-leaf` | Pielęgnacja, gwarancja, montaż; miss → ścieżka leada Nest |
+| `delivery` | `lookup-leaf`, `search-leaves` | Liście dostawy / terminów (slug z drzewa) |
+| `after_sales` | `lookup-leaf`, `search-leaves` | Pielęgnacja, gwarancja, montaż; miss → ścieżka leada Nest |
 | `out_of_scope` | `[]` | Brak fetcha sklepu; ewentualnie zbieranie kontaktu (lead = Nest) |
 
 `resolve-template` zastępuje szkic `lookup_mat_template`. Wynik kaskady:

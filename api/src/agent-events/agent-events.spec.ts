@@ -1,4 +1,10 @@
 import { CONTEXT_TREE_NODES } from '../context-tree/in-memory/context-tree-fixture';
+import {
+  CONTEXT_LEAF_SEARCH_FIXTURE,
+  CONTEXT_LEAF_SEARCH_QUERIES,
+} from '../context-tree/in-memory/context-leaf-search-fixture';
+import { InMemoryContextLeafVectors } from '../context-tree/in-memory/in-memory-context-leaf-vectors';
+import { MapTextEmbedder } from '../context-tree/in-memory/map-text-embedder';
 import { InMemoryContextNodeCatalog } from '../context-tree/in-memory/in-memory-context-node-catalog';
 import { ContextTreeResolver } from '../context-tree/context-tree.resolver';
 import {
@@ -47,7 +53,11 @@ function shopTools(events: InMemoryAgentEvents): ShopTools {
       new InMemoryPricingCategoryVariantCatalog(PRICING_CATEGORY_VARIANTS),
       new InMemoryPricingMatrixCatalog(PRICING_MATRIX),
     ),
-    new ContextTreeResolver(new InMemoryContextNodeCatalog(CONTEXT_TREE_NODES)),
+    new ContextTreeResolver(
+      new InMemoryContextNodeCatalog(CONTEXT_TREE_NODES),
+      new MapTextEmbedder(CONTEXT_LEAF_SEARCH_QUERIES),
+      new InMemoryContextLeafVectors(CONTEXT_LEAF_SEARCH_FIXTURE),
+    ),
     events,
   );
 }
@@ -122,6 +132,30 @@ describe('agent domain events', () => {
       expect.objectContaining({
         type: 'context_miss',
         payload: { slug: 'pielegnacja' },
+      }),
+    ]);
+    expect(JSON.stringify(events.list())).not.toContain(
+      'Wysyłka w 5–7 dni roboczych.',
+    );
+  });
+
+  it('records context_search slugs without leaf body', async () => {
+    const events = new InMemoryAgentEvents();
+    const tools = shopTools(events);
+
+    await runWithTurnSession('session-search', async () => {
+      await tools.searchLeaves('kiedy wyślecie dywaniki');
+      await tools.searchLeaves('jaki mam VIN');
+    });
+
+    expect(events.list()).toEqual([
+      expect.objectContaining({
+        type: 'context_search',
+        payload: { slugs: ['dostawa'], matched: true },
+      }),
+      expect.objectContaining({
+        type: 'context_search',
+        payload: { slugs: [], matched: false },
       }),
     ]);
     expect(JSON.stringify(events.list())).not.toContain(

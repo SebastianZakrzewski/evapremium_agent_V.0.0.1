@@ -12,6 +12,7 @@ const catalog = {
   'resolve-template': { id: 'resolve-template' },
   'quote-price': { id: 'quote-price' },
   'lookup-leaf': { id: 'lookup-leaf' },
+  'search-leaves': { id: 'search-leaves' },
 };
 
 describe('eva turn request context', () => {
@@ -73,7 +74,7 @@ describe('eva turn request context', () => {
 
     expect(tools).not.toHaveProperty('quote-price');
     expect(Object.keys(tools).sort()).toEqual(
-      ['lookup-leaf', 'resolve-template'].sort(),
+      ['lookup-leaf', 'resolve-template', 'search-leaves'].sort(),
     );
   });
 });

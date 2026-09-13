@@ -15,6 +15,7 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 | events-005 | high | intent_accepted bez tekstu użytkownika |
 | events-006 | medium | tool_failed bez kopii czatu |
 | events-007 | high | Stub czatu emituje wycenę w sesji |
+| events-008 | high | context_search bez body FAQ |
 
 ### events-001 — Kaskada 0/1/N → cascade_resolved
 
@@ -71,3 +72,12 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 - **Logika:** `sessionId` z `handle` trafia do ALS i do eventu.
 - **Wejście:** `postChatMessage` stub `quote passenger_car komplet-5szt`
 - **Wyjście:** `quote_issued` na `session-stub`
+
+### events-008 — context_search bez body FAQ
+
+- **Kod:** `api/src/agent-events/agent-events.spec.ts` → `it('records context_search slugs without leaf body')`
+- **Krytyczność:** high
+- **Logika:** wyszukiwanie semantyczne emituje slugi, nie treść liścia.
+- **Wejście:** `searchLeaves` parafraza dostawy oraz VIN
+- **Wyjście:** `matched: true` ze `dostawa`; potem pusta lista; JSON bez body FAQ
+

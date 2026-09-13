@@ -35,6 +35,7 @@ export interface SessionEvent {
     | 'quote_issued'
     | 'context_hit'
     | 'context_miss'
+    | 'context_search'
     | 'lead_attempted'
     | 'tool_failed';
   payload: Record<string, unknown>;

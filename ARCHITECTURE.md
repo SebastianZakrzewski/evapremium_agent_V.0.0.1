@@ -85,8 +85,8 @@ serwerowo (nie anon z widgetu).
    migracja `20260913220000_context_node_embeddings.sql` w repo, **bez apply
    PROD**). Nest: `OPENAI_API_KEY` → `text-embedding-3-small`; `DATABASE_URL`
    → pgvector. Bez klucza / URL: stub, puste wyszukiwanie. Fakt nadal
-   `lookup-leaf` po slugu; wektory nie zwracają `body`. Tool Mastry
-   `search-leaves` jeszcze nie. Wymagane liście na start: `chat-zapis` (informacja o transkrypcie),
+   `lookup-leaf` po slugu; wektory nie zwracają `body`. Agent tury ma tool
+   `search-leaves` (Nest); apply indeksu na PROD nie. Wymagane liście na start: `chat-zapis` (informacja o transkrypcie),
    `zgoda-lead` (klauzula przy telefonie/mailu). **Treść prawną wkleja biznes**
    ze sklepu; agent jej nie generuje. Dalsze FAQ (dostawa, pielęgnacja, …) jako
    kolejne liście.
@@ -228,8 +228,8 @@ zapisie rozmowy.
 - Dashboard operatora: `docs/exec-plans/active/evapremium-agents-dashboard.md`.
 - Które slugi context tree mapują się na `delivery` vs `after_sales` vs
   `product_info` — przy wypełnianiu profili, nie przy zmianie kaskady.
-- RAG FAQ: indeks i embedder Nest w kodzie; tool Mastry i ingest-skrypt
-  w kolejnych slice’ach. Mechanizm: `docs/design-docs/context-tree-rag.md`.
+- RAG FAQ: indeks, embedder Nest i tool `search-leaves` w kodzie; skrypt
+  ingestu w Slice 6. Mechanizm: `docs/design-docs/context-tree-rag.md`.
   Plan: `docs/exec-plans/active/context-tree-rag.md`. Apply pgvector na PROD
   tylko za zgodą.
 

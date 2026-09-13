@@ -9,6 +9,7 @@ const shopCatalog = {
   'resolve-template': { id: 'resolve-template' },
   'quote-price': { id: 'quote-price' },
   'lookup-leaf': { id: 'lookup-leaf' },
+  'search-leaves': { id: 'search-leaves' },
 };
 
 describe('prepareIntentTurn', () => {
@@ -40,7 +41,7 @@ describe('prepareIntentTurn', () => {
     expect(profileAllowsTool(turn.toolIds, 'quote-price')).toBe(false);
     expect(tools).not.toHaveProperty('quote-price');
     expect(Object.keys(tools).sort()).toEqual(
-      ['lookup-leaf', 'resolve-template'].sort(),
+      ['lookup-leaf', 'resolve-template', 'search-leaves'].sort(),
     );
   });
 

@@ -52,6 +52,16 @@ function shopToolCatalog(tools: ShopTools, events?: AgentEventSink) {
       execute: async ({ slug }) =>
         executeShopTool(events, 'lookup-leaf', () => tools.lookupLeaf(slug)),
     }),
+    'search-leaves': createTool({
+      id: 'search-leaves',
+      description:
+        'Return similar context tree slugs for a natural-language question. No leaf body — call lookup-leaf next. Empty means miss.',
+      inputSchema: z.object({ query: z.string() }),
+      execute: async ({ query }) =>
+        executeShopTool(events, 'search-leaves', () =>
+          tools.searchLeaves(query),
+        ),
+    }),
   } satisfies Record<ShopToolId, ReturnType<typeof createTool>>;
 }
 

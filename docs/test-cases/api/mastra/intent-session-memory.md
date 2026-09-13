@@ -63,7 +63,7 @@ wymuszone `out_of_scope` (niska pewność) omija filtr.
 - **Krytyczność:** high
 - **Logika:** Kandydat odrzucony → tool-e FAQ, bez `quote-price`.
 - **Wejście:** `currentIntent: product_info`, qualify `out_of_scope` 1.0
-- **Wyjście:** `product_info`, `lookup-leaf` + `resolve-template`
+- **Wyjście:** `product_info`, `lookup-leaf` + `resolve-template` + `search-leaves`
 
 ### memory-007 — Sesje nie dzielą stanu
 

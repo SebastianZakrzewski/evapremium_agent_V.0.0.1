@@ -75,7 +75,7 @@ describe('intent session memory', () => {
     expect(turn.intent).toBe('product_info');
     expect(turn.toolIds).not.toContain('quote-price');
     expect(turn.toolIds).toEqual(
-      expect.arrayContaining(['lookup-leaf', 'resolve-template']),
+      expect.arrayContaining(['lookup-leaf', 'resolve-template', 'search-leaves']),
     );
   });
 
