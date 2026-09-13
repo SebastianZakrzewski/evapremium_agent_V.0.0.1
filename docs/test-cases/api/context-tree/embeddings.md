@@ -1,7 +1,7 @@
 # Adapter embeddings context tree
 
 Kod: `api/src/context-tree/embeddings/postgres-embeddings.spec.ts`,
-`ingest.spec.ts`, `openai-text-embedder.spec.ts`,
+`ingest.spec.ts`, `openai-text-embedder.spec.ts`, `run-ingest.spec.ts`,
 `api/src/domain/context-leaf-ingest.spec.ts`  
 Migracja: `supabase/migrations/20260913220000_context_node_embeddings.sql`  
 Standard: [docs/test-cases/README.md](../../README.md)
@@ -16,6 +16,7 @@ Bez apply PROD.
 | leaf-emb-002 | critical | Ingest zapisuje i nadpisuje slug |
 | leaf-emb-003 | high | Adapter SQL mapuje wiersze na `{ slug, vector }` |
 | leaf-emb-004 | high | OpenAI small zwraca wektor z mocka HTTP |
+| leaf-emb-005 | high | Ingest skryptu skip bez env |
 
 ### leaf-emb-001 — Kwalifikacja ingestu pomija gałąź i puste seed
 
@@ -48,3 +49,12 @@ Bez apply PROD.
 - **Logika:** embedding woła Nest, nie Mastra; model `text-embedding-3-small`.
 - **Wejście:** fake fetch, klucz `sk-test`
 - **Wyjście:** `[0.1, 0.2]`
+
+### leaf-emb-005 — Ingest skryptu skip bez env
+
+- **Kod:** `api/src/context-tree/embeddings/run-ingest.spec.ts` → `it('skips when embedder or database env is missing')`; `api/scripts/ingest-context-leaves.test.mjs`
+- **Krytyczność:** high
+- **Logika:** `verify` bez `OPENAI_API_KEY` / `DATABASE_URL` nie woła sieci.
+- **Wejście:** puste env
+- **Wyjście:** `{ written: 0, skipped: true }` / `leafIngestEnabled` false
+

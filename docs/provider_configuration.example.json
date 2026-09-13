@@ -21,5 +21,11 @@
   "supabase-service-role-key": {
     "url": "https://kmepxyervpeujwvgdqtm.supabase.co",
     "key": ""
+  },
+  "openai-api-key": {
+    "api_key": ""
+  },
+  "database-url": {
+    "url": ""
   }
 }

@@ -10,7 +10,8 @@
     "test": "jest",
     "lint": "eslint \"src/**/*.ts\"",
     "typecheck": "tsc --noEmit",
-    "studio:prod": "node scripts/studio-prod.mjs"
+    "studio:prod": "node scripts/studio-prod.mjs",
+    "ingest:leaves": "node scripts/ingest-context-leaves.mjs"
   },
   "dependencies": {
     "@mastra/core": "^1.66.0",

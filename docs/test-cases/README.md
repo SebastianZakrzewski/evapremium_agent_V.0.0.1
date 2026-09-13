@@ -109,7 +109,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Adapter szablonów Supabase | [api/templates/supabase-catalog.md](api/templates/supabase-catalog.md) | `api/src/templates/supabase/load-catalog.spec.ts` |
 | Adapter cennika Supabase | [api/pricing/supabase-pricing.md](api/pricing/supabase-pricing.md) | `api/src/pricing/supabase/load-pricing.spec.ts` |
 | Adapter context tree Supabase | [api/context-tree/supabase-nodes.md](api/context-tree/supabase-nodes.md) | `api/src/context-tree/supabase/load-nodes.spec.ts` |
-| Embeddings liści (pgvector / OpenAI) | [api/context-tree/embeddings.md](api/context-tree/embeddings.md) | `api/src/context-tree/embeddings/*.spec.ts`, `api/src/domain/context-leaf-ingest.spec.ts` |
+| Embeddings liści (pgvector / OpenAI) | [api/context-tree/embeddings.md](api/context-tree/embeddings.md) | `api/src/context-tree/embeddings/*.spec.ts`, `api/src/domain/context-leaf-ingest.spec.ts`, `api/scripts/ingest-context-leaves.test.mjs` |
 | Widget czat (wycena i miss) | [widget/chat-ui.md](widget/chat-ui.md) | `widget/src/chat/ChatPanel.test.tsx`, `format-turn.test.ts`, `App.test.tsx` |
 | Snippet sklepu | [widget/snippet.md](widget/snippet.md) | `widget/src/embed/shop-snippet.test.ts` |
 | Dashboard — przegląd doby | [dashboard/overview.md](dashboard/overview.md) | `dashboard/src/App.test.tsx` |

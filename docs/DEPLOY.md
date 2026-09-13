@@ -20,6 +20,11 @@ Env: `DEEPSEEK_API_KEY`, `BITRIX_WEBHOOK_URL`, `SUPABASE_URL`
 (`https://kmepxyervpeujwvgdqtm.supabase.co`), `SUPABASE_SERVICE_ROLE_KEY`,
 `WIDGET_ORIGIN` (HTTPS origin Vercel, bez slasha), `PORT=3000`,
 `SENTRY_DSN` (adres ingest projektu, nie token `sntryu_`).
+Opcjonalnie RAG FAQ (Nest, nie widget): `OPENAI_API_KEY` (`text-embedding-3-small`),
+`DATABASE_URL` (Postgres/pgvector). Migracja
+`20260913220000_context_node_embeddings.sql` **nie** apply na PROD bez zgody.
+Po apply: `npm run ingest:leaves --workspace api` (wymaga `nest build` /
+`dist` przy pełnym zapisie; bez env skrypt wychodzi ze skip).
 Opcjonalnie Studio: `MASTRA_STUDIO_TOKEN` (Bearer + hasło basic `eva`),
 `EVA_STUDIO_PUBLIC_HOST` (IP/domena w pasku przeglądarki). HTTP Mastry
 `/mastra` zostaje na Neście. LibSQL: host `/opt/evabot/mastra` →
