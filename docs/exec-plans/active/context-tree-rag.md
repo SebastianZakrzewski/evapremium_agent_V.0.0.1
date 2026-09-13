@@ -107,7 +107,7 @@ Kod: `createTool` w `create-eva-mastra-agent.ts` → `ShopTools.searchLeaves`
 (Nest). `prepare-intent-turn` / `profiles.ts`. Bez zmiany ramek SSE. Agent
 Mastry bez pola `memory.embedder` / `vectors`. DeepSeek tylko czat.
 
-## Slice 6 — uruchomienie indeksu i granice
+## Slice 6 — uruchomienie indeksu i granice (zrobione)
 
 Test: przy env embeddera + `DATABASE_URL` ingest z listy liści (fixture
 store) buduje indeks; bez env `verify` nadal zielone (fixture Slice 1–2).

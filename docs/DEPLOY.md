@@ -25,7 +25,7 @@ Opcjonalnie RAG FAQ (Nest, nie widget): `OPENAI_API_KEY` (`text-embedding-3-smal
 `20260913220000_context_node_embeddings.sql` **nie** apply na PROD bez zgody.
 Po apply: `npm run ingest:leaves --workspace api` (wymaga `nest build` /
 `dist`; ładuje `eva_bot.context_nodes` gdy jest Supabase env, inaczej
-fixture). Bez env skrypt wychodzi ze skip).
+fixture). Bez env skrypt wychodzi ze skip.
 Opcjonalnie Studio: `MASTRA_STUDIO_TOKEN` (Bearer + hasło basic `eva`),
 `EVA_STUDIO_PUBLIC_HOST` (IP/domena w pasku przeglądarki). HTTP Mastry
 `/mastra` zostaje na Neście. LibSQL: host `/opt/evabot/mastra` →
