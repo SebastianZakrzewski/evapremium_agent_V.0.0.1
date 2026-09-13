@@ -59,7 +59,7 @@ Kod: `searchContextLeaves(query, index, threshold)` w `api/src/domain/`
 deterministycznym stubem podobieństwa — bez sieci, bez klienta Postgres.
 Wpis w `docs/test-cases/api/domain/`. Bez HTTP, bez Mastry, bez embeddera.
 
-## Slice 2 — porty Nest: embedder + indeks
+## Slice 2 — porty Nest: embedder + indeks (zrobione)
 
 Test: katalog za portem; stub embeddera w Jest (stały wektor per tekst);
 ten sam kontrakt co Slice 1. Brak embeddera w env → wyszukiwanie nie woła
