@@ -96,7 +96,7 @@ Dashboard: nowy typ eventu w KPI „Prawda” tylko jeśli spec dashboardu to
 wymaga — w tym slice minimum to zapis eventu; zmiana karty KPI osobno, gdy
 operator tego chce.
 
-## Slice 5 — Mastra: tool + instrukcja tury
+## Slice 5 — Mastra: tool + instrukcja tury (zrobione)
 
 Test: na intencji `delivery` mapa tooli ma `search-leaves` i `lookup-leaf`;
 execute `search-leaves` zwraca JSON slugów; stub bez klucza DeepSeek nie
