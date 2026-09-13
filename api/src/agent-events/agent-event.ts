@@ -35,5 +35,6 @@ export type AgentEventSink = {
 };
 
 export type AgentEventStore = AgentEventSink & {
-  list(): AgentEvent[];
+  listBySession(sessionId: string): Promise<AgentEvent[]>;
+  listInRange(fromIso: string, toIso: string): Promise<AgentEvent[]>;
 };

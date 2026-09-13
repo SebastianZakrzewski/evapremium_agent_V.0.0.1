@@ -33,7 +33,7 @@ treść wiadomości nie jest w paylodzie.
 Kod: port + adapter in-memory; haki w istniejących serwisach Nest / przygotowaniu
 tury. Bez HTTP dashboardu, bez UI.
 
-## Slice 2 — persystencja w `eva_bot`
+## Slice 2 — persystencja w `eva_bot` (zrobione)
 
 Test: ten sam kontrakt co in-memory, zapis do tabeli (fixture / fake store);
 odczyt listy po `session_id` i zakresie czasu.

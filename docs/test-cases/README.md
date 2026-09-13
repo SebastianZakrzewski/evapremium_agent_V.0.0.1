@@ -97,6 +97,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Agent czatu Mastra | [api/chat/mastra-chat-agent.md](api/chat/mastra-chat-agent.md) | `api/src/chat/mastra-chat.agent.spec.ts` |
 | Kontrakt HTTP czatu | [api/chat/chat-http.md](api/chat/chat-http.md) | `api/src/chat/chat.contract.spec.ts` |
 | Zdarzenia domenowe agenta | [api/agent-events/agent-events.md](api/agent-events/agent-events.md) | `api/src/agent-events/agent-events.spec.ts` |
+| Persystencja zdarzeń agenta | [api/agent-events/agent-events-store.md](api/agent-events/agent-events-store.md) | `api/src/agent-events/supabase-agent-events.spec.ts` |
 | CORS czatu | [api/chat/cors.md](api/chat/cors.md) | `api/src/chat/shop-cors.spec.ts` |
 | Sesje Supabase | [api/chat/supabase-sessions.md](api/chat/supabase-sessions.md) | `api/src/chat/supabase-chat-sessions.spec.ts` |
 | Resolver leada | [api/lead/lead-resolver.md](api/lead/lead-resolver.md) | `api/src/lead/lead.resolver.spec.ts` |

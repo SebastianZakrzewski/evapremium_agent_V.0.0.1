@@ -26,4 +26,17 @@ export class InMemoryAgentEvents implements AgentEventStore {
   list(): AgentEvent[] {
     return [...this.events];
   }
+
+  async listBySession(sessionId: string): Promise<AgentEvent[]> {
+    return this.events.filter((row) => row.sessionId === sessionId);
+  }
+
+  async listInRange(fromIso: string, toIso: string): Promise<AgentEvent[]> {
+    const from = Date.parse(fromIso);
+    const to = Date.parse(toIso);
+    return this.events.filter((row) => {
+      const at = Date.parse(row.occurredAt);
+      return at >= from && at <= to;
+    });
+  }
 }
