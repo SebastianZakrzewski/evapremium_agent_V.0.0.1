@@ -1,5 +1,14 @@
 import { FormEvent, useEffect, useState } from 'react';
-import { fetchDaySummary, type DaySummary } from './dashboard-api';
+import {
+  fetchDaySummary,
+  fetchSession,
+  fetchSessions,
+  type DaySummary,
+  type SessionDetails,
+  type SessionEvent,
+  type SessionListItem,
+  type SessionMarker,
+} from './dashboard-api';
 import './App.css';
 
 const TOKEN_STORAGE_KEY = 'eva-dashboard-token';
@@ -8,8 +17,41 @@ interface AppProps {
   initialDate?: string;
 }
 
+type DashboardView =
+  | { kind: 'overview' }
+  | { kind: 'sessions' }
+  | { kind: 'session'; sessionId: string };
+
+const markerLabels: Record<SessionMarker, string> = {
+  intent: 'Intencja',
+  cascade: 'Kaskada',
+  quote: 'Wycena',
+  tree: 'Drzewo',
+  lead: 'Lead',
+  violation: 'Naruszenie',
+};
+
 function today(): string {
   return new Date().toISOString().slice(0, 10);
+}
+
+function readView(): DashboardView {
+  const path = window.location.hash.replace(/^#/, '');
+  if (path.startsWith('/sessions/')) {
+    try {
+      return {
+        kind: 'session',
+        sessionId: decodeURIComponent(path.slice('/sessions/'.length)),
+      };
+    } catch {
+      return { kind: 'sessions' };
+    }
+  }
+  return path === '/sessions' ? { kind: 'sessions' } : { kind: 'overview' };
+}
+
+function sessionHref(sessionId: string): string {
+  return `#/sessions/${encodeURIComponent(sessionId)}`;
 }
 
 function violationLabel(count: number): string {
@@ -20,6 +62,10 @@ function violationLabel(count: number): string {
     return 'naruszenia';
   }
   return 'naruszeń';
+}
+
+function requestError(reason: unknown, fallback: string): string {
+  return reason instanceof Error ? reason.message : fallback;
 }
 
 function TokenGate({ onSubmit }: { onSubmit: (token: string) => void }) {
@@ -65,6 +111,19 @@ function TokenGate({ onSubmit }: { onSubmit: (token: string) => void }) {
   );
 }
 
+function PageNavigation({ current }: { current: 'overview' | 'sessions' }) {
+  return (
+    <nav className="page-navigation" aria-label="Widoki dashboardu">
+      <a className={current === 'overview' ? 'active' : ''} href="#/">
+        Przegląd
+      </a>
+      <a className={current === 'sessions' ? 'active' : ''} href="#/sessions">
+        Sesje
+      </a>
+    </nav>
+  );
+}
+
 function MetricCard({
   title,
   value,
@@ -104,6 +163,7 @@ function Overview({
         <div>
           <p className="eyebrow">EVA Premium · Agent</p>
           <h1>Przegląd doby</h1>
+          <PageNavigation current="overview" />
         </div>
         <div className="topbar-actions">
           <label htmlFor="summary-date">Data</label>
@@ -166,7 +226,9 @@ function Overview({
               <ul>
                 {summary.violations.map((violation) => (
                   <li key={`${violation.sessionId}:${violation.reason}`}>
-                    <span>{violation.sessionId}</span>
+                    <a href={sessionHref(violation.sessionId)}>
+                      {violation.sessionId}
+                    </a>
                     <strong>{violation.reason}</strong>
                   </li>
                 ))}
@@ -179,16 +241,291 @@ function Overview({
   );
 }
 
+function Sessions({
+  date,
+  onDateChange,
+  token,
+  onSignOut,
+}: {
+  date: string;
+  onDateChange: (date: string) => void;
+  token: string;
+  onSignOut: () => void;
+}) {
+  const [marker, setMarker] = useState<SessionMarker | ''>('');
+  const [sessions, setSessions] = useState<SessionListItem[] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    setError(null);
+    setSessions(null);
+    fetchSessions(date, marker, token, controller.signal)
+      .then(setSessions)
+      .catch((reason: unknown) => {
+        if (!controller.signal.aborted) {
+          setError(requestError(reason, 'Nie udało się pobrać listy sesji.'));
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, [date, marker, token]);
+
+  return (
+    <main className="dashboard-shell">
+      <header className="topbar">
+        <div>
+          <p className="eyebrow">EVA Premium · Agent</p>
+          <h1>Sesje</h1>
+          <PageNavigation current="sessions" />
+        </div>
+        <div className="topbar-actions filter-actions">
+          <label htmlFor="sessions-date">Data</label>
+          <input
+            id="sessions-date"
+            type="date"
+            value={date}
+            onChange={(event) => onDateChange(event.target.value)}
+          />
+          <label htmlFor="session-marker">Wymiar</label>
+          <select
+            id="session-marker"
+            value={marker}
+            onChange={(event) =>
+              setMarker(event.target.value as SessionMarker | '')
+            }
+          >
+            <option value="">Wszystkie</option>
+            {Object.entries(markerLabels).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+          <button className="text-button" type="button" onClick={onSignOut}>
+            Zmień token
+          </button>
+        </div>
+      </header>
+
+      <section className="intro">
+        <p>Znaczniki sesji pochodzą ze zdarzeń domenowych zapisanych przez API.</p>
+      </section>
+
+      {loading && <p className="status">Pobieram sesje…</p>}
+      {error && (
+        <p className="status status-error" role="alert">
+          {error}
+        </p>
+      )}
+      {sessions && sessions.length === 0 && (
+        <p className="empty-state">Brak sesji dla wybranych filtrów.</p>
+      )}
+      {sessions && sessions.length > 0 && (
+        <ul className="session-list" aria-label="Lista sesji">
+          {sessions.map((session) => (
+            <li key={session.sessionId}>
+              <a className="session-link" href={sessionHref(session.sessionId)}>
+                <span>{session.sessionId}</span>
+                <span className="marker-list">
+                  {session.markers.map((sessionMarker) => (
+                    <span
+                      className={`marker marker-${sessionMarker}`}
+                      key={sessionMarker}
+                    >
+                      {markerLabels[sessionMarker]}
+                    </span>
+                  ))}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </main>
+  );
+}
+
+function eventLabel(type: SessionEvent['type']): string {
+  const labels: Record<SessionEvent['type'], string> = {
+    intent_accepted: 'Zaakceptowano intencję',
+    cascade_resolved: 'Rozstrzygnięto kaskadę',
+    quote_issued: 'Wydano wycenę',
+    context_hit: 'Trafienie w drzewie',
+    context_miss: 'Brak w drzewie',
+    lead_attempted: 'Próba utworzenia leada',
+    tool_failed: 'Błąd narzędzia',
+  };
+  return labels[type];
+}
+
+function eventDetail(event: SessionEvent): string | null {
+  switch (event.type) {
+    case 'intent_accepted':
+      return typeof event.payload.intent === 'string'
+        ? event.payload.intent
+        : null;
+    case 'cascade_resolved':
+      return typeof event.payload.match === 'string' ? event.payload.match : null;
+    case 'context_hit':
+    case 'context_miss':
+      return typeof event.payload.slug === 'string' ? event.payload.slug : null;
+    case 'lead_attempted':
+      return typeof event.payload.outcome === 'string'
+        ? event.payload.outcome
+        : null;
+    case 'tool_failed':
+      return typeof event.payload.tool === 'string' ? event.payload.tool : null;
+    case 'quote_issued':
+      return null;
+  }
+}
+
+function quoteAmount(event: SessionEvent): string | null {
+  if (event.type !== 'quote_issued' || typeof event.payload.amount !== 'number') {
+    return null;
+  }
+  const currency =
+    typeof event.payload.currency === 'string' ? event.payload.currency : '';
+  return `${event.payload.amount} ${currency}`.trim();
+}
+
+function SessionView({
+  sessionId,
+  token,
+  onSignOut,
+}: {
+  sessionId: string;
+  token: string;
+  onSignOut: () => void;
+}) {
+  const [session, setSession] = useState<SessionDetails | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    setError(null);
+    setSession(null);
+    fetchSession(sessionId, token, controller.signal)
+      .then((result) => ({
+        ...result,
+        events: [...result.events].sort((a, b) =>
+          a.occurredAt.localeCompare(b.occurredAt),
+        ),
+      }))
+      .then(setSession)
+      .catch((reason: unknown) => {
+        if (!controller.signal.aborted) {
+          setError(requestError(reason, 'Nie udało się pobrać sesji.'));
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, [sessionId, token]);
+
+  return (
+    <main className="dashboard-shell">
+      <header className="topbar">
+        <div>
+          <p className="eyebrow">EVA Premium · Agent</p>
+          <h1>Sesja {sessionId}</h1>
+          <PageNavigation current="sessions" />
+        </div>
+        <div className="topbar-actions">
+          <a className="back-link" href="#/sessions">
+            Wróć do listy
+          </a>
+          <button className="text-button" type="button" onClick={onSignOut}>
+            Zmień token
+          </button>
+        </div>
+      </header>
+
+      {loading && <p className="status">Pobieram sesję…</p>}
+      {error && (
+        <p className="status status-error" role="alert">
+          {error}
+        </p>
+      )}
+      {session && (
+        <div className="session-detail">
+          <section aria-labelledby="transcript-title">
+            <p className="section-kicker">Rozmowa</p>
+            <h2 id="transcript-title">Transkrypt</h2>
+            <div className="transcript">
+              {session.messages.map((message, index) => (
+                <article
+                  className={`message message-${message.direction}`}
+                  key={`${message.direction}:${index}`}
+                >
+                  <span>
+                    {message.direction === 'inbound' ? 'Klient' : 'Eva'}
+                  </span>
+                  <p>{message.text}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section aria-labelledby="timeline-title">
+            <p className="section-kicker">Fakty z Nest</p>
+            <h2 id="timeline-title">Oś zdarzeń</h2>
+            <ol className="event-timeline">
+              {session.events.map((event) => {
+                const detail = eventDetail(event);
+                const amount = quoteAmount(event);
+                return (
+                  <li data-testid="timeline-event" key={event.id}>
+                    <time dateTime={event.occurredAt}>
+                      {new Date(event.occurredAt).toLocaleString('pl-PL')}
+                    </time>
+                    <strong>{eventLabel(event.type)}</strong>
+                    {detail && <span>{detail}</span>}
+                    {amount && <span className="event-amount">{amount}</span>}
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+        </div>
+      )}
+    </main>
+  );
+}
+
 export function App({ initialDate = today() }: AppProps) {
   const storedToken = sessionStorage.getItem(TOKEN_STORAGE_KEY);
   const [token, setToken] = useState(storedToken ?? '');
   const [date, setDate] = useState(initialDate);
+  const [view, setView] = useState<DashboardView>(readView);
   const [summary, setSummary] = useState<DaySummary | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!token) {
+    function onHashChange() {
+      setView(readView());
+    }
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
+  useEffect(() => {
+    if (!token || view.kind !== 'overview') {
       return;
     }
 
@@ -214,7 +551,7 @@ export function App({ initialDate = today() }: AppProps) {
       });
 
     return () => controller.abort();
-  }, [date, token]);
+  }, [date, token, view.kind]);
 
   function signOut() {
     sessionStorage.removeItem(TOKEN_STORAGE_KEY);
@@ -225,6 +562,27 @@ export function App({ initialDate = today() }: AppProps) {
 
   if (!token) {
     return <TokenGate onSubmit={setToken} />;
+  }
+
+  if (view.kind === 'sessions') {
+    return (
+      <Sessions
+        date={date}
+        onDateChange={setDate}
+        token={token}
+        onSignOut={signOut}
+      />
+    );
+  }
+
+  if (view.kind === 'session') {
+    return (
+      <SessionView
+        sessionId={view.sessionId}
+        token={token}
+        onSignOut={signOut}
+      />
+    );
   }
 
   return (

@@ -7,17 +7,56 @@ export interface DaySummary {
   violations: Array<{ sessionId: string; reason: string }>;
 }
 
-function summaryUrl(date: string): string {
-  const baseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
-  return `${baseUrl}/v1/dashboard/summary?date=${encodeURIComponent(date)}`;
+export type SessionMarker =
+  | 'intent'
+  | 'cascade'
+  | 'quote'
+  | 'tree'
+  | 'lead'
+  | 'violation';
+
+export interface SessionListItem {
+  sessionId: string;
+  markers: SessionMarker[];
 }
 
-export async function fetchDaySummary(
-  date: string,
+export interface SessionMessage {
+  direction: 'inbound' | 'outbound';
+  text: string;
+}
+
+export interface SessionEvent {
+  id: string;
+  sessionId: string;
+  occurredAt: string;
+  type:
+    | 'intent_accepted'
+    | 'cascade_resolved'
+    | 'quote_issued'
+    | 'context_hit'
+    | 'context_miss'
+    | 'lead_attempted'
+    | 'tool_failed';
+  payload: Record<string, unknown>;
+}
+
+export interface SessionDetails {
+  sessionId: string;
+  messages: SessionMessage[];
+  events: SessionEvent[];
+}
+
+function apiUrl(path: string): string {
+  const baseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
+  return `${baseUrl}${path}`;
+}
+
+async function dashboardFetch<T>(
+  path: string,
   token: string,
   signal?: AbortSignal,
-): Promise<DaySummary> {
-  const response = await fetch(summaryUrl(date), {
+): Promise<T> {
+  const response = await fetch(apiUrl(path), {
     headers: { Authorization: `Bearer ${token}` },
     signal,
   });
@@ -26,9 +65,47 @@ export async function fetchDaySummary(
     throw new Error(
       response.status === 401
         ? 'Token został odrzucony. Sprawdź go i spróbuj ponownie.'
-        : 'Nie udało się pobrać podsumowania. Spróbuj ponownie.',
+        : 'Nie udało się pobrać danych dashboardu. Spróbuj ponownie.',
     );
   }
 
-  return (await response.json()) as DaySummary;
+  return (await response.json()) as T;
+}
+
+export async function fetchDaySummary(
+  date: string,
+  token: string,
+  signal?: AbortSignal,
+): Promise<DaySummary> {
+  return dashboardFetch<DaySummary>(
+    `/v1/dashboard/summary?date=${encodeURIComponent(date)}`,
+    token,
+    signal,
+  );
+}
+
+export async function fetchSessions(
+  date: string,
+  marker: SessionMarker | '',
+  token: string,
+  signal?: AbortSignal,
+): Promise<SessionListItem[]> {
+  const markerQuery = marker ? `&marker=${encodeURIComponent(marker)}` : '';
+  return dashboardFetch<SessionListItem[]>(
+    `/v1/dashboard/sessions?date=${encodeURIComponent(date)}${markerQuery}`,
+    token,
+    signal,
+  );
+}
+
+export async function fetchSession(
+  sessionId: string,
+  token: string,
+  signal?: AbortSignal,
+): Promise<SessionDetails> {
+  return dashboardFetch<SessionDetails>(
+    `/v1/dashboard/sessions/${encodeURIComponent(sessionId)}`,
+    token,
+    signal,
+  );
 }

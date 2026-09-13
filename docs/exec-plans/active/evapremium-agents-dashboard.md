@@ -55,7 +55,7 @@ nowy pakiet. Auth sekretem. Wygląd zgodny z zasadą UI powyżej. Bez listy
 sesji w tym slice, jeśli nie jest potrzebna do samego przeglądu — lista
 jest Slice 5.
 
-## Slice 5 — lista sesji i widok sesji
+## Slice 5 — lista sesji i widok sesji (zrobione)
 
 Test: znaczniki z eventów, nie z tekstu; widok sesji składa transkrypt
 `direction`/`text` z osią eventów w czasie.

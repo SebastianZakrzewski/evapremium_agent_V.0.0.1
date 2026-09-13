@@ -12,9 +12,9 @@
 
 - **Kod:** `dashboard/src/App.test.tsx` → `it('loads four hypotheses and a violation snippet with bearer auth')`
 - **Krytyczność:** high
-- **Logika:** Przegląd doby prezentuje liczby zwrócone przez API dla czterech hipotez, bez wyprowadzania ich z tekstu agenta. Żądanie używa sekretu operatora w nagłówku Bearer.
+- **Logika:** Przegląd doby prezentuje liczby zwrócone przez API dla czterech hipotez, bez wyprowadzania ich z tekstu agenta. Żądanie używa sekretu operatora w nagłówku Bearer, a wiersz naruszenia pozwala przejść do widoku tej sesji.
 - **Wejście:** token `dashboard-secret` w `sessionStorage`, data `2026-09-13`, fake `fetch` ze znanym podsumowaniem i naruszeniem.
-- **Wyjście:** liczby Odciążenia, Wyceny, Prawdy i Leada, tekst `session-risk-7` / `quote_without_cascade_one` oraz wywołanie `/v1/dashboard/summary?date=2026-09-13` z `Authorization: Bearer dashboard-secret`.
+- **Wyjście:** liczby Odciążenia, Wyceny, Prawdy i Leada, link `session-risk-7` do `#/sessions/session-risk-7`, tekst `quote_without_cascade_one` oraz wywołanie `/v1/dashboard/summary?date=2026-09-13` z `Authorization: Bearer dashboard-secret`.
 
 ### `dashboard-overview-003` — token ograniczony do sesji przeglądarki
 

@@ -111,6 +111,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Widget czat (wycena i miss) | [widget/chat-ui.md](widget/chat-ui.md) | `widget/src/chat/ChatPanel.test.tsx`, `format-turn.test.ts`, `App.test.tsx` |
 | Snippet sklepu | [widget/snippet.md](widget/snippet.md) | `widget/src/embed/shop-snippet.test.ts` |
 | Dashboard — przegląd doby | [dashboard/overview.md](dashboard/overview.md) | `dashboard/src/App.test.tsx` |
+| Dashboard — sesje | [dashboard/sessions.md](dashboard/sessions.md) | `dashboard/src/App.test.tsx` |
 | Aktualizacja kontenera API | [deploy/update-container.md](deploy/update-container.md) | `deploy/update-container.test.mjs` |
 | Obraz Docker Studio | [deploy/studio-image.md](deploy/studio-image.md) | `deploy/studio.test.mjs` |
 | Studio → Nest produkcyjny | [api/mastra/studio-prod.md](api/mastra/studio-prod.md) | `api/scripts/studio-prod.test.mjs` |

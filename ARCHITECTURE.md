@@ -4,7 +4,7 @@
 
 Szkielet monorepo (npm workspaces): `api/` (NestJS + Express, Mastra w tym
 samym procesie za portem `CHAT_AGENT`), `widget/` (React / Vite) i
-`dashboard/` (React / Vite, przegląd doby). Kaskada,
+`dashboard/` (React / Vite, przegląd doby, lista i szczegół sesji). Kaskada,
 wycena i context tree: serwisy Nest; przy `SUPABASE_URL` +
 `SUPABASE_SERVICE_ROLE_KEY` katalogi ładują PROD (`evapremium_shop` /
 `eva_bot`) raz przy starcie, bez env zostaje fixture. HTTP czatu:
@@ -21,7 +21,8 @@ przy `SENTRY_DSN` (`instrument.ts` przed Nest, `SentryGlobalFilter`; awarie
 SSE przez `reportUnexpectedError`). DSN, nie token użytkownika.
 Dashboard operatora: eventy domenowe in-memory albo `eva_bot.agent_events`;
 odczyt `GET /v1/dashboard/*` za `DASHBOARD_TOKEN`; UI ma bramkę tokenu
-sesyjnego i przegląd doby (bez listy i szczegółu sesji).
+sesyjnego, przegląd doby, listę sesji ze znacznikami eventów i szczegół
+z transkryptem oraz osią eventów.
 Poniżej są **zaakceptowane granice MVP**.
 
 Ten dokument jest źródłem prawdy o architekturze wysokiego poziomu.
@@ -44,8 +45,9 @@ Mastra → NestJS; NestJS → Supabase; NestJS → Bitrix24 (leady).
 LLM nie sięga do bazy ani nie jest źródłem cen ani polityki sklepu.
 
 Kod w jednym gicie, pakiety `api`, `widget` i `dashboard`. Deploy nadal
-rozdzielony (Nest na Hetznerze, widget na Vercel/CDN). `dashboard/` ma przegląd
-doby i docelowo osobny origin Vercel; wdrożenie panelu jest późniejszym slice'em.
+rozdzielony (Nest na Hetznerze, widget na Vercel/CDN). `dashboard/` ma trzy
+widoki operatora na nawigacji hash i docelowo osobny origin Vercel; wdrożenie
+panelu jest późniejszym slice'em.
 
 | Warstwa | Technologia | Odpowiedzialność |
 | --- | --- | --- |
@@ -175,9 +177,11 @@ Nie PaaS i nie serverless. Widget nie jest serwowany z VPS.
 ## Dashboard operatora (eventy + HTTP odczytu)
 
 Osobny produkt KPI: pakiet `dashboard/` na **Vercel** (inny origin niż widget
-sklepu) — zaimplementowana bramka `DASHBOARD_TOKEN` w `sessionStorage` i
-przegląd doby z czterema hipotezami oraz tekstowym skrótem naruszeń. Lista
-i szczegół sesji pozostają poza bieżącym slice'em. Nie Mastra Studio
+sklepu) — zaimplementowana bramka `DASHBOARD_TOKEN` w `sessionStorage`,
+przegląd doby z czterema hipotezami, lista sesji filtrowana po dacie i jednym
+znaczniku oraz szczegół z transkryptem i chronologiczną osią eventów. Kwota
+jest renderowana wyłącznie z `quote_issued`; naruszenie w przeglądzie prowadzi
+do sesji. Widoki używają nawigacji hash bez dodatkowego routera. Nie Mastra Studio
 (`/mastra`) i nie kolejka Bitrix. Nest emituje zdarzenia domenowe za portem `AGENT_EVENTS`
 (in-memory albo `eva_bot.agent_events`). Odczyt: `GET /v1/dashboard/summary`,
 `/sessions`, `/sessions/:id` za `DASHBOARD_TOKEN`; CORS tylko
