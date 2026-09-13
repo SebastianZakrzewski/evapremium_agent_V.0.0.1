@@ -6,7 +6,8 @@
   },
   "workspaces": [
     "api",
-    "widget"
+    "widget",
+    "dashboard"
   ],
   "scripts": {
     "test": "npm test --workspaces --if-present",

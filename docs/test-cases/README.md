@@ -1,8 +1,8 @@
 # Katalog przypadków testowych
 
 Źródło prawdy o **przypadkach** (co i dlaczego testujemy). Kod wykonywalny
-zostaje w `api/` i `widget/` (`*.spec.ts`, `*.test.ts(x)`). Ten katalog nie
-zastępuje Jest/Vitest.
+zostaje w `api/`, `widget/` i `dashboard/` (`*.spec.ts`, `*.test.ts(x)`).
+Ten katalog nie zastępuje Jest/Vitest.
 
 Odbiorca: agent kodujący i człowiek przeglądający zmianę.
 
@@ -14,7 +14,7 @@ usuwa test.
 Każdy nowy test w repozytorium **musi** dostać wpis w tym katalogu, w tym
 samym standardzie co istniejące przypadki. Bez opisu test nie jest kompletny.
 
-1. Dodaj lub zmień test w pakiecie (`api` / `widget` / przyszłe workspace).
+1. Dodaj lub zmień test w pakiecie (`api` / `widget` / `dashboard`).
 2. Utwórz lub zaktualizuj plik w podkatalogu odpowiadającym obszarowi.
 3. Wypełnij wszystkie pola standardu (poniżej).
 4. Dopisz wiersz w indeksie tego pliku `README.md`, jeśli to nowy zestaw.
@@ -39,7 +39,8 @@ docs/test-cases/
 │   ├── mastra/               ← IntentProfile / workflow intencji
 │   └── observability/        ← Sentry na API
 ├── deploy/                   ← skrypt aktualizacji kontenera na VPS
-└── widget/                   ← UI widgetu i snippet sklepu
+├── widget/                   ← UI widgetu i snippet sklepu
+└── dashboard/                ← UI panelu operatora
 ```
 
 Nowy obszar (wycena, context tree, HTTP, Bitrix, snippet) = nowy podkatalog
@@ -109,6 +110,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Adapter context tree Supabase | [api/context-tree/supabase-nodes.md](api/context-tree/supabase-nodes.md) | `api/src/context-tree/supabase/load-nodes.spec.ts` |
 | Widget czat (wycena i miss) | [widget/chat-ui.md](widget/chat-ui.md) | `widget/src/chat/ChatPanel.test.tsx`, `format-turn.test.ts`, `App.test.tsx` |
 | Snippet sklepu | [widget/snippet.md](widget/snippet.md) | `widget/src/embed/shop-snippet.test.ts` |
+| Dashboard — przegląd doby | [dashboard/overview.md](dashboard/overview.md) | `dashboard/src/App.test.tsx` |
 | Aktualizacja kontenera API | [deploy/update-container.md](deploy/update-container.md) | `deploy/update-container.test.mjs` |
 | Obraz Docker Studio | [deploy/studio-image.md](deploy/studio-image.md) | `deploy/studio.test.mjs` |
 | Studio → Nest produkcyjny | [api/mastra/studio-prod.md](api/mastra/studio-prod.md) | `api/scripts/studio-prod.test.mjs` |

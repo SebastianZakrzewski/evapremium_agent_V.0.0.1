@@ -46,7 +46,7 @@ doby, lista sesji ze znacznikami, jedna sesja (wiadomości + eventy). Origin
 poza `DASHBOARD_ORIGIN` → brak CORS. Widgetowy kontrakt `/v1/sessions` bez zmian.
 Kod: wąskie GET-y w Nest. Token ≠ `MASTRA_STUDIO_TOKEN`.
 
-## Slice 4 — pakiet `dashboard/`: przegląd doby
+## Slice 4 — pakiet `dashboard/`: przegląd doby (zrobione)
 
 Test: przy znanych eventach UI (lub test renderu) pokazuje liczby czterech
 hipotez i skrót naruszeń.

@@ -58,7 +58,7 @@ Przed uznaniem zadania za zakończone uruchom kontrole odpowiednie do zmienioneg
 obszaru, w szczególności testy, lint, kontrolę typów i build, jeśli są dostępne.
 
 Kanoniczna weryfikacja z katalogu głównego: `npm run verify`
-(test + lint + typecheck w workspace’ach `api` i `widget`).
+(test + lint + typecheck w workspace’ach `api`, `widget` i `dashboard`).
 Skrót tylko do testów: `npm test`.
 
 Po dodaniu testu zaktualizuj odpowiadający zestaw w `docs/test-cases/`.
