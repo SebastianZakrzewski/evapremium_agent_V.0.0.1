@@ -134,7 +134,7 @@ widget / Vercel). Publiczny id widgetu w snippecie, nie sekret. Szczegóły:
 
 ## LLM
 
-Dostawca: **DeepSeek**. W Mastrze: `model: "deepseek/deepseek-v4-flash"`, env
+Dostawca: **DeepSeek**. W Mastrze: `model: "deepseek/deepseek-flash"`, env
 `DEEPSEEK_API_KEY`. API DeepSeek: id `deepseek-flash` (V4.1-Flash). Klucz tylko
 po stronie serwera. Model nie jest źródłem cen ani FAQ. Język MVP: **polski**.
 Kontekst implementacji: `docs/references/mastra/`.

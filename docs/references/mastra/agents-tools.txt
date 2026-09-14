@@ -5,7 +5,7 @@ Pobrane: 2026-09-11. Kanoniczne: mastra.ai (aktualny `@mastra/core`).
 
 ## Zakazy
 
-- `model` to string `provider/model` (np. `deepseek/deepseek-v4-flash`), nie `provider:model` i nie obiekt providera, chyba że docs na to pozwalają.
+- `model` to string `provider/model` (np. `deepseek/deepseek-flash`), nie `provider:model` i nie obiekt providera, chyba że docs na to pozwalają.
 - Narzędzia TYLKO `createTool()` z `@mastra/core/tools`. Zwykły obiekt toola **milcząco nie działa**.
 - `execute(inputData, context)` — pierwszy arg = input ze schematu; drugi daje runtime (`requestContext`, `tracingContext`, `abortSignal`). Drugi można pominąć.
 - Nie instaluj AI SDK, dopóki konkretna strona Mastry tego nie każe.
@@ -21,7 +21,7 @@ new Agent({
   id: 'weather-agent',
   name: 'Weather Agent',
   instructions: '...',
-  model: 'openai/gpt-5.6-sol', // u nas: deepseek/deepseek-v4-flash
+  model: 'openai/gpt-5.6-sol', // u nas: deepseek/deepseek-flash
   tools: { weatherTool },
 })
 
