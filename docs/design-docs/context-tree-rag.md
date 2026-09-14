@@ -52,11 +52,12 @@ przy pytaniu. Inny niż DeepSeek czatu. W `verify` / bez klucza: stub
 otwarte do Slice 3.
 
 **Magazyn wektorów** — tabela w Postgresie Supabase (schemat `eva_bot`,
-roboczo `context_node_embeddings`) z kolumną `vector` (pgvector). Wiersz =
-chunk tekstu liścia + embedding + `slug`. To indeks podobieństwa, nie kopia
-polityki sklepu. Nest łączy się connection stringiem (`DATABASE_URL` /
-pooler), nie anon key z widgetu. Opcjonalnie adapter `@mastra/pg` **za
-portem Nest**; execute toola Mastry nadal woła tylko serwis Nest.
+`context_node_embeddings`) z kolumną `vector` (pgvector). Wiersz = chunk
+tekstu liścia + embedding + `slug`. To indeks podobieństwa, nie kopia
+polityki sklepu. Tura czatu **czyta** indeks tym samym `DataStore` co
+`context_nodes` (service role / PostgREST). `DATABASE_URL` zostaje przy
+ingescie (skrypt), nie jest wymagany do `search-leaves`. Execute toola
+Mastry nadal woła tylko serwis Nest.
 
 **Próg i top-K** — liczby kalibracji (otwarte). Poniżej progu kandydat
 wypada, nawet jeśli jest „najbliższy”.
@@ -79,8 +80,9 @@ Zmiana `body` w bazie **nie** aktualizuje wektorów sama z siebie. Po edycji
 FAQ: ponowny ingest. Zmiana modelu embeddingu = przebudowa całego indeksu
 (wymiar kolumny musi się zgadzać).
 
-Bez env embeddera i bez `DATABASE_URL`: ingest się nie wykonuje; czat działa
-jak MVP (tylko slug).
+Bez env embeddera: `search-leaves` zwraca `[]`. Bez `DATABASE_URL` ingest
+się nie wykonuje; tura czatu i tak czyta już zapisany indeks przez
+Supabase. Bez indeksu / bez klucza OpenAI czat działa jak MVP (tylko slug).
 
 ## Faza B — tura czatu
 

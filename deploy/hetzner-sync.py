@@ -47,28 +47,39 @@ def connect(client: paramiko.SSHClient, server: dict) -> None:
     }
     key_path = str(server.get("key_path") or "").strip()
     password = str(server.get("password") or "")
-    if key_path:
+    if key_path and Path(os.path.expanduser(key_path)).exists():
         kwargs["key_filename"] = os.path.expanduser(key_path)
     if password:
         kwargs["password"] = password
     client.connect(**kwargs)
 
 
+def openai_api_key(cfg: dict) -> str:
+    env_path = ROOT / "api" / ".env"
+    if env_path.exists():
+        for line in env_path.read_text(encoding="utf-8").splitlines():
+            if line.startswith("OPENAI_API_KEY="):
+                return line.split("=", 1)[1].strip()
+    return str((cfg.get("openai-api-key") or {}).get("api_key") or "").strip()
+
+
 def env_contents(cfg: dict) -> str:
     bitrix = str(cfg["bitrix24-webhook"]["url"]).rstrip("/") + "/"
     supabase = cfg["supabase-service-role-key"]
     deepseek = cfg["deepseek-api-key"]["api_key"]
-    return "\n".join(
-        [
-            f"DEEPSEEK_API_KEY={deepseek}",
-            f"BITRIX_WEBHOOK_URL={bitrix}",
-            f"SUPABASE_URL={supabase['url']}",
-            f"SUPABASE_SERVICE_ROLE_KEY={supabase['key']}",
-            "PORT=3000",
-            f"WIDGET_ORIGIN={WIDGET_ORIGIN}",
-            "",
-        ]
-    )
+    lines = [
+        f"DEEPSEEK_API_KEY={deepseek}",
+        f"BITRIX_WEBHOOK_URL={bitrix}",
+        f"SUPABASE_URL={supabase['url']}",
+        f"SUPABASE_SERVICE_ROLE_KEY={supabase['key']}",
+        "PORT=3000",
+        f"WIDGET_ORIGIN={WIDGET_ORIGIN}",
+    ]
+    openai = openai_api_key(cfg)
+    if openai:
+        lines.append(f"OPENAI_API_KEY={openai}")
+    lines.append("")
+    return "\n".join(lines)
 
 
 def main() -> None:

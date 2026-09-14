@@ -20,8 +20,10 @@ Env: `DEEPSEEK_API_KEY`, `BITRIX_WEBHOOK_URL`, `SUPABASE_URL`
 (`https://kmepxyervpeujwvgdqtm.supabase.co`), `SUPABASE_SERVICE_ROLE_KEY`,
 `WIDGET_ORIGIN` (HTTPS origin Vercel, bez slasha), `PORT=3000`,
 `SENTRY_DSN` (adres ingest projektu, nie token `sntryu_`).
-Opcjonalnie RAG FAQ (Nest, nie widget): `OPENAI_API_KEY` (`text-embedding-3-small`),
-`DATABASE_URL` (Postgres/pgvector). Migracja
+Opcjonalnie RAG FAQ (Nest, nie widget): `OPENAI_API_KEY` (`text-embedding-3-small`).
+Indeks `eva_bot.context_node_embeddings` Nest czyta przez Supabase service
+role (jak `context_nodes`). `DATABASE_URL` jest tylko do skryptu ingestu,
+nie do tury czatu. Migracja
 `20260913220000_context_node_embeddings.sql` **nie** apply na PROD bez zgody.
 Po apply: `npm run ingest:leaves --workspace api` (wymaga `nest build` /
 `dist`; ładuje `eva_bot.context_nodes` gdy jest Supabase env, inaczej
