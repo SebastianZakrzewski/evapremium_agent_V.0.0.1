@@ -1,5 +1,12 @@
 import type { ContextNode } from './context-tree';
 
+/** Calibrated on PROD PL paraphrases (2026-09-15 iter-2): 0.8 empty;
+ * 0.5 misses temp (~0.496) and fit@rank4; 0.49+topK4 → recall@K=1.0. */
+export const CONTEXT_LEAF_SEARCH_THRESHOLD = 0.49;
+
+/** Cap candidates returned to the agent after threshold filter. */
+export const CONTEXT_LEAF_SEARCH_TOP_K = 4;
+
 export type ContextLeafSearchHit = {
   slug: string;
   score: number;
@@ -36,7 +43,8 @@ export function searchContextLeaves(
   queryVector: number[],
   index: ContextLeafVector[],
   nodes: ContextNode[],
-  threshold: number,
+  threshold: number = CONTEXT_LEAF_SEARCH_THRESHOLD,
+  topK: number = CONTEXT_LEAF_SEARCH_TOP_K,
 ): ContextLeafSearchHit[] {
   const hits: ContextLeafSearchHit[] = [];
   for (const entry of index) {
@@ -55,6 +63,6 @@ export function searchContextLeaves(
     }
   }
   hits.sort((a, b) => b.score - a.score);
-  return hits;
+  return hits.slice(0, Math.max(0, topK));
 }
 

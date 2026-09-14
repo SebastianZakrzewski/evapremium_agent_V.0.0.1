@@ -1,6 +1,6 @@
 # Vercel dashboard (bez proxy czatu)
 
-Kod: `deploy/dashboard-vercel.test.mjs`  
+Kod: `tests/deploy/dashboard-vercel.test.mjs`  
 Standard: [docs/test-cases/README.md](../README.md)
 
 Logika zestawu: panel operatora woła Nest z Bearer; nie dziedziczy rewrite
@@ -12,7 +12,7 @@ Logika zestawu: panel operatora woła Nest z Bearer; nie dziedziczy rewrite
 
 ### dash-deploy-001 — Brak rewrite `/v1` na Hetzner
 
-- **Kod:** `deploy/dashboard-vercel.test.mjs` → `dashboard Vercel config does not rewrite /v1 to Hetzner`
+- **Kod:** `tests/deploy/dashboard-vercel.test.mjs` → `dashboard Vercel config does not rewrite /v1 to Hetzner`
 - **Krytyczność:** high
 - **Logika:** token dashboardu nie może iść przez publiczny rewrite widgetu.
 - **Wejście:** `dashboard/vercel.json`

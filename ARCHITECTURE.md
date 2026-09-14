@@ -82,12 +82,15 @@ serwerowo (nie anon z widgetu).
    (aktywny liść → `body`, w tym puste seed; gałąź / brak / nieaktywny → miss).
    W procesie: fixture in-memory za portem (jak kaskada i wycena).
    Pomocniczy indeks `eva_bot.context_node_embeddings` (`vector(1536)`,
-   migracja `20260913220000_context_node_embeddings.sql` w repo, **bez apply
-   PROD**). Nest: `OPENAI_API_KEY` → `text-embedding-3-small`; `DATABASE_URL`
-   → pgvector. Ingest: skrypt `npm run ingest:leaves --workspace api`, nie
-   boot czatu. Bez klucza / URL: stub, puste wyszukiwanie. Fakt nadal
-   `lookup-leaf` po slugu; wektory nie zwracają `body`. Agent tury ma tool
-   `search-leaves` (Nest); apply indeksu na PROD nie. Wymagane liście na start: `chat-zapis` (informacja o transkrypcie),
+   migracja `20260913220000_context_node_embeddings.sql` w repo; na PROD
+   zastosowany). Nest: `OPENAI_API_KEY` → `text-embedding-3-small`;
+   `DATABASE_URL` → pgvector. Wyszukiwanie: cosine ≥
+   `CONTEXT_LEAF_SEARCH_THRESHOLD` (0.49) i cap `CONTEXT_LEAF_SEARCH_TOP_K`
+   (4); zwrot tylko `{ slug, score }`. Ingest: skrypt
+   `npm run ingest:leaves --workspace api`, nie boot czatu. Bez klucza /
+   URL: stub, puste wyszukiwanie. Fakt nadal `lookup-leaf` po slugu;
+   wektory nie zwracają `body`. Agent tury ma tool `search-leaves` (Nest).
+   Wymagane liście na start: `chat-zapis` (informacja o transkrypcie),
    `zgoda-lead` (klauzula przy telefonie/mailu). **Treść prawną wkleja biznes**
    ze sklepu; agent jej nie generuje. Dalsze FAQ (dostawa, pielęgnacja, …) jako
    kolejne liście.

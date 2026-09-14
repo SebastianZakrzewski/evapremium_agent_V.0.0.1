@@ -1,6 +1,6 @@
 # Gałąź tury (tool-e profilu)
 
-Kod: `api/src/mastra/intents/prepare-intent-turn.spec.ts`
+Kod: `tests/api/mastra/intents/prepare-intent-turn.spec.ts`
 
 Logika zestawu: kwalifikacja → `IntentProfile` → mapa tooli tury ⊆ katalogu
 Nest. `quote-price` tylko na `pricing`. SSE bez zmiany (`stream-chat-message.spec.ts`).
@@ -14,7 +14,7 @@ Nest. `quote-price` tylko na `pricing`. SSE bez zmiany (`stream-chat-message.spe
 
 ### turn-001 — pricing: resolve-template + quote-price
 
-- **Kod:** `api/src/mastra/intents/prepare-intent-turn.spec.ts` → `it('gives pricing the quote-price and resolve-template tools')`
+- **Kod:** `tests/api/mastra/intents/prepare-intent-turn.spec.ts` → `it('gives pricing the quote-price and resolve-template tools')`
 - **Krytyczność:** critical
 - **Logika:** Gałąź wyceny widzi macierz i kaskadę; instrukcja profilu trafia do tury.
 - **Wejście:** stub qualify `Ile kosztują dywaniki do Golfa 8?` + katalog 3 tooli
@@ -22,7 +22,7 @@ Nest. `quote-price` tylko na `pricing`. SSE bez zmiany (`stream-chat-message.spe
 
 ### turn-002 — product_info bez quote-price
 
-- **Kod:** `api/src/mastra/intents/prepare-intent-turn.spec.ts` → `it('does not expose quote-price on product_info')`
+- **Kod:** `tests/api/mastra/intents/prepare-intent-turn.spec.ts` → `it('does not expose quote-price on product_info')`
 - **Krytyczność:** critical
 - **Logika:** Kwota nie może być wywołana na Q&A — tool nie ma w mapie tury.
 - **Wejście:** `Czy dywaniki pasują do Golfa 8?`
@@ -30,7 +30,7 @@ Nest. `quote-price` tylko na `pricing`. SSE bez zmiany (`stream-chat-message.spe
 
 ### turn-004 — delivery: search-leaves + lookup-leaf
 
-- **Kod:** `api/src/mastra/intents/prepare-intent-turn.spec.ts` → `it('gives delivery search-leaves and lookup-leaf without quote-price')`
+- **Kod:** `tests/api/mastra/intents/prepare-intent-turn.spec.ts` → `it('gives delivery search-leaves and lookup-leaf without quote-price')`
 - **Krytyczność:** critical
 - **Logika:** FAQ dostawy ma wyszukiwanie sluga i lookup; bez kwoty. Puste search = miss.
 - **Wejście:** `Jaki jest termin dostawy?`
@@ -38,7 +38,7 @@ Nest. `quote-price` tylko na `pricing`. SSE bez zmiany (`stream-chat-message.spe
 
 ### turn-003 — Brak id w katalogu → błąd, nie cichy drop
 
-- **Kod:** `api/src/mastra/intents/prepare-intent-turn.spec.ts` → `it('throws when a profile tool is missing from the catalog')`
+- **Kod:** `tests/api/mastra/intents/prepare-intent-turn.spec.ts` → `it('throws when a profile tool is missing from the catalog')`
 - **Krytyczność:** high
 - **Logika:** Nieznane id toola nie jest pomijane.
 - **Wejście:** katalog tylko `lookup-leaf`, żądanie `quote-price`

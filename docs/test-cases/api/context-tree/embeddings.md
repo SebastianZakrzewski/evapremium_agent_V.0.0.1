@@ -1,8 +1,8 @@
 # Adapter embeddings context tree
 
-Kod: `api/src/context-tree/embeddings/postgres-embeddings.spec.ts`,
+Kod: `tests/api/context-tree/embeddings/postgres-embeddings.spec.ts`,
 `ingest.spec.ts`, `openai-text-embedder.spec.ts`, `run-ingest.spec.ts`,
-`api/src/domain/context-leaf-ingest.spec.ts`  
+`tests/api/domain/context-leaf-ingest.spec.ts`  
 Migracja: `supabase/migrations/20260913220000_context_node_embeddings.sql`  
 Standard: [docs/test-cases/README.md](../../README.md)
 
@@ -21,7 +21,7 @@ Bez apply PROD.
 
 ### leaf-emb-001 — Kwalifikacja ingestu pomija gałąź i puste seed
 
-- **Kod:** `api/src/domain/context-leaf-ingest.spec.ts` → `it('keeps active leaves with body and skips branch, inactive, and empty legal seed')`
+- **Kod:** `tests/api/domain/context-leaf-ingest.spec.ts` → `it('keeps active leaves with body and skips branch, inactive, and empty legal seed')`
 - **Krytyczność:** critical
 - **Logika:** indeks nie zawiera gałęzi, wyłączonych liści ani pustego `chat-zapis`.
 - **Wejście:** `CONTEXT_TREE_NODES`
@@ -29,7 +29,7 @@ Bez apply PROD.
 
 ### leaf-emb-002 — Ingest zapisuje i nadpisuje slug
 
-- **Kod:** `api/src/context-tree/embeddings/ingest.spec.ts` → `it('upserts active leaves with body and overwrites the same slug')`
+- **Kod:** `tests/api/context-tree/embeddings/ingest.spec.ts` → `it('upserts active leaves with body and overwrites the same slug')`
 - **Krytyczność:** critical
 - **Logika:** ponowny ingest tego samego sluga zastępuje wektor.
 - **Wejście:** fixture drzewa + stub embeddera
@@ -37,7 +37,7 @@ Bez apply PROD.
 
 ### leaf-emb-003 — Adapter SQL mapuje wiersze
 
-- **Kod:** `api/src/context-tree/embeddings/postgres-embeddings.spec.ts` → `it('maps eva_bot.context_node_embeddings onto the lookup contract')`
+- **Kod:** `tests/api/context-tree/embeddings/postgres-embeddings.spec.ts` → `it('maps eva_bot.context_node_embeddings onto the lookup contract')`
 - **Krytyczność:** high
 - **Logika:** Nest składa UPSERT/SELECT; brak DDL w requeście.
 - **Wejście:** fake `query` + wektor `[1,0,0]`
@@ -45,7 +45,7 @@ Bez apply PROD.
 
 ### leaf-emb-004 — OpenAI small z mocka HTTP
 
-- **Kod:** `api/src/context-tree/embeddings/openai-text-embedder.spec.ts` → `it('posts text-embedding-3-small and returns the vector')`
+- **Kod:** `tests/api/context-tree/embeddings/openai-text-embedder.spec.ts` → `it('posts text-embedding-3-small and returns the vector')`
 - **Krytyczność:** high
 - **Logika:** embedding woła Nest, nie Mastra; model `text-embedding-3-small`.
 - **Wejście:** fake fetch, klucz `sk-test`
@@ -53,7 +53,7 @@ Bez apply PROD.
 
 ### leaf-emb-005 — Ingest skryptu skip bez env
 
-- **Kod:** `api/src/context-tree/embeddings/run-ingest.spec.ts` → `it('skips when embedder or database env is missing')`; `api/scripts/ingest-context-leaves.test.mjs`
+- **Kod:** `tests/api/context-tree/embeddings/run-ingest.spec.ts` → `it('skips when embedder or database env is missing')`; `tests/api/scripts/ingest-context-leaves.test.mjs`
 - **Krytyczność:** high
 - **Logika:** `verify` bez `OPENAI_API_KEY` / `DATABASE_URL` nie woła sieci.
 - **Wejście:** puste env
@@ -61,7 +61,7 @@ Bez apply PROD.
 
 ### leaf-emb-006 — Ingest ładuje katalog, nie tylko fixture
 
-- **Kod:** `api/src/context-tree/embeddings/run-ingest.spec.ts` → `it('loads nodes from the catalog loader instead of the fixture')`
+- **Kod:** `tests/api/context-tree/embeddings/run-ingest.spec.ts` → `it('loads nodes from the catalog loader instead of the fixture')`
 - **Krytyczność:** high
 - **Logika:** po apply PROD skrypt ma indeksować `context_nodes`, nie sam fixture.
 - **Wejście:** env + `loadNodes` zwraca `[]`

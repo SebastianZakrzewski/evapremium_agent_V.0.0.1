@@ -135,3 +135,18 @@ Slice 1–4 **nie dodają** świadomego długu poza TD-003/TD-005 (Jest bez
   ClickHouse.
 - **Nie robić przy usuwaniu:** LibSQL jako magazyn metryk Studio.
 
+## TD-012 — próg RAG 0.49: recall@K OK, hit@1 niepełny
+
+- **Stan:** otwarte
+- **Priorytet:** średni
+- **Kompromis:** kalibracja PL PROD (2026-09-15) — próg 0.8 dawał empty 100%;
+  0.49 + `topK=4` daje recall@K = 1.0 przy hit@1 ≈ 0.57 (kolizje
+  `czas-produkcji`/`dostawa`, `reklamacja`/`gwarancja`, fit vs
+  `dopasowanie-model`). Brak osobnego liścia `temperatura` — fakt w
+  `parametry` (~0.496).
+- **Wpływ:** agent musi czasem wybrać wśród 2–4 slugów przez `lookup-leaf`;
+  zły top-1 może kosztować tool call.
+- **Warunek usunięcia:** rozróżnienie treści/title liści albo re-kalibracja
+  po większym zestawie zapytań, bez podnoszenia progu „na oko”.
+- **Nie robić przy usuwaniu:** body w wyniku `search-leaves`, scrape w runtime.
+

@@ -1,6 +1,6 @@
 # Lead Bitrix (domena)
 
-Kod: `api/src/domain/lead.spec.ts`  
+Kod: `tests/api/domain/lead.spec.ts`  
 Standard: [docs/test-cases/README.md](../../README.md)
 
 Logika zestawu: `crm.lead.add` tylko przy kontakcie (telefon lub e-mail) **oraz**
@@ -14,7 +14,7 @@ zgodzie. Transkrypt nie idzie do CRM.
 
 ### lead-001 — Kontakt + zgoda → lead
 
-- **Kod:** `api/src/domain/lead.spec.ts` → `it('creates a Bitrix lead when contact and consent are present')`
+- **Kod:** `tests/api/domain/lead.spec.ts` → `it('creates a Bitrix lead when contact and consent are present')`
 - **Krytyczność:** critical
 - **Logika:** kolejka człowieka powstaje tylko przy obietnicy kontaktu.
 - **Wejście:** `consent: true`, `phone: '+48 793 993 430'`, `sessionId`, opis auta
@@ -22,7 +22,7 @@ zgodzie. Transkrypt nie idzie do CRM.
 
 ### lead-002 — Bez zgody brak wywołania Bitrix
 
-- **Kod:** `api/src/domain/lead.spec.ts` → `it('does not call crm.lead.add without consent')`
+- **Kod:** `tests/api/domain/lead.spec.ts` → `it('does not call crm.lead.add without consent')`
 - **Krytyczność:** critical
 - **Logika:** zgoda jest bramką; nie zapisujemy leada „na wszelki wypadek”.
 - **Wejście:** `consent: false`, ten sam kontakt
@@ -30,7 +30,7 @@ zgodzie. Transkrypt nie idzie do CRM.
 
 ### lead-003 — Bez telefonu i maila brak wywołania Bitrix
 
-- **Kod:** `api/src/domain/lead.spec.ts` → `it('does not call crm.lead.add without phone or email')`
+- **Kod:** `tests/api/domain/lead.spec.ts` → `it('does not call crm.lead.add without phone or email')`
 - **Krytyczność:** critical
 - **Logika:** pusty kontakt nie jest leadem.
 - **Wejście:** `consent: true`, `email: '  '`

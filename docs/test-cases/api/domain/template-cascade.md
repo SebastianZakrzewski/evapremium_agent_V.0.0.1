@@ -1,7 +1,7 @@
 # Kaskada szablonu (domena)
 
-Kod: `api/src/domain/template-cascade.spec.ts`  
-Fixture: `api/src/templates/in-memory/cascade-fixture.ts`  
+Kod: `tests/api/domain/template-cascade.spec.ts`  
+Fixture: `tests/api/templates/in-memory/cascade-fixture.ts`  
 Standard: [docs/test-cases/README.md](../../README.md)
 
 Logika zestawu: surowe sloty → normalizacja → alias → jeden filtr
@@ -21,7 +21,7 @@ Logika zestawu: surowe sloty → normalizacja → alias → jeden filtr
 
 ### cascade-001 — Normalizacja slotów
 
-- **Kod:** `api/src/domain/template-cascade.spec.ts` → `it('normalizes raw slots without inventing keys')`
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('normalizes raw slots without inventing keys')`
 - **Krytyczność:** medium
 - **Logika:** tekst klienta jest ujednolicany (trim, lowercase, spacje); funkcja nie wymyśla `brand_key` / `model_key`.
 - **Wejście:** `{ brand: '  VW ', model: 'Golf   8', bodyType: 'Kombi', year: 2021 }`
@@ -29,7 +29,7 @@ Logika zestawu: surowe sloty → normalizacja → alias → jeden filtr
 
 ### cascade-002 — Mapowanie aliasów
 
-- **Kod:** `api/src/domain/template-cascade.spec.ts` → `it('maps aliases to canonical mat_templates keys')`
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('maps aliases to canonical mat_templates keys')`
 - **Krytyczność:** medium
 - **Logika:** alias musi trafić w kanoniczny klucz jak w `mat_templates` (Excel), nie w ładny slug.
 - **Wejście:** znormalizowane `{ brand: 'vw', model: 'golf 8', bodyType: 'kombi' }` + `CASCADE_ALIASES`
@@ -37,7 +37,7 @@ Logika zestawu: surowe sloty → normalizacja → alias → jeden filtr
 
 ### cascade-003 — Pełne sloty → jeden szablon
 
-- **Kod:** `api/src/domain/template-cascade.spec.ts` → `it('resolves full slots to one template')`
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('resolves full slots to one template')`
 - **Krytyczność:** critical
 - **Logika:** jednoznaczny szablon jest jedyną podstawą późniejszej wyceny; wynik niesie `dealerPricingCategoryKey`.
 - **Wejście:** `{ brand: 'vw', model: 'Golf 8', bodyType: 'kombi', year: 2021 }` + fixture
@@ -45,7 +45,7 @@ Logika zestawu: surowe sloty → normalizacja → alias → jeden filtr
 
 ### cascade-004 — Brak aliasu → none
 
-- **Kod:** `api/src/domain/template-cascade.spec.ts` → `it('returns none when the only slot has no alias')`
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('returns none when the only slot has no alias')`
 - **Krytyczność:** critical
 - **Logika:** nieznane auto nie dostaje szablonu ani ceny; 0 rekordów, bez zgadywania.
 - **Wejście:** `{ brand: 'nieznana-marka' }`
@@ -53,7 +53,7 @@ Logika zestawu: surowe sloty → normalizacja → alias → jeden filtr
 
 ### cascade-005 — Sama marka → many
 
-- **Kod:** `api/src/domain/template-cascade.spec.ts` → `it('returns many when only brand is known')`
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('returns many when only brand is known')`
 - **Krytyczność:** high
 - **Logika:** wiele szablonów = lista, bez ceny, aż do jednego rekordu. Nieaktywne wiersze odpadają.
 - **Wejście:** `{ brand: 'volkswagen' }`
@@ -61,7 +61,7 @@ Logika zestawu: surowe sloty → normalizacja → alias → jeden filtr
 
 ### cascade-006 — Nadwozie schodzi z N do 1
 
-- **Kod:** `api/src/domain/template-cascade.spec.ts` → `it('narrows many body variants to one with body type')`
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('narrows many body variants to one with body type')`
 - **Krytyczność:** high
 - **Logika:** filtr nadwozia (`body_type_key` lub `_1`/`_2`/`_3`) ma domknąć kaskadę do jednego wiersza.
 - **Wejście:** `{ brand: 'vw', model: 'golf 8', bodyType: 'hatch' }`
@@ -69,7 +69,7 @@ Logika zestawu: surowe sloty → normalizacja → alias → jeden filtr
 
 ### cascade-007 — Rok schodzi z N do 1
 
-- **Kod:** `api/src/domain/template-cascade.spec.ts` → `it('narrows generations to one with year')`
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('narrows generations to one with year')`
 - **Krytyczność:** high
 - **Logika:** rok w zakresie `year_from` … `year_to` / `is_open_ended` wybiera generację, nie „podobne auto”.
 - **Wejście:** `{ brand: 'vw', model: 'golf 7', bodyType: 'hatch', year: 2015 }`
@@ -77,7 +77,7 @@ Logika zestawu: surowe sloty → normalizacja → alias → jeden filtr
 
 ### cascade-008 — `record_key` bez reszty slotów
 
-- **Kod:** `api/src/domain/template-cascade.spec.ts` → `it('resolves an exact record_key without other slots')`
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('resolves an exact record_key without other slots')`
 - **Krytyczność:** high
 - **Logika:** znany `record_key` to celny strzał; nie wymaga marki/modelu w wejściu.
 - **Wejście:** `{ recordKey: 'passenger_car|audi|a4|2015-2023|sedan|5' }`
@@ -85,7 +85,7 @@ Logika zestawu: surowe sloty → normalizacja → alias → jeden filtr
 
 ### cascade-009 — Niezmapowany slot nie wymyśla klucza
 
-- **Kod:** `api/src/domain/template-cascade.spec.ts` → `it('ignores an unmapped extra slot instead of inventing a key')`
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('ignores an unmapped extra slot instead of inventing a key')`
 - **Krytyczność:** critical
 - **Logika:** brak aliasu = slot poza filtrem; system nie dopasowuje „na podobieństwo”.
 - **Wejście:** `{ brand: 'vw', model: 'golf-xyz' }` vs `{ brand: 'vw' }`

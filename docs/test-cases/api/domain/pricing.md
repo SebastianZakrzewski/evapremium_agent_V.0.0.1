@@ -1,7 +1,7 @@
 # Wycena (domena)
 
-Kod: `api/src/domain/pricing.spec.ts`  
-Fixture: `api/src/pricing/in-memory/pricing-fixture.ts`  
+Kod: `tests/api/domain/pricing.spec.ts`  
+Fixture: `tests/api/pricing/in-memory/pricing-fixture.ts`  
 Standard: [docs/test-cases/README.md](../../README.md)
 
 Logika zestawu: kategoria szablonu + wariant z `pricing_category_variants`
@@ -19,7 +19,7 @@ Logika zestawu: kategoria szablonu + wariant z `pricing_category_variants`
 
 ### pricing-001 — Lista wariantów tylko z kategorii
 
-- **Kod:** `api/src/domain/pricing.spec.ts` → `it('lists only variants attached to the template category')`
+- **Kod:** `tests/api/domain/pricing.spec.ts` → `it('lists only variants attached to the template category')`
 - **Krytyczność:** high
 - **Logika:** agent pyta o wariant wyłącznie z `pricing_category_variants` dla kategorii szablonu, nie z pełnego słownika.
 - **Wejście:** `dealerPricingCategoryKey: 'passenger_car'` + fixture
@@ -27,7 +27,7 @@ Logika zestawu: kategoria szablonu + wariant z `pricing_category_variants`
 
 ### pricing-002 — Znana kategoria + wariant → jedna kwota
 
-- **Kod:** `api/src/domain/pricing.spec.ts` → `it('quotes one amount from the matrix for a known category and variant')`
+- **Kod:** `tests/api/domain/pricing.spec.ts` → `it('quotes one amount from the matrix for a known category and variant')`
 - **Krytyczność:** critical
 - **Logika:** jedna para kategoria + wariant z jednym `mat_type` w macierzy daje jedną orientacyjną kwotę; nie zgadujemy ceny.
 - **Wejście:** `{ dealerPricingCategoryKey: 'passenger_car', variantKey: 'komplet-5szt' }`
@@ -35,7 +35,7 @@ Logika zestawu: kategoria szablonu + wariant z `pricing_category_variants`
 
 ### pricing-003 — Dual `mat_type` + wybór → jedna kwota
 
-- **Kod:** `api/src/domain/pricing.spec.ts` → `it('quotes when dual mat types are resolved with mat_type')`
+- **Kod:** `tests/api/domain/pricing.spec.ts` → `it('quotes when dual mat types are resolved with mat_type')`
 - **Krytyczność:** critical
 - **Logika:** przy dwóch typach maty w macierzy kwota powstaje dopiero po `mat_type`.
 - **Wejście:** pickup + `komplet-5szt` + `matType: '3d-with-rims'`
@@ -43,7 +43,7 @@ Logika zestawu: kategoria szablonu + wariant z `pricing_category_variants`
 
 ### pricing-004 — Dual bez `mat_type` → błąd, nie liczba
 
-- **Kod:** `api/src/domain/pricing.spec.ts` → `it('returns a domain error when mat_type is required and missing')`
+- **Kod:** `tests/api/domain/pricing.spec.ts` → `it('returns a domain error when mat_type is required and missing')`
 - **Krytyczność:** critical
 - **Logika:** brak wyboru typu maty nie może stać się kwotą.
 - **Wejście:** pickup + `komplet-5szt` bez `matType`
@@ -51,7 +51,7 @@ Logika zestawu: kategoria szablonu + wariant z `pricing_category_variants`
 
 ### pricing-005 — Wariant spoza kategorii → błąd, nie liczba
 
-- **Kod:** `api/src/domain/pricing.spec.ts` → `it('returns a domain error when the variant is not on the category')`
+- **Kod:** `tests/api/domain/pricing.spec.ts` → `it('returns a domain error when the variant is not on the category')`
 - **Krytyczność:** critical
 - **Logika:** wariant ze słownika globalnego, niepodpięty do kategorii, nie daje ceny.
 - **Wejście:** `passenger_car` + `nie-na-kategorii`
@@ -59,7 +59,7 @@ Logika zestawu: kategoria szablonu + wariant z `pricing_category_variants`
 
 ### pricing-006 — Wariant na kategorii, brak wiersza macierzy
 
-- **Kod:** `api/src/domain/pricing.spec.ts` → `it('returns a domain error when the category has the variant but the matrix has no row')`
+- **Kod:** `tests/api/domain/pricing.spec.ts` → `it('returns a domain error when the category has the variant but the matrix has no row')`
 - **Krytyczność:** high
 - **Logika:** brak wiersza `pricing_matrix` = brak kwoty, nie wymyślona liczba.
 - **Wejście:** `minivan` + `komplet-5szt`

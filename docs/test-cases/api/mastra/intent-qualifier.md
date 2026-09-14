@@ -1,6 +1,6 @@
 # Kwalifikator intencji
 
-Kod: `api/src/mastra/intents/intent-qualifier.spec.ts`
+Kod: `tests/api/mastra/intents/intent-qualifier.spec.ts`
 
 Logika zestawu: wiadomość → `ShopIntent` ze schematu Zod; stub bez DeepSeek;
 adapter Mastry parsuje structured output; krok `executeQualifyStep` bez shop-tooli.
@@ -18,7 +18,7 @@ Czat / SSE nietknięte (Slice 3).
 
 ### qualify-001 — Pytanie o cenę → pricing
 
-- **Kod:** `api/src/mastra/intents/intent-qualifier.spec.ts` → `it('maps a price question to pricing ShopIntent')`
+- **Kod:** `tests/api/mastra/intents/intent-qualifier.spec.ts` → `it('maps a price question to pricing ShopIntent')`
 - **Krytyczność:** high
 - **Logika:** Stub (verify bez `DEEPSEEK_API_KEY`) mapuje wycenę na `pricing`, wynik przechodzi `qualifyResultSchema`.
 - **Wejście:** `Ile kosztują dywaniki do Golfa 8?`
@@ -26,7 +26,7 @@ Czat / SSE nietknięte (Slice 3).
 
 ### qualify-002 — Dopasowanie auta → product_info
 
-- **Kod:** `api/src/mastra/intents/intent-qualifier.spec.ts` → `it('maps a fit question to product_info')`
+- **Kod:** `tests/api/mastra/intents/intent-qualifier.spec.ts` → `it('maps a fit question to product_info')`
 - **Krytyczność:** medium
 - **Logika:** Fit / katalog to `product_info`, nie wycena.
 - **Wejście:** `Czy dywaniki pasują do Golfa 8?`
@@ -34,7 +34,7 @@ Czat / SSE nietknięte (Slice 3).
 
 ### qualify-003 — Poza ofertą → out_of_scope
 
-- **Kod:** `api/src/mastra/intents/intent-qualifier.spec.ts` → `it('maps unknown copy to out_of_scope')`
+- **Kod:** `tests/api/mastra/intents/intent-qualifier.spec.ts` → `it('maps unknown copy to out_of_scope')`
 - **Krytyczność:** high
 - **Logika:** Brak ścieżki sklepu → `out_of_scope`, nie `general_agent`.
 - **Wejście:** `jaki jest kurs euro`
@@ -42,7 +42,7 @@ Czat / SSE nietknięte (Slice 3).
 
 ### qualify-004 — Structured output delivery ze schematu
 
-- **Kod:** `api/src/mastra/intents/intent-qualifier.spec.ts` → `it('parses structured generate output through qualifyResultSchema')`
+- **Kod:** `tests/api/mastra/intents/intent-qualifier.spec.ts` → `it('parses structured generate output through qualifyResultSchema')`
 - **Krytyczność:** high
 - **Logika:** Adapter Mastry czyta `object` z `generate` + Zod; bez wołania sieci.
 - **Wejście:** fake `generate` → `{ intent: 'delivery', confidence: 0.9 }`
@@ -50,7 +50,7 @@ Czat / SSE nietknięte (Slice 3).
 
 ### qualify-005 — general_agent odrzucony przez schemat
 
-- **Kod:** `api/src/mastra/intents/intent-qualifier.spec.ts` → `it('rejects generate output that is not a ShopIntent')`
+- **Kod:** `tests/api/mastra/intents/intent-qualifier.spec.ts` → `it('rejects generate output that is not a ShopIntent')`
 - **Krytyczność:** high
 - **Logika:** LLM nie może zwrócić catch-all agenta ze wszystkimi toolami.
 - **Wejście:** `{ intent: 'general_agent', confidence: 1 }`
@@ -58,7 +58,7 @@ Czat / SSE nietknięte (Slice 3).
 
 ### qualify-006 — Mapa tooli kwalifikatora pusta
 
-- **Kod:** `api/src/mastra/intents/intent-qualifier.spec.ts` → `it('exposes an empty shop-tool map')`
+- **Kod:** `tests/api/mastra/intents/intent-qualifier.spec.ts` → `it('exposes an empty shop-tool map')`
 - **Krytyczność:** high
 - **Logika:** Kwalifikator nie ma `resolve-template` / `quote-price` / `lookup-leaf`.
 - **Wejście:** `QUALIFIER_AGENT_TOOLS`
@@ -66,7 +66,7 @@ Czat / SSE nietknięte (Slice 3).
 
 ### qualify-007 — Krok workflow zwraca ShopIntent (stub, bez klucza)
 
-- **Kod:** `api/src/mastra/intents/intent-qualifier.spec.ts` → `it('returns ShopIntent from the qualifier without calling shop tools')`
+- **Kod:** `tests/api/mastra/intents/intent-qualifier.spec.ts` → `it('returns ShopIntent from the qualifier without calling shop tools')`
 - **Krytyczność:** high
 - **Logika:** `executeQualifyStep` to krok qualify; Jest nie bootuje Mastra ESM (`TD-003` analog).
 - **Wejście:** stub + `Ile kosztują dywaniki do Golfa 8?`

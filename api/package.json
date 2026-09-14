@@ -9,7 +9,7 @@
     "start:prod": "node dist/main.js",
     "test": "jest",
     "lint": "eslint \"src/**/*.ts\"",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
     "studio:prod": "node scripts/studio-prod.mjs",
     "ingest:leaves": "node scripts/ingest-context-leaves.mjs"
   },

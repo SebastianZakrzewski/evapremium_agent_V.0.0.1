@@ -1,6 +1,6 @@
 # Pamięć intencji sesji i filtr krawędzi
 
-Kod: `api/src/mastra/intents/accept-intent-transition.spec.ts`
+Kod: `tests/api/mastra/intents/accept-intent-transition.spec.ts`
 
 Logika zestawu: `acceptIntentTransition` przepuszcza kandydata tylko gdy
 krawędź jest dozwolona; `InMemoryIntentSessionState` trzyma temat rozmowy;
@@ -19,7 +19,7 @@ wymuszone `out_of_scope` (niska pewność) omija filtr.
 
 ### memory-001 — Brak stanu → przyjmij kandydata
 
-- **Kod:** `api/src/mastra/intents/accept-intent-transition.spec.ts` → `it('accepts the candidate when the session has no current intent')`
+- **Kod:** `tests/api/mastra/intents/accept-intent-transition.spec.ts` → `it('accepts the candidate when the session has no current intent')`
 - **Krytyczność:** high
 - **Logika:** Pierwsza wiadomość nie ma „skąd”.
 - **Wejście:** `from: undefined`, `to: pricing`
@@ -27,7 +27,7 @@ wymuszone `out_of_scope` (niska pewność) omija filtr.
 
 ### memory-002 — product_info → pricing dozwolone
 
-- **Kod:** `api/src/mastra/intents/accept-intent-transition.spec.ts` → `it('allows product_info to switch to pricing')`
+- **Kod:** `tests/api/mastra/intents/accept-intent-transition.spec.ts` → `it('allows product_info to switch to pricing')`
 - **Krytyczność:** high
 - **Logika:** Krawędź z profilu FAQ.
 - **Wejście:** `product_info` → `pricing`
@@ -35,7 +35,7 @@ wymuszone `out_of_scope` (niska pewność) omija filtr.
 
 ### memory-003 — product_info odrzuca out_of_scope (pewny qualify)
 
-- **Kod:** `api/src/mastra/intents/accept-intent-transition.spec.ts` → `it('rejects an off-graph candidate and keeps product_info')`
+- **Kod:** `tests/api/mastra/intents/accept-intent-transition.spec.ts` → `it('rejects an off-graph candidate and keeps product_info')`
 - **Krytyczność:** high
 - **Logika:** `out_of_scope` nie jest na `allowedTransitions` FAQ — filtr zostawia stan.
 - **Wejście:** `product_info` → `out_of_scope`
@@ -43,7 +43,7 @@ wymuszone `out_of_scope` (niska pewność) omija filtr.
 
 ### memory-004 — out_of_scope może wrócić do product_info
 
-- **Kod:** `api/src/mastra/intents/accept-intent-transition.spec.ts` → `it('allows leaving out_of_scope toward product_info')`
+- **Kod:** `tests/api/mastra/intents/accept-intent-transition.spec.ts` → `it('allows leaving out_of_scope toward product_info')`
 - **Krytyczność:** medium
 - **Logika:** Routing na profilu OOS.
 - **Wejście:** `out_of_scope` → `product_info`
@@ -51,7 +51,7 @@ wymuszone `out_of_scope` (niska pewność) omija filtr.
 
 ### memory-005 — Druga tura FAQ→cena ładuje quote-price
 
-- **Kod:** `api/src/mastra/intents/accept-intent-transition.spec.ts` → `it('loads pricing tools on a legal switch from product_info')`
+- **Kod:** `tests/api/mastra/intents/accept-intent-transition.spec.ts` → `it('loads pricing tools on a legal switch from product_info')`
 - **Krytyczność:** critical
 - **Logika:** Pamięć sesji + legalna krawędź otwiera macierz.
 - **Wejście:** ta sama sesja, fit potem „ile kosztują”
@@ -59,7 +59,7 @@ wymuszone `out_of_scope` (niska pewność) omija filtr.
 
 ### memory-006 — Pewny out_of_scope przy FAQ nie otwiera ceny
 
-- **Kod:** `api/src/mastra/intents/accept-intent-transition.spec.ts` → `it('keeps product_info tools when qualify proposes out_of_scope')`
+- **Kod:** `tests/api/mastra/intents/accept-intent-transition.spec.ts` → `it('keeps product_info tools when qualify proposes out_of_scope')`
 - **Krytyczność:** high
 - **Logika:** Kandydat odrzucony → tool-e FAQ, bez `quote-price`.
 - **Wejście:** `currentIntent: product_info`, qualify `out_of_scope` 1.0
@@ -67,7 +67,7 @@ wymuszone `out_of_scope` (niska pewność) omija filtr.
 
 ### memory-007 — Sesje nie dzielą stanu
 
-- **Kod:** `api/src/mastra/intents/accept-intent-transition.spec.ts` → `it('does not share intent across sessions')`
+- **Kod:** `tests/api/mastra/intents/accept-intent-transition.spec.ts` → `it('does not share intent across sessions')`
 - **Krytyczność:** medium
 - **Logika:** Map po `sessionId`.
 - **Wejście:** `one=pricing`, odczyt `two`
@@ -75,7 +75,7 @@ wymuszone `out_of_scope` (niska pewność) omija filtr.
 
 ### memory-008 — Niska pewność i tak → out_of_scope
 
-- **Kod:** `api/src/mastra/intents/accept-intent-transition.spec.ts` → `it('still forces out_of_scope after low-confidence fallback')`
+- **Kod:** `tests/api/mastra/intents/accept-intent-transition.spec.ts` → `it('still forces out_of_scope after low-confidence fallback')`
 - **Krytyczność:** high
 - **Logika:** Fallback Slice 4 nie jest blokowany grafem.
 - **Wejście:** `currentIntent: product_info`, dwa wyniki 0.1 / 0.2

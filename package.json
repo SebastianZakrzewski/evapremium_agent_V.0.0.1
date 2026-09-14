@@ -13,7 +13,7 @@
     "test": "npm test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "verify": "npm run test && node --test deploy/update-container.test.mjs api/scripts/studio-prod.test.mjs api/scripts/ingest-context-leaves.test.mjs deploy/studio.test.mjs deploy/dashboard-vercel.test.mjs && npm run lint && npm run typecheck",
+    "verify": "npm run test && node --test tests/deploy/update-container.test.mjs tests/api/scripts/studio-prod.test.mjs tests/api/scripts/ingest-context-leaves.test.mjs tests/deploy/studio.test.mjs tests/deploy/dashboard-vercel.test.mjs && npm run lint && npm run typecheck",
     "studio:prod": "npm run studio:prod --workspace api"
   }
 }

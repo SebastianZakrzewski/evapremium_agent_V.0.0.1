@@ -1,6 +1,6 @@
 # Zdarzenia domenowe agenta
 
-Kod: `api/src/agent-events/agent-events.spec.ts`  
+Kod: `tests/api/agent-events/agent-events.spec.ts`  
 Standard: [docs/test-cases/README.md](../../README.md)
 
 Logika zestawu: Nest dopisuje fakty tury (kaskada, wycena, drzewo, lead,
@@ -19,7 +19,7 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 
 ### events-001 — Kaskada 0/1/N → cascade_resolved
 
-- **Kod:** `api/src/agent-events/agent-events.spec.ts` → `it('records cascade none/one/many without message text')`
+- **Kod:** `tests/api/agent-events/agent-events.spec.ts` → `it('records cascade none/one/many without message text')`
 - **Krytyczność:** high
 - **Logika:** operator widzi wynik kaskady jako fakt Nest, nie z tekstu modelu.
 - **Wejście:** `runWithTurnSession`, `resolveTemplate` brak / Golf 8 kombi / samo `vw`
@@ -27,7 +27,7 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 
 ### events-002 — quote_issued tylko z macierzy
 
-- **Kod:** `api/src/agent-events/agent-events.spec.ts` → `it('records quote_issued only when the matrix returns an amount')`
+- **Kod:** `tests/api/agent-events/agent-events.spec.ts` → `it('records quote_issued only when the matrix returns an amount')`
 - **Krytyczność:** critical
 - **Logika:** kwota na osi tylko gdy macierz zwróciła amount.
 - **Wejście:** poprawny wariant `komplet-5szt` oraz nieznany wariant
@@ -35,7 +35,7 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 
 ### events-003 — Hit i miss drzewa bez body
 
-- **Kod:** `api/src/agent-events/agent-events.spec.ts` → `it('records context_hit and context_miss without leaf body')`
+- **Kod:** `tests/api/agent-events/agent-events.spec.ts` → `it('records context_hit and context_miss without leaf body')`
 - **Krytyczność:** high
 - **Logika:** payload ma slug, nie treść liścia.
 - **Wejście:** `lookupLeaf('dostawa')`, `lookupLeaf('pielegnacja')`
@@ -43,7 +43,7 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 
 ### events-004 — lead_attempted zgoda i skip
 
-- **Kod:** `api/src/agent-events/agent-events.spec.ts` → `it('records lead_attempted for consent and skip outcomes')`
+- **Kod:** `tests/api/agent-events/agent-events.spec.ts` → `it('records lead_attempted for consent and skip outcomes')`
 - **Krytyczność:** critical
 - **Logika:** próba leada jest faktem niezależnie od Bitrix.
 - **Wejście:** `LeadAttemptService.create` (Nest `LeadService` dziedziczy) zgoda+mail, potem brak zgody
@@ -51,7 +51,7 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 
 ### events-005 — intent_accepted bez tekstu użytkownika
 
-- **Kod:** `api/src/agent-events/agent-events.spec.ts` → `it('records intent_accepted from the Mastra chat turn without the user text')`
+- **Kod:** `tests/api/agent-events/agent-events.spec.ts` → `it('records intent_accepted from the Mastra chat turn without the user text')`
 - **Krytyczność:** high
 - **Logika:** zaakceptowana intencja tury, nie kopia wiadomości.
 - **Wejście:** `MastraChatAgent.stream` z pytaniem o cenę
@@ -59,7 +59,7 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 
 ### events-006 — tool_failed bez kopii czatu
 
-- **Kod:** `api/src/agent-events/agent-events.spec.ts` → `it('records tool_failed without chat copy when a shop tool throws')`
+- **Kod:** `tests/api/agent-events/agent-events.spec.ts` → `it('records tool_failed without chat copy when a shop tool throws')`
 - **Krytyczność:** medium
 - **Logika:** awaria toola to `toolId`, nie komunikat wyjątku z czatu.
 - **Wejście:** `executeShopTool` rzuca Error z tekstem użytkownika
@@ -67,7 +67,7 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 
 ### events-007 — Stub czatu emituje wycenę w sesji
 
-- **Kod:** `api/src/agent-events/agent-events.spec.ts` → `it('emits quote_issued when the stub chat agent quotes in a session')`
+- **Kod:** `tests/api/agent-events/agent-events.spec.ts` → `it('emits quote_issued when the stub chat agent quotes in a session')`
 - **Krytyczność:** high
 - **Logika:** `sessionId` z `handle` trafia do ALS i do eventu.
 - **Wejście:** `postChatMessage` stub `quote passenger_car komplet-5szt`
@@ -75,7 +75,7 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 
 ### events-008 — context_search bez body FAQ
 
-- **Kod:** `api/src/agent-events/agent-events.spec.ts` → `it('records context_search slugs without leaf body')`
+- **Kod:** `tests/api/agent-events/agent-events.spec.ts` → `it('records context_search slugs without leaf body')`
 - **Krytyczność:** high
 - **Logika:** wyszukiwanie semantyczne emituje slugi, nie treść liścia.
 - **Wejście:** `searchLeaves` parafraza dostawy oraz VIN

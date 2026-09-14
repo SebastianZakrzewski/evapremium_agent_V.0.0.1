@@ -1,0 +1,407 @@
+{
+  "$schema_comment": "Roboczy katalog wiedzy EvaPremium (draft). Nie jest jeszcze źródłem runtime agenta — runtime = eva_bot.context_nodes po akceptacji biznesu. Scraping w runtime nadal zakazany (core-beliefs).",
+  "meta": {
+    "brand_workspace": "EvaPremium",
+    "primary_site": "https://www.evapremium.pl",
+    "context_site": "https://www.evamats.pl",
+    "context_note": "Druga strona użyta tylko jako kontekst produktowy (ten sam typ dywaników EVA 3D). Do katalogu wchodzą wyłącznie fakty o produkcie — bez danych firmowych drugiej marki.",
+    "locale": "pl-PL",
+    "format": "json",
+    "format_rationale": "JSON: natywny dla Nest/TS/Zod/Supabase, łatwy diff i seed do context_nodes. XML zbędny (więcej szumu, gorsze DX).",
+    "version": "0.2.0-draft",
+    "status_legend": {
+      "approved": "Można wstawić do context_nodes po krótkim review",
+      "needs_decision": "Konflikt lub brak kanonu — nie podawać klientowi",
+      "context_only": "Fakt produktowy z kontekstu drugiego źródła; wymaga potwierdzenia dla EvaPremium"
+    }
+  },
+  "open_decisions": [],
+  "resolved_decisions": [
+    {
+      "id": "warranty_term",
+      "resolution": "Gwarancja 1 rok (na wady materiałowe i wykonania).",
+      "resolved_at": "2026-09-14"
+    },
+    {
+      "id": "temp_range",
+      "resolution": "Kanon: -40°C … +80°C. Pianka EVA zachowuje elastyczność w niskich temperaturach (typowo do ok. -40°C) i nie mięknie w typowych temperaturach kabiny latem; górna granica +80°C jest zgodna z charakterystyką EVA w zastosowaniach motoryzacyjnych (EP). Zakres -50…+50 z kontekstu odrzucony jako zbyt konserwatywny u góry.",
+      "resolved_at": "2026-09-14"
+    },
+    {
+      "id": "returns_policy",
+      "resolution": "Gwarancja dopasowania: przy braku dopasowania klient zgłasza reklamację do 14 dni; firma zobowiązuje się uszyć nowy komplet lub naprawić obecny na własny koszt, w tym koszt dostawy.",
+      "resolved_at": "2026-09-14"
+    },
+    {
+      "id": "variant_without_rims",
+      "resolution": "Dostępny także wariant 3D bez rantów.",
+      "resolved_at": "2026-09-14"
+    },
+    {
+      "id": "cell_patterns",
+      "resolution": "Dostępne struktury: romby oraz plastry miodu (bez kropli w ofercie kanonicznej).",
+      "resolved_at": "2026-09-14"
+    },
+    {
+      "id": "heel_pads",
+      "resolution": "Podpiętki nie są w komplecie — osobny produkt do dokupienia.",
+      "resolved_at": "2026-09-14"
+    },
+    {
+      "id": "shipping_threshold",
+      "resolution": "Dostawa od 600 zł zawsze gratis. Poniżej 600 zł: płatna (27 zł wg EP FAQ — bez zmiany przez OD).",
+      "resolved_at": "2026-09-14"
+    }
+  ],
+  "categories": [
+    {
+      "id": "material",
+      "title": "Materiał i właściwości",
+      "topics": [
+        {
+          "slug": "material-eva",
+          "title": "Z czego są dywaniki",
+          "status": "approved",
+          "sources": ["EP", "CTX"],
+          "facts": [
+            "Dywaniki wykonane są z pianki EVA (etylen–octan winylu).",
+            "Materiał jest elastyczny, wodoodporny i odzyskuje kształt po nacisku.",
+            "Materiał jest hipoalergiczny i w normalnym użytkowaniu nie wydziela nieprzyjemnego zapachu."
+          ],
+          "agent_body": "Dywaniki EvaPremium są wykonane z pianki EVA (etylen–octan winylu). To elastyczny, wodoodporny materiał, który odzyskuje kształt po nacisku i nie chłonie zabrudzeń jak klasyczna wykładzina."
+        },
+        {
+          "slug": "parametry",
+          "title": "Parametry techniczne",
+          "status": "approved",
+          "sources": ["EP", "BUSINESS"],
+          "facts": [
+            "Grubość: ok. 10 mm.",
+            "Gęstość: 0,6 g/cm³.",
+            "Zakres temperatur pracy: -40°C do +80°C (kanon na bazie właściwości pianki EVA w zastosowaniach motoryzacyjnych)."
+          ],
+          "agent_body": "Dywaniki mają grubość ok. 10 mm i gęstość ok. 0,6 g/cm³. Pianka EVA zachowuje elastyczność w mrozie i jest odporna na typowe temperatury w kabinie — zakres pracy to ok. -40°C do +80°C."
+        },
+        {
+          "slug": "wlasciwosci",
+          "title": "Właściwości użytkowe",
+          "status": "approved",
+          "sources": ["EP", "CTX"],
+          "facts": [
+            "100% wodoodporność / zatrzymywanie wody i brudu na powierzchni.",
+            "Łatwe czyszczenie.",
+            "Izolacja termiczna (EP).",
+            "Właściwości antybakteryjne / higieniczne (EP).",
+            "Antypoślizgowość (EP).",
+            "Odporność na zużycie; żywotność marketingowa z kontekstu: ok. 5–7 lat (nie mylić z gwarancją)."
+          ],
+          "agent_body": "Dywaniki EVA są wodoodporne, łatwe w czyszczeniu i chronią oryginalną podłogę przed brudem oraz wilgocią. Materiał jest elastyczny, odporny na zużycie i ma właściwości antypoślizgowe oraz higieniczne."
+        },
+        {
+          "slug": "struktura-komorek",
+          "title": "Struktura powierzchni",
+          "status": "approved",
+          "sources": ["EP", "BUSINESS"],
+          "facts": [
+            "Dostępne struktury powierzchni: romby oraz plastry miodu.",
+            "Głęboka struktura komórek zatrzymuje brud i wilgoć na powierzchni dywanika."
+          ],
+          "agent_body": "Dywaniki mają głęboką strukturę komórek, która zatrzymuje brud i wilgoć na powierzchni. Do wyboru są dwa wzory: romby oraz plastry miodu."
+        }
+      ]
+    },
+    {
+      "id": "product_variants",
+      "title": "Warianty produktu",
+      "topics": [
+        {
+          "slug": "3d-z-rantami",
+          "title": "Dywaniki 3D z rantami",
+          "status": "approved",
+          "sources": ["EP", "CTX"],
+          "facts": [
+            "Wariant 3D z rantami chroni boczną część podłogi / tapicerkę.",
+            "EP: wysokość rantów do ok. 8 cm.",
+            "EP: zintegrowany języzor 3D pod pedałami gazu.",
+            "EP: rzepy w rogach stabilizują dywanik."
+          ],
+          "agent_body": "Dywaniki 3D z rantami mają podniesione krawędzie (u nas do ok. 8 cm), które lepiej chronią podłogę przed brudem i wilgocią. Wersja EvaPremium obejmuje też języzor 3D pod pedałami oraz rzepy w rogach dla stabilnego ułożenia."
+        },
+        {
+          "slug": "3d-bez-rantow",
+          "title": "Dywaniki 3D bez rantów",
+          "status": "approved",
+          "sources": ["BUSINESS", "CTX"],
+          "facts": [
+            "Dostępny jest także wariant 3D bez rantów.",
+            "Wariant bez rantów ma niższy profil przy krawędziach niż wersja z rantami."
+          ],
+          "agent_body": "Oferujemy też dywaniki 3D bez rantów — z niższym profilem przy krawędziach. Jeśli zależy Ci na maksymalnej ochronie boków podłogi, lepszym wyborem będzie wersja z rantami."
+        },
+        {
+          "slug": "zakres-kompletu",
+          "title": "Zakres kompletu",
+          "status": "context_only",
+          "sources": ["CTX", "EP"],
+          "facts": [
+            "Typowe elementy: dywanik kierowcy, przód, tył, mata bagażnika.",
+            "Konfiguracja zakresu (przód / tył / bagażnik) bywa dostępna w ofercie produktowej — ceny EP wyłącznie z Nest/cennika."
+          ],
+          "agent_body": "Komplet może obejmować dywaniki przednie, tylne oraz matę do bagażnika — dokładny zakres zależy od konfiguracji zamówienia. Cenę podajemy dopiero po dopasowaniu szablonu do auta."
+        },
+        {
+          "slug": "kolory",
+          "title": "Kolorystyka",
+          "status": "approved",
+          "sources": ["EP", "CTX"],
+          "facts": [
+            "EP — klasyczne: czarny, ciemnoszary, jasnobeżowy, kość słoniowa, brązowy.",
+            "EP — żywe: niebieski, czerwony, bordowy, pomarańczowy, żółty, zielony, jasnozielony, różowy, fioletowy.",
+            "Kontekst produktowy: bardzo szeroka paleta kolorów mat + osobne kolory obrzeża (rzędu 150+).",
+            "Disclaimer: kolor na ekranie może różnić się od fizycznego (ekran, światło, tekstura EVA)."
+          ],
+          "agent_body": "Dostępna jest szeroka paleta kolorów — od klasycznych (czarny, szarości, beże, brąz, kość słoniowa) po żywsze barwy. Kolor na ekranie może nieznacznie różnić się od rzeczywistego ze względu na ustawienia wyświetlacza i oświetlenie."
+        }
+      ]
+    },
+    {
+      "id": "fitment",
+      "title": "Dopasowanie do auta",
+      "topics": [
+        {
+          "slug": "dopasowanie-model",
+          "title": "Dopasowanie do modelu",
+          "status": "approved",
+          "sources": ["EP", "CTX"],
+          "facts": [
+            "Dywaniki są szyte / projektowane pod konkretną markę, model i wersję.",
+            "EP deklaruje bazę ponad 5000 modeli i ponad 50 marek.",
+            "Przy braku modelu w bazie możliwe zamówienie indywidualne / kontakt."
+          ],
+          "agent_body": "Dywaniki dopasowujemy do konkretnej marki, modelu i wersji samochodu — nie są uniwersalne „na oko”. Obsługujemy bardzo szeroką bazę modeli; jeśli Twojego auta nie ma na liście, możemy pomóc przez zamówienie indywidualne."
+        },
+        {
+          "slug": "pokrycie-podlogi",
+          "title": "Pokrycie podłogi",
+          "status": "context_only",
+          "sources": ["CTX", "EP"],
+          "facts": [
+            "Kontekst produktowy: pokrycie nawet do ok. 95–98% podłogi, w tym tunel środkowy.",
+            "EP: precyzyjne pokrycie podłogi i ochrona miejsc trudnych dla gumy/weluru (bez % na stronie)."
+          ],
+          "agent_body": "Dywaniki EVA są projektowane tak, aby maksymalnie chronić podłogę — także miejsca, których zwykle nie zakrywają klasyczne dywaniki gumowe czy welurowe."
+        },
+        {
+          "slug": "nietypowe-auto",
+          "title": "Nietypowe / indywidualne przypadki",
+          "status": "context_only",
+          "sources": ["CTX"],
+          "facts": [
+            "Osobna mata na butlę gazową w bagażniku.",
+            "Dodatkowe zakrycie wskazanych miejsc.",
+            "Bagażnik dzielony na 2 części (np. auta 7-osobowe / 3. rząd).",
+            "Możliwość wykonania po indywidualnych pomiarach."
+          ],
+          "agent_body": "Przy nietypowym aucie lub specjalnych wymaganiach (np. butla gazowa, 3. rząd siedzeń) możliwe jest indywidualne dopasowanie. W takiej sytuacji najlepiej zostawić kontakt — doprecyzujemy szczegóły z zespołem."
+        }
+      ]
+    },
+    {
+      "id": "care",
+      "title": "Pielęgnacja i użytkowanie",
+      "topics": [
+        {
+          "slug": "czyszczenie",
+          "title": "Jak czyścić",
+          "status": "approved",
+          "sources": ["EP", "CTX"],
+          "facts": [
+            "Wystarczy opłukać wodą lub przetrzeć wilgotną ściereczką.",
+            "Przy większych zabrudzeniach: delikatny detergent / miękka gąbka.",
+            "Można wytrząsnąć; mocne zabrudzenia — woda pod ciśnieniem.",
+            "Unikać agresywnej chemii.",
+            "Materiał szybko schnie."
+          ],
+          "agent_body": "Czyszczenie jest proste: wytrząśnij dywanik, opłucz wodą lub przetrzyj wilgotną ściereczką. Przy większych zabrudzeniach użyj delikatnego detergentu. Unikaj agresywnej chemii — materiał EVA jest wodoodporny i szybko schnie."
+        },
+        {
+          "slug": "uzytkowanie-zima-lato",
+          "title": "Użytkowanie całoroczne",
+          "status": "approved",
+          "sources": ["EP", "CTX"],
+          "facts": [
+            "Przeznaczone do użytku latem i zimą.",
+            "Chronią przed wilgocią, błotem i (zimą) solą / śniegiem."
+          ],
+          "agent_body": "Dywaniki EVA nadają się do użytku całorocznego. Zatrzymują wodę i brud na powierzchni, więc zimą lepiej chronią podłogę przed śniegiem i wilgocią."
+        }
+      ]
+    },
+    {
+      "id": "accessories",
+      "title": "Akcesoria i montaż",
+      "topics": [
+        {
+          "slug": "montaz",
+          "title": "Montaż",
+          "status": "approved",
+          "sources": ["EP", "CTX"],
+          "facts": [
+            "Montaż bez kleju i specjalistycznych narzędzi.",
+            "EP: ułożenie dywaników w aucie + rzepy w rogach.",
+            "Kontekst produktowy: wiele rodzajów zapięć (rzędu 30+) + rzepy boczne."
+          ],
+          "agent_body": "Montaż jest prosty: wystarczy ułożyć dywaniki w odpowiednich miejscach. Są precyzyjnie wycięte pod podłogę auta; stabilizację zapewniają mocowania i rzepy — bez klejenia."
+        },
+        {
+          "slug": "podpietki",
+          "title": "Podpiętki",
+          "status": "approved",
+          "sources": ["BUSINESS", "CTX"],
+          "facts": [
+            "Podpiętka chroni miejsce pod piętą kierowcy przed przetarciem.",
+            "Podpiętki nie wchodzą w skład kompletu dywaników.",
+            "Są osobnym produktem — można je dokupić osobno."
+          ],
+          "agent_body": "Podpiętki chronią miejsce pod piętą kierowcy przed przetarciem. Nie są w komplecie dywaników — to osobny produkt, który można dokupić przy zamówieniu."
+        },
+        {
+          "slug": "mata-bagaznik",
+          "title": "Mata do bagażnika",
+          "status": "context_only",
+          "sources": ["CTX", "EP"],
+          "facts": [
+            "Dostępna jako element zestawu / osobny produkt.",
+            "W kontekście produktowym bywają też warianty specjalne (np. mata dla psa) — wymaga mapowania oferty EP."
+          ],
+          "agent_body": "Do kompletu można dodać matę do bagażnika dopasowaną do modelu auta. Szczegóły dostępności potwierdzimy przy konfiguracji."
+        }
+      ]
+    },
+    {
+      "id": "fulfillment",
+      "title": "Realizacja i dostawa",
+      "topics": [
+        {
+          "slug": "czas-produkcji",
+          "title": "Czas realizacji",
+          "status": "approved",
+          "sources": ["EP", "CTX"],
+          "facts": [
+            "EP FAQ: standard 2–3 tygodnie.",
+            "EP timeline UI: ok. 14 dni procesu (zamówienie → produkcja → QC → wysyłka).",
+            "Kontekst produktowy: standard ok. 14 dni roboczych; warianty przyspieszone (np. 7 / 3 dni) za dopłatą.",
+            "EP: ekspres 24h za dodatkową opłatą."
+          ],
+          "agent_body": "Standardowy czas realizacji to zwykle 2–3 tygodnie, bo każdy komplet powstaje indywidualnie. Dostępna jest też szybsza realizacja ekspresowa za dodatkową opłatą."
+        },
+        {
+          "slug": "dostawa",
+          "title": "Dostawa",
+          "status": "approved",
+          "sources": ["EP", "BUSINESS"],
+          "facts": [
+            "Dostawa kurierem na terenie Polski.",
+            "Czas doręczenia po wysyłce: 1–2 dni robocze (EP FAQ).",
+            "Od 600 zł dostawa zawsze gratis.",
+            "Poniżej 600 zł: koszt dostawy 27 zł (EP FAQ)."
+          ],
+          "agent_body": "Wysyłamy kurierem na terenie Polski. Po nadaniu przesyłka zwykle dociera w 1–2 dni robocze. Od 600 zł dostawa jest zawsze darmowa; poniżej 600 zł koszt wynosi 27 zł."
+        },
+        {
+          "slug": "start-liczenia-terminu",
+          "title": "Od kiedy liczymy termin",
+          "status": "context_only",
+          "sources": ["CTX"],
+          "facts": [
+            "Czas produkcji liczony od kompletnych danych zamówienia oraz zaksięgowania płatności."
+          ],
+          "agent_body": "Termin realizacji liczymy od momentu, gdy mamy komplet danych do produkcji i potwierdzoną płatność."
+        }
+      ]
+    },
+    {
+      "id": "policy",
+      "title": "Gwarancja, zwroty, reklamacje",
+      "topics": [
+        {
+          "slug": "gwarancja",
+          "title": "Gwarancja",
+          "status": "approved",
+          "sources": ["BUSINESS", "EP"],
+          "facts": [
+            "Gwarancja: 1 rok na wady materiałowe i wykonania.",
+            "W okresie gwarancji możliwa bezpłatna wymiana przy uznanej wadzie."
+          ],
+          "agent_body": "Wszystkie dywaniki EvaPremium objęte są 1-roczną gwarancją na wady materiałowe i wykonania. W razie uznanej wady wymieniamy produkt bezpłatnie."
+        },
+        {
+          "slug": "niedopasowanie-wymiana",
+          "title": "Gwarancja dopasowania",
+          "status": "approved",
+          "sources": ["BUSINESS"],
+          "facts": [
+            "Każdy klient ma gwarancję dopasowania.",
+            "Przy braku dopasowania firma przyjmuje reklamację do 14 dni od odbioru.",
+            "Firma zobowiązuje się uszyć nowy komplet albo naprawić obecny na własny koszt.",
+            "Koszt naprawy/nowego kompletu oraz dostawy pokrywa firma."
+          ],
+          "agent_body": "Każdy klient ma gwarancję dopasowania. Jeśli dywaniki nie pasują, zgłoś reklamację w ciągu 14 dni od odbioru — naprawimy komplet albo uszyjemy nowy na nasz koszt, łącznie z dostawą."
+        },
+        {
+          "slug": "reklamacja",
+          "title": "Reklamacja",
+          "status": "approved",
+          "sources": ["BUSINESS", "CTX"],
+          "facts": [
+            "Zgłoszenie z opisem i zdjęciami.",
+            "Przy niedopasowaniu: nowy komplet lub naprawa + dostawa na koszt firmy (do 14 dni od odbioru).",
+            "Przy wadzie gwarancyjnej: naprawa lub wymiana w ramach gwarancji."
+          ],
+          "agent_body": "W razie problemu zbierzemy opis i zdjęcia. Przy braku dopasowania (zgłoszenie do 14 dni) naprawimy komplet lub uszyjemy nowy na nasz koszt z dostawą. Przy wadzie materiałowej lub wykonania działa 1-roczna gwarancja."
+        }
+      ]
+    },
+    {
+      "id": "contact",
+      "title": "Kontakt EvaPremium",
+      "topics": [
+        {
+          "slug": "kontakt",
+          "title": "Kontakt",
+          "status": "approved",
+          "sources": ["EP", "MVP_SPEC"],
+          "facts": [
+            "Telefon EvaPremium: +48 793 993 430.",
+            "Na stronie: chat / asystent."
+          ],
+          "agent_body": "Możesz zadzwonić pod +48 793 993 430 albo kontynuować rozmowę tutaj — chętnie pomogę w dopasowaniu i wycenie orientacyjnej."
+        }
+      ]
+    }
+  ],
+  "excluded_from_agent": {
+    "pricing": "Ceny zawsze z Nest (pricing_matrix / konfigurator), nigdy z tego pliku ani z LLM.",
+    "runtime_scraping": "Zakazane. Ten draft to ręcznie wyselekcjonowana wiedza pod seed context_nodes."
+  },
+  "suggested_seed_order": [
+    "material-eva",
+    "parametry",
+    "wlasciwosci",
+    "struktura-komorek",
+    "czyszczenie",
+    "czas-produkcji",
+    "dostawa",
+    "dopasowanie-model",
+    "3d-z-rantami",
+    "3d-bez-rantow",
+    "kolory",
+    "montaz",
+    "podpietki",
+    "gwarancja",
+    "niedopasowanie-wymiana",
+    "reklamacja",
+    "uzytkowanie-zima-lato",
+    "kontakt"
+  ]
+}

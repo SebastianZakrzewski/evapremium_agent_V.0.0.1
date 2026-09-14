@@ -1,6 +1,6 @@
 # Ścieżka DuckDB observablity Mastry
 
-Kod: `api/src/mastra/mastra-observability-path.spec.ts`  
+Kod: `tests/api/mastra/mastra-observability-path.spec.ts`  
 Standard: [docs/test-cases/README.md](../../README.md)
 
 Logika zestawu: wykresy Studio nie idą do LibSQL; plik DuckDB leży obok
@@ -14,7 +14,7 @@ Logika zestawu: wykresy Studio nie idą do LibSQL; plik DuckDB leży obok
 
 ### mastra-obs-path-001 — DuckDB obok pliku LibSQL
 
-- **Kod:** `api/src/mastra/mastra-observability-path.spec.ts` → `it('puts DuckDB next to the LibSQL file')`
+- **Kod:** `tests/api/mastra/mastra-observability-path.spec.ts` → `it('puts DuckDB next to the LibSQL file')`
 - **Krytyczność:** high
 - **Logika:** na VPS oba pliki muszą trafić na ten sam wolumen `/data`.
 - **Wejście:** `file:/data/mastra.db` oraz `file:.mastra/editor.db`
@@ -22,7 +22,7 @@ Logika zestawu: wykresy Studio nie idą do LibSQL; plik DuckDB leży obok
 
 ### mastra-obs-path-002 — Override ścieżki i prefix `file:`
 
-- **Kod:** `api/src/mastra/mastra-observability-path.spec.ts` → `it('uses MASTRA_OBSERVABILITY_PATH and strips a file: prefix')`
+- **Kod:** `tests/api/mastra/mastra-observability-path.spec.ts` → `it('uses MASTRA_OBSERVABILITY_PATH and strips a file: prefix')`
 - **Krytyczność:** medium
 - **Logika:** env i opcja konstruktora wygrywają z siblingiem; DuckDB nie używa prefiksu `file:`.
 - **Wejście:** `MASTRA_OBSERVABILITY_PATH=/data/custom.duckdb`; `file:/tmp/obs.duckdb`
@@ -30,7 +30,7 @@ Logika zestawu: wykresy Studio nie idą do LibSQL; plik DuckDB leży obok
 
 ### mastra-obs-path-003 — Fallback przy pamięci LibSQL
 
-- **Kod:** `api/src/mastra/mastra-observability-path.spec.ts` → `it('falls back when LibSQL is in-memory')`
+- **Kod:** `tests/api/mastra/mastra-observability-path.spec.ts` → `it('falls back when LibSQL is in-memory')`
 - **Krytyczność:** low
 - **Logika:** `file::memory:` nie ma katalogu siblinga.
 - **Wejście:** `file::memory:`

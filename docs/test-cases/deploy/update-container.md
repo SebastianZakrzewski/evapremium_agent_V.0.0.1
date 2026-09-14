@@ -1,6 +1,6 @@
 # Deploy skryptu kontenera (Hetzner)
 
-Kod: `deploy/update-container.test.mjs`  
+Kod: `tests/deploy/update-container.test.mjs`  
 Standard: [docs/test-cases/README.md](../README.md)
 
 Logika zestawu: obraz Dockera buduje się z klona repo; sekrety zostają w
@@ -14,7 +14,7 @@ Logika zestawu: obraz Dockera buduje się z klona repo; sekrety zostają w
 
 ### deploy-001 — Rebuild z env-file, bez sekretów w skrypcie
 
-- **Kod:** `deploy/update-container.test.mjs` → `rebuilds the named image from the clone root and keeps secrets in env-file`
+- **Kod:** `tests/deploy/update-container.test.mjs` → `rebuilds the named image from the clone root and keeps secrets in env-file`
 - **Krytyczność:** high
 - **Logika:** CD na VPS nie może wklejać kluczy do `docker build`; musi podmienić kontener z `/opt/evabot/api/.env`.
 - **Wejście:** treść `deploy/update-container.sh`
@@ -22,7 +22,7 @@ Logika zestawu: obraz Dockera buduje się z klona repo; sekrety zostają w
 
 ### deploy-002 — Wolumen LibSQL + DuckDB Mastry, bez tokenu Studio w skrypcie
 
-- **Kod:** `deploy/update-container.test.mjs` → `persists Mastra LibSQL on a host volume without embedding secrets`
+- **Kod:** `tests/deploy/update-container.test.mjs` → `persists Mastra LibSQL on a host volume without embedding secrets`
 - **Krytyczność:** high
 - **Logika:** Editor i wykresy Studio nie mogą ginąć przy `docker rm`; ścieżki w kontenerze stałe, token Studio zostaje w `--env-file`.
 - **Wejście:** treść `deploy/update-container.sh`
@@ -30,7 +30,7 @@ Logika zestawu: obraz Dockera buduje się z klona repo; sekrety zostają w
 
 ### deploy-003 — Drugi obraz Studio na 4111, bez sekretów w skrypcie
 
-- **Kod:** `deploy/update-container.test.mjs` → `runs Studio as a second image on 4111 without embedding secrets`
+- **Kod:** `tests/deploy/update-container.test.mjs` → `runs Studio as a second image on 4111 without embedding secrets`
 - **Krytyczność:** high
 - **Logika:** UI Studio nie idzie w obraz API; port 4111 i host-gateway, token tylko z env-file.
 - **Wejście:** treść `deploy/update-container.sh`

@@ -1,6 +1,6 @@
 # Log tury intencji
 
-Kod: `api/src/mastra/intents/intent-turn-log.spec.ts`
+Kod: `tests/api/mastra/intents/intent-turn-log.spec.ts`
 
 Logika zestawu: jedna linia konsoli na turę — sesja, intencje, tool-e; bez
 treści wiadomości.
@@ -12,7 +12,7 @@ treści wiadomości.
 
 ### log-001 — Format linii: session / current / candidate / accepted / tools
 
-- **Kod:** `api/src/mastra/intents/intent-turn-log.spec.ts` → `it('prints session and intent fields without message text')`
+- **Kod:** `tests/api/mastra/intents/intent-turn-log.spec.ts` → `it('prints session and intent fields without message text')`
 - **Krytyczność:** medium
 - **Logika:** Diagnostyka tury bez PII z czatu.
 - **Wejście:** session-1, current product_info, candidate/accepted pricing
@@ -20,7 +20,7 @@ treści wiadomości.
 
 ### log-002 — prepareIntentTurn woła log raz na turę
 
-- **Kod:** `api/src/mastra/intents/intent-turn-log.spec.ts` → `it('emits one turn log with session and accepted intent')`
+- **Kod:** `tests/api/mastra/intents/intent-turn-log.spec.ts` → `it('emits one turn log with session and accepted intent')`
 - **Krytyczność:** medium
 - **Logika:** Jedno wykonanie = jeden wpis z accepted i toolami tury.
 - **Wejście:** stub, sesja session-log, current product_info, pytanie o cenę

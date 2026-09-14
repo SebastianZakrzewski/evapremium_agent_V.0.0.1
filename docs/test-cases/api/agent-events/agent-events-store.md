@@ -1,6 +1,6 @@
 # Persystencja zdarzeń agenta
 
-Kod: `api/src/agent-events/supabase-agent-events.spec.ts`  
+Kod: `tests/api/agent-events/supabase-agent-events.spec.ts`  
 Standard: [docs/test-cases/README.md](../../README.md)
 
 Logika zestawu: ten sam kontrakt co in-memory, zapis do `eva_bot.agent_events`
@@ -14,7 +14,7 @@ Logika zestawu: ten sam kontrakt co in-memory, zapis do `eva_bot.agent_events`
 
 ### events-store-001 — Zapis jak in-memory na kolumnach tabeli
 
-- **Kod:** `api/src/agent-events/supabase-agent-events.spec.ts` → `it('writes the same contract as in-memory onto eva_bot.agent_events')`
+- **Kod:** `tests/api/agent-events/supabase-agent-events.spec.ts` → `it('writes the same contract as in-memory onto eva_bot.agent_events')`
 - **Krytyczność:** high
 - **Logika:** dashboard czyta fakty Nest, nie transkrypt.
 - **Wejście:** `append` `quote_issued` session-1, amount 599
@@ -22,7 +22,7 @@ Logika zestawu: ten sam kontrakt co in-memory, zapis do `eva_bot.agent_events`
 
 ### events-store-002 — In-memory: sesja i zakres czasu
 
-- **Kod:** `api/src/agent-events/supabase-agent-events.spec.ts` → `it('lists events for one session and a time range')`
+- **Kod:** `tests/api/agent-events/supabase-agent-events.spec.ts` → `it('lists events for one session and a time range')`
 - **Krytyczność:** high
 - **Logika:** odczyt po `session_id` i oknie czasu, nie full-text.
 - **Wejście:** trzy eventy (dwie sesje, dwa dni)
@@ -30,7 +30,7 @@ Logika zestawu: ten sam kontrakt co in-memory, zapis do `eva_bot.agent_events`
 
 ### events-store-003 — Adapter: sesja i zakres doby
 
-- **Kod:** `api/src/agent-events/supabase-agent-events.spec.ts` → `it('filters supabase rows by session and day range')`
+- **Kod:** `tests/api/agent-events/supabase-agent-events.spec.ts` → `it('filters supabase rows by session and day range')`
 - **Krytyczność:** high
 - **Logika:** ten sam kontrakt odczytu na adapterze za `DataStore`.
 - **Wejście:** trzy wiersze fixture

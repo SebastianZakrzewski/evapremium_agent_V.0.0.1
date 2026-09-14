@@ -1,6 +1,6 @@
 # Widget — snippet sklepu
 
-Kod: `widget/src/embed/shop-snippet.test.ts`  
+Kod: `tests/widget/embed/shop-snippet.test.ts`  
 Standard: [docs/test-cases/README.md](../README.md)
 
 Logika zestawu: sklep ładuje skrypt z originu widgetu (CDN); w HTML jest tylko
@@ -13,7 +13,7 @@ publiczny `data-eva-widget`, bez sekretów serwera.
 
 ### snippet-001 — Publiczny id i src z originu widgetu
 
-- **Kod:** `widget/src/embed/shop-snippet.test.ts` → `it('exposes a public widget id and loads the script from the widget origin')`
+- **Kod:** `tests/widget/embed/shop-snippet.test.ts` → `it('exposes a public widget id and loads the script from the widget origin')`
 - **Krytyczność:** high
 - **Logika:** snippet nie jest kluczem API; identyfikator jest publiczny.
 - **Wejście:** `shopEmbedSnippet('https://widget.example.cdn')`
@@ -21,7 +21,7 @@ publiczny `data-eva-widget`, bez sekretów serwera.
 
 ### snippet-002 — embed.js bez sekretów
 
-- **Kod:** `widget/src/embed/shop-snippet.test.ts` → `it('keeps embed.js free of server secrets')`
+- **Kod:** `tests/widget/embed/shop-snippet.test.ts` → `it('keeps embed.js free of server secrets')`
 - **Krytyczność:** high
 - **Logika:** skrypt CDN nie może zawierać kluczy Nest / Bitrix / DeepSeek.
 - **Wejście:** treść `widget/public/embed.js`

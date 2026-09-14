@@ -1,6 +1,6 @@
 # Query `orderBy` ze Studio
 
-Kod: `api/src/mastra/coerce-mastra-query.spec.ts`  
+Kod: `tests/api/mastra/coerce-mastra-query.spec.ts`  
 Standard: [docs/test-cases/README.md](../../README.md)
 
 Logika zestawu: CLI Studio wysyła `orderBy` jako string; Nest Mastra waliduje
@@ -16,7 +16,7 @@ obiekt. Publish promptu pada na 400 bez tej koercji.
 
 ### coerce-query-001 — String `createdAt` → `{ field, direction }`
 
-- **Kod:** `api/src/mastra/coerce-mastra-query.spec.ts` → `it('turns Studio string orderBy into the object Nest validates')`
+- **Kod:** `tests/api/mastra/coerce-mastra-query.spec.ts` → `it('turns Studio string orderBy into the object Nest validates')`
 - **Krytyczność:** high
 - **Logika:** Błąd Studio: `orderBy` expected object, received string.
 - **Wejście:** `orderBy: 'createdAt'`, `sortDirection: 'ASC'`
@@ -24,7 +24,7 @@ obiekt. Publish promptu pada na 400 bez tej koercji.
 
 ### coerce-query-002 — JSON string → obiekt
 
-- **Kod:** `api/src/mastra/coerce-mastra-query.spec.ts` → `it('parses JSON orderBy strings')`
+- **Kod:** `tests/api/mastra/coerce-mastra-query.spec.ts` → `it('parses JSON orderBy strings')`
 - **Krytyczność:** medium
 - **Logika:** Inne klienty kodują `orderBy` jako JSON w query.
 - **Wejście:** string JSON z `updatedAt`
@@ -32,7 +32,7 @@ obiekt. Publish promptu pada na 400 bez tej koercji.
 
 ### coerce-query-003 — `versionNumber` mapuje na `createdAt`
 
-- **Kod:** `api/src/mastra/coerce-mastra-query.spec.ts` → `it('maps versionNumber to createdAt so publish version lists validate')`
+- **Kod:** `tests/api/mastra/coerce-mastra-query.spec.ts` → `it('maps versionNumber to createdAt so publish version lists validate')`
 - **Krytyczność:** high
 - **Logika:** Lista wersji promptu sortuje po `versionNumber`; schema Nestu zna `createdAt` / `updatedAt`.
 - **Wejście:** `orderBy: 'versionNumber'`
@@ -40,7 +40,7 @@ obiekt. Publish promptu pada na 400 bez tej koercji.
 
 ### coerce-query-004 — Obiekt zostaje bez zmian
 
-- **Kod:** `api/src/mastra/coerce-mastra-query.spec.ts` → `it('leaves object orderBy unchanged')`
+- **Kod:** `tests/api/mastra/coerce-mastra-query.spec.ts` → `it('leaves object orderBy unchanged')`
 - **Krytyczność:** low
 - **Logika:** `orderBy[field]=` z qs już jest obiektem.
 - **Wejście:** obiekt `{ field, direction }`
@@ -48,7 +48,7 @@ obiekt. Publish promptu pada na 400 bez tej koercji.
 
 ### coerce-query-005 — Query string Studio (parser Express 5)
 
-- **Kod:** `api/src/mastra/coerce-mastra-query.spec.ts` → `it('parses Express query strings used by Studio publish')`
+- **Kod:** `tests/api/mastra/coerce-mastra-query.spec.ts` → `it('parses Express query strings used by Studio publish')`
 - **Krytyczność:** high
 - **Logika:** Express 5 nie pozwala nadpisać `req.query`; parser musi zwrócić obiekt.
 - **Wejście:** `orderBy=createdAt&sortDirection=DESC`

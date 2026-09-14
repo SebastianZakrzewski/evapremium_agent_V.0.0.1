@@ -11,7 +11,12 @@
     "jsx": "react-jsx",
     "strict": true,
     "noEmit": true,
-    "types": ["vite/client", "vitest/globals"]
+    "types": ["vite/client", "vitest/globals"],
+    "baseUrl": ".",
+    "paths": {
+      "@widget/*": ["src/*"],
+      "@widget-root/*": ["./*"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "../tests/widget"]
 }

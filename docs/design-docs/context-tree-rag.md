@@ -118,8 +118,10 @@ Nest:
 
 1. Brak embeddera w env → `[]` (ścieżka miss, bez sieci).
 2. Embedding zapytania.
-3. Query magazynu: najbliższe wektory, `topK`.
-4. Odrzuć score poniżej progu.
+3. Query magazynu: najbliższe wektory, `topK` (domyślnie 4 —
+   `CONTEXT_LEAF_SEARCH_TOP_K`).
+4. Odrzuć score poniżej progu (domyślnie 0.49 —
+   `CONTEXT_LEAF_SEARCH_THRESHOLD`; kalibracja PL PROD 2026-09-15).
 5. Zostaw tylko slugi, które **teraz** przechodzą `lookupContextLeaf` jako
    potencjalny hit (aktywny liść). Jeśli indeks jest nieświeży (liść
    wyłączony), kandydat znika tutaj, nie w prompcie.

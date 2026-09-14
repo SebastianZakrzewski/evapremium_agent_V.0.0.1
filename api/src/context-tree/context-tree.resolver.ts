@@ -3,6 +3,8 @@ import {
   type ContextLeafLookupResult,
 } from '../domain/context-tree';
 import {
+  CONTEXT_LEAF_SEARCH_THRESHOLD,
+  CONTEXT_LEAF_SEARCH_TOP_K,
   searchContextLeaves,
   type ContextLeafSearchHit,
 } from '../domain/context-leaf-search';
@@ -13,8 +15,6 @@ import type {
 } from './ports';
 import { NullTextEmbedder } from './in-memory/null-text-embedder';
 import { InMemoryContextLeafVectors } from './in-memory/in-memory-context-leaf-vectors';
-
-const SEARCH_THRESHOLD = 0.8;
 
 export class ContextTreeResolver {
   constructor(
@@ -38,7 +38,8 @@ export class ContextTreeResolver {
       queryVector,
       await this.vectors.list(),
       this.nodes.list(),
-      SEARCH_THRESHOLD,
+      CONTEXT_LEAF_SEARCH_THRESHOLD,
+      CONTEXT_LEAF_SEARCH_TOP_K,
     );
   }
 }

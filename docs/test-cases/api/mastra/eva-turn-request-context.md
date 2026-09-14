@@ -1,6 +1,6 @@
 # Request context tury EVA
 
-Kod: `api/src/mastra/eva-turn-request-context.spec.ts`
+Kod: `tests/api/mastra/eva-turn-request-context.spec.ts`
 
 Logika zestawu: zaakceptowany `ShopIntent` idzie w Mastra `RequestContext`
 (`intent`). Z niego składany jest system prompt i mapa tooli — bez nowej
@@ -19,7 +19,7 @@ instancji `Agent`. Brak klucza = `out_of_scope`.
 
 ### ctx-001 — intent w request context
 
-- **Kod:** `api/src/mastra/eva-turn-request-context.spec.ts` → `it('stores ShopIntent for interpolation and display conditions')`
+- **Kod:** `tests/api/mastra/eva-turn-request-context.spec.ts` → `it('stores ShopIntent for interpolation and display conditions')`
 - **Krytyczność:** high
 - **Logika:** Studio i Nest czytają ten sam klucz `intent` (prompt-block `{{intent}}`).
 - **Wejście:** `createEvaTurnRequestContext('pricing')`
@@ -27,7 +27,7 @@ instancji `Agent`. Brak klucza = `out_of_scope`.
 
 ### ctx-002 — brak intent → out_of_scope
 
-- **Kod:** `api/src/mastra/eva-turn-request-context.spec.ts` → `it('defaults missing intent to out_of_scope')`
+- **Kod:** `tests/api/mastra/eva-turn-request-context.spec.ts` → `it('defaults missing intent to out_of_scope')`
 - **Krytyczność:** high
 - **Logika:** `shopIntentFromContext` bez klucza = `out_of_scope`; mapa tooli w czacie produkcyjnym zostaje pusta (ctx-006).
 - **Wejście:** pusty `RequestContext`
@@ -35,7 +35,7 @@ instancji `Agent`. Brak klucza = `out_of_scope`.
 
 ### ctx-003 — pricing: instructions + quote-price
 
-- **Kod:** `api/src/mastra/eva-turn-request-context.spec.ts` → `it('resolves pricing instructions and quote-price from request context')`
+- **Kod:** `tests/api/mastra/eva-turn-request-context.spec.ts` → `it('resolves pricing instructions and quote-price from request context')`
 - **Krytyczność:** critical
 - **Logika:** Bez Editora system prompt tury = `assembleTurnInstructions(pricing)`; tool `quote-price` jest na mapie.
 - **Wejście:** context `intent: pricing`, katalog 3 tooli
@@ -43,7 +43,7 @@ instancji `Agent`. Brak klucza = `out_of_scope`.
 
 ### ctx-004 — product_info bez quote-price
 
-- **Kod:** `api/src/mastra/eva-turn-request-context.spec.ts` → `it('does not expose quote-price for product_info request context')`
+- **Kod:** `tests/api/mastra/eva-turn-request-context.spec.ts` → `it('does not expose quote-price for product_info request context')`
 - **Krytyczność:** critical
 - **Logika:** Kwota nie może być wywołana na Q&A — tool nie ma w mapie z contextu.
 - **Wejście:** `intent: product_info`
@@ -51,7 +51,7 @@ instancji `Agent`. Brak klucza = `out_of_scope`.
 
 ### ctx-005 — opublikowane prompt-blocks zastępują prompt profilu
 
-- **Kod:** `api/src/mastra/eva-turn-request-context.spec.ts` → `it('uses published prompt-blocks instead of the intent profile prompt')`
+- **Kod:** `tests/api/mastra/eva-turn-request-context.spec.ts` → `it('uses published prompt-blocks instead of the intent profile prompt')`
 - **Krytyczność:** high
 - **Logika:** Czat i Studio mają ten sam tekst co Editor; tool-e zostają z profilu.
 - **Wejście:** context `pricing` + mock `getEditor().prompt`
@@ -59,7 +59,7 @@ instancji `Agent`. Brak klucza = `out_of_scope`.
 
 ### ctx-006 — czat bez intent → zero shop-tooli
 
-- **Kod:** `api/src/mastra/eva-turn-request-context.spec.ts` → `it('keeps production chat without intent on out_of_scope tools')`
+- **Kod:** `tests/api/mastra/eva-turn-request-context.spec.ts` → `it('keeps production chat without intent on out_of_scope tools')`
 - **Krytyczność:** high
 - **Logika:** Produkcja bez `intent` nie dostaje pełnego katalogu — tylko `out_of_scope` (pusta mapa).
 - **Wejście:** pusty `RequestContext` bez `mastra__isStudio`
@@ -67,7 +67,7 @@ instancji `Agent`. Brak klucza = `out_of_scope`.
 
 ### ctx-007 — Studio bez presetu → pełny katalog
 
-- **Kod:** `api/src/mastra/eva-turn-request-context.spec.ts` → `it('exposes the full catalog in Studio when intent is unset')`
+- **Kod:** `tests/api/mastra/eva-turn-request-context.spec.ts` → `it('exposes the full catalog in Studio when intent is unset')`
 - **Krytyczność:** high
 - **Logika:** Studio ustawia `mastra__isStudio`; bez presetu `intent` agent i `/tools` pokazują cały katalog projektu.
 - **Wejście:** `RequestContext` z `mastra__isStudio: true`, bez `intent`
@@ -75,7 +75,7 @@ instancji `Agent`. Brak klucza = `out_of_scope`.
 
 ### ctx-008 — Studio z presetem intent → filtr profilu
 
-- **Kod:** `api/src/mastra/eva-turn-request-context.spec.ts` → `it('still filters Studio tools when a request-context preset sets intent')`
+- **Kod:** `tests/api/mastra/eva-turn-request-context.spec.ts` → `it('still filters Studio tools when a request-context preset sets intent')`
 - **Krytyczność:** high
 - **Logika:** Preset `pricing` w Studio nie otwiera pełnego katalogu — zostaje filtr profilu.
 - **Wejście:** `intent: pricing`, `mastra__isStudio: true`

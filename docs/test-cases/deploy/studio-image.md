@@ -1,6 +1,6 @@
 # Obraz Docker Mastra Studio
 
-Kod: `deploy/studio.test.mjs`  
+Kod: `tests/deploy/studio.test.mjs`  
 Standard: [docs/test-cases/README.md](../README.md)
 
 Logika zestawu: UI Studio jest osobnym kontenerem. Przeglądarka woła ten sam
@@ -14,7 +14,7 @@ origin (`:4111`); Caddy dokłada Bearer i proxy `/mastra` na Nest.
 
 ### studio-image-001 — Caddy: `/mastra` → host API + Bearer z env
 
-- **Kod:** `deploy/studio.test.mjs` → `Studio Caddy same-origin proxies /mastra to host API with injected Bearer`
+- **Kod:** `tests/deploy/studio.test.mjs` → `Studio Caddy same-origin proxies /mastra to host API with injected Bearer`
 - **Krytyczność:** high
 - **Logika:** Browser nie widzi sieci Dockera; `/mastra` musi iść na `host.docker.internal:3000` z tokenem z env, nie z gita.
 - **Wejście:** `deploy/studio/Caddyfile`
@@ -22,7 +22,7 @@ origin (`:4111`); Caddy dokłada Bearer i proxy `/mastra` na Nest.
 
 ### studio-image-002 — `mastra studio` na 4112, publiczny host:4111
 
-- **Kod:** `deploy/studio.test.mjs` → `Studio start binds UI internally and tells the browser public host:4111`
+- **Kod:** `tests/deploy/studio.test.mjs` → `Studio start binds UI internally and tells the browser public host:4111`
 - **Krytyczność:** high
 - **Logika:** `--server-host` to adres w pasku przeglądarki, nie hostname kontenera.
 - **Wejście:** `deploy/studio/start.sh`
@@ -30,7 +30,7 @@ origin (`:4111`); Caddy dokłada Bearer i proxy `/mastra` na Nest.
 
 ### studio-image-003 — Pin CLI Mastry i presety intencji
 
-- **Kod:** `deploy/studio.test.mjs` → `Studio image pins Mastra CLI and copies presets`
+- **Kod:** `tests/deploy/studio.test.mjs` → `Studio image pins Mastra CLI and copies presets`
 - **Krytyczność:** medium
 - **Logika:** obraz nie woła `mastra@latest` przy starcie.
 - **Wejście:** `Dockerfile.studio`

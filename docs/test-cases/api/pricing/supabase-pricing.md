@@ -1,6 +1,6 @@
 # Adaptery Supabase (cennik)
 
-Kod: `api/src/pricing/supabase/load-pricing.spec.ts`  
+Kod: `tests/api/pricing/supabase/load-pricing.spec.ts`  
 Standard: [docs/test-cases/README.md](../../README.md)
 
 Logika zestawu: join aktywnej wersji katalogu, kategorii i wariantu → kwota
@@ -12,7 +12,7 @@ Logika zestawu: join aktywnej wersji katalogu, kategorii i wariantu → kwota
 
 ### supabase-price-001 — Macierz aktywnego katalogu
 
-- **Kod:** `api/src/pricing/supabase/load-pricing.spec.ts` → `it('joins active catalog matrix onto category slug and variant_key')`
+- **Kod:** `tests/api/pricing/supabase/load-pricing.spec.ts` → `it('joins active catalog matrix onto category slug and variant_key')`
 - **Krytyczność:** critical
 - **Logika:** kwota z aktywnego `pricing_catalog_versions`, nie ze starej wersji.
 - **Wejście:** dwie wersje katalogu; wiersz 599 PLN na `cat-live`

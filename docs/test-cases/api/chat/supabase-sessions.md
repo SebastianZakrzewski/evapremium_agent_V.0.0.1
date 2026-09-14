@@ -1,6 +1,6 @@
 # Sesje czatu w `eva_bot` (istniejący schemat PROD)
 
-Kod: `api/src/chat/supabase-chat-sessions.spec.ts`  
+Kod: `tests/api/chat/supabase-chat-sessions.spec.ts`  
 Standard: [docs/test-cases/README.md](../../README.md)
 
 Logika zestawu: zapis na kolumnach już obecnych w PROD (`text`, `direction`
@@ -13,7 +13,7 @@ inbound/outbound), nie na migracji `body` z repo (tabele sesji już istnieją).
 
 ### supabase-session-001 — User/assistant na `text` + `direction`
 
-- **Kod:** `api/src/chat/supabase-chat-sessions.spec.ts` → `it('writes user/assistant onto existing eva_bot message columns')`
+- **Kod:** `tests/api/chat/supabase-chat-sessions.spec.ts` → `it('writes user/assistant onto existing eva_bot message columns')`
 - **Krytyczność:** high
 - **Logika:** transkrypt w Supabase; LLM nie jest magazynem.
 - **Wejście:** `create` + append user `golf 8` + assistant `quoted`
@@ -21,7 +21,7 @@ inbound/outbound), nie na migracji `body` z repo (tabele sesji już istnieją).
 
 ### supabase-session-002 — Nieznana sesja
 
-- **Kod:** `api/src/chat/supabase-chat-sessions.spec.ts` → `it('rejects an unknown session')`
+- **Kod:** `tests/api/chat/supabase-chat-sessions.spec.ts` → `it('rejects an unknown session')`
 - **Krytyczność:** high
 - **Logika:** brak id w `chat_sessions` → `UnknownSessionError`.
 - **Wejście:** `missing`

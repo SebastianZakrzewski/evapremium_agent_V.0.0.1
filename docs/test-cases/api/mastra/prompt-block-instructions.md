@@ -1,6 +1,6 @@
 # Prompt-blocks w instrukcjach tury
 
-Kod: `api/src/mastra/prompt-block-instructions.spec.ts`  
+Kod: `tests/api/mastra/prompt-block-instructions.spec.ts`  
 Standard: [docs/test-cases/README.md](../../README.md)
 
 Logika zestawu: system prompt agenta EVA pochodzi z opublikowanych
@@ -15,7 +15,7 @@ prompt-blocks; pusty Editor albo błąd storage nie zrywa tury (fallback w
 
 ### prompt-blocks-001 — Preview z `intent` w kontekście
 
-- **Kod:** `api/src/mastra/prompt-block-instructions.spec.ts` → `it('joins published prompt-blocks with intent in preview context')`
+- **Kod:** `tests/api/mastra/prompt-block-instructions.spec.ts` → `it('joins published prompt-blocks with intent in preview context')`
 - **Krytyczność:** high
 - **Logika:** Display conditions / `{{intent}}` muszą dostać zaakceptowaną intencję tury.
 - **Wejście:** reader z jednym id, intent `pricing`
@@ -23,7 +23,7 @@ prompt-blocks; pusty Editor albo błąd storage nie zrywa tury (fallback w
 
 ### prompt-blocks-002 — Brak opublikowanych bloków → undefined
 
-- **Kod:** `api/src/mastra/prompt-block-instructions.spec.ts` → `it('returns undefined when no published blocks exist')`
+- **Kod:** `tests/api/mastra/prompt-block-instructions.spec.ts` → `it('returns undefined when no published blocks exist')`
 - **Krytyczność:** high
 - **Logika:** `verify` i świeża baza nadal składają prompt z profilu.
 - **Wejście:** pusta lista id
@@ -31,7 +31,7 @@ prompt-blocks; pusty Editor albo błąd storage nie zrywa tury (fallback w
 
 ### prompt-blocks-003 — Błąd Editora → undefined
 
-- **Kod:** `api/src/mastra/prompt-block-instructions.spec.ts` → `it('returns undefined when the editor throws')`
+- **Kod:** `tests/api/mastra/prompt-block-instructions.spec.ts` → `it('returns undefined when the editor throws')`
 - **Krytyczność:** medium
 - **Logika:** Awaria LibSQL nie może wyłączyć czatu.
 - **Wejście:** `listPublishedIds` rzuca
