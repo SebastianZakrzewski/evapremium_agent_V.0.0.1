@@ -12,6 +12,7 @@ import type { Response } from 'express';
 import * as Sentry from '@sentry/nestjs';
 import { apiHealth } from './api-health';
 import { ChatService } from './chat.service';
+import type { CreatedChatSession } from './session-opener';
 import { encodeSse } from './sse';
 import { reportUnexpectedError } from '../observability/report-unexpected-error';
 import {
@@ -37,7 +38,7 @@ export class ChatController {
   }
 
   @Post('sessions')
-  createSession(): Promise<{ sessionId: string }> {
+  createSession(): Promise<CreatedChatSession> {
     return this.chat.createSession();
   }
 

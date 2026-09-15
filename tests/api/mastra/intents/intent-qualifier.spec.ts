@@ -25,6 +25,11 @@ describe('StubIntentQualifier', () => {
     const result = await qualifier.qualify('jaki jest kurs euro');
     expect(result.intent).toBe('out_of_scope');
   });
+
+  it('maps a greeting to product_info', async () => {
+    const result = await qualifier.qualify('Dzień dobry');
+    expect(result.intent).toBe('product_info');
+  });
 });
 
 describe('MastraIntentQualifier', () => {

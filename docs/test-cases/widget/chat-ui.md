@@ -18,6 +18,7 @@ Kwota nie pochodzi z modelu w widgecie.
 | widget-008 | high | formatter `generated` → `text` |
 | widget-009 | high | parser SSE: tokeny i `done` |
 | widget-010 | high | UI dokłada tokeny z `onDelta` |
+| widget-011 | high | Powitanie i chipy tematów |
 
 ### widget-002 — UI wyceny orientacyjnej
 
@@ -90,3 +91,11 @@ Kwota nie pochodzi z modelu w widgecie.
 - **Logika:** `postMessage` woła `onDelta`; pęcherzyk asystenta pokazuje złożony tekst.
 - **Wejście:** mock `onDelta('Komplet ')`, `onDelta('dywaników')`
 - **Wyjście:** `Komplet dywaników` na liście wiadomości
+
+### widget-011 — Powitanie i chipy tematów
+
+- **Kod:** `tests/widget/chat/ChatPanel.test.tsx` → `it('opens a session with greeting chips and sends the chip message')`
+- **Krytyczność:** high
+- **Logika:** widget otwiera sesję przy montażu; klik chipa wysyła kanoniczną wiadomość i chowa tematy. Tekst powitania z API, nie z modelu w UI.
+- **Wejście:** `createSession` z `greeting` + chip `Dopasowanie do auta`
+- **Wyjście:** `postMessage(..., 'Chcę dobrać dywaniki EVA do mojego auta.')`; brak chipów po kliku

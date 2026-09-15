@@ -5,7 +5,11 @@ import type { ChatApi } from '@widget/chat/chat-api';
 
 function mockApi(data: Record<string, unknown>): ChatApi {
   return {
-    createSession: vi.fn(async () => ({ sessionId: 's1' })),
+    createSession: vi.fn(async () => ({
+      sessionId: 's1',
+      greeting: '',
+      suggestions: [],
+    })),
     postMessage: vi.fn(async () => ({
       sessionId: 's1',
       text: String(data.status ?? ''),

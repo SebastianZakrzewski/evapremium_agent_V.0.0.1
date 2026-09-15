@@ -1,3 +1,15 @@
+export type SessionOpenerSuggestion = {
+  id: string;
+  label: string;
+  message: string;
+};
+
+export type CreatedSession = {
+  sessionId: string;
+  greeting: string;
+  suggestions: SessionOpenerSuggestion[];
+};
+
 export type ChatTurn = {
   sessionId: string;
   text: string;
@@ -10,7 +22,7 @@ export type ChatTurn = {
 };
 
 export type ChatApi = {
-  createSession: () => Promise<{ sessionId: string }>;
+  createSession: () => Promise<CreatedSession>;
   postMessage: (
     sessionId: string,
     message: string,

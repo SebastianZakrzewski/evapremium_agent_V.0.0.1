@@ -6,13 +6,17 @@ function matchIntent(message: string): ShopIntent {
   if (/ile koszt|wycen|\bcen/.test(text)) {
     return 'pricing';
   }
-  if (/dostaw|termin/.test(text)) {
+  if (/dostaw|termin|wyślecie|wyslecie/.test(text)) {
     return 'delivery';
   }
-  if (/gwaranc|piel[eę]gn|monta[zż]/.test(text)) {
+  if (/gwaranc|piel[eę]gn|czyśc|monta[zż]/.test(text)) {
     return 'after_sales';
   }
-  if (/dywan|golf|materiał|dopasow/.test(text)) {
+  if (
+    /dywan|golf|materiał|kolor|dopasow|dobrać|dobrac|dzień dobry|dzien dobry|cześć|czesc|\bhej\b|\bwitam\b/.test(
+      text,
+    )
+  ) {
     return 'product_info';
   }
   return 'out_of_scope';

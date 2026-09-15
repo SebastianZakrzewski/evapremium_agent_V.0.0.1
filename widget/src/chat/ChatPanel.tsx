@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import type { ChatApi } from './chat-api';
+import { useEffect, useRef, useState } from 'react';
+import type { ChatApi, SessionOpenerSuggestion } from './chat-api';
 import { formatAssistantTurn } from './format-turn';
 import './ChatPanel.css';
 
@@ -16,27 +16,59 @@ export function ChatPanel({ api }: ChatPanelProps) {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [draft, setDraft] = useState('');
   const [lines, setLines] = useState<ChatLine[]>([]);
+  const [suggestions, setSuggestions] = useState<SessionOpenerSuggestion[]>(
+    [],
+  );
   const [busy, setBusy] = useState(false);
+  const opening = useRef<Promise<string> | null>(null);
+  const conversationStarted = useRef(false);
 
-  async function send() {
-    const message = draft.trim();
+  async function ensureSession(): Promise<string> {
+    if (sessionId) {
+      return sessionId;
+    }
+    if (!opening.current) {
+      opening.current = api.createSession().then((created) => {
+        setSessionId(created.sessionId);
+        if (created.greeting) {
+          setLines((current) => {
+            if (current.some((line) => line.text === created.greeting)) {
+              return current;
+            }
+            return [{ role: 'assistant', text: created.greeting }, ...current];
+          });
+        }
+        if (!conversationStarted.current) {
+          setSuggestions(created.suggestions ?? []);
+        }
+        return created.sessionId;
+      });
+    }
+    return opening.current;
+  }
+
+  useEffect(() => {
+    void ensureSession().catch(() => {
+      opening.current = null;
+    });
+  }, [api]);
+
+  async function send(text = draft) {
+    const message = text.trim();
     if (!message || busy) {
       return;
     }
+    conversationStarted.current = true;
     setBusy(true);
     setDraft('');
+    setSuggestions([]);
     setLines((current) => [
       ...current,
       { role: 'user', text: message },
       { role: 'assistant', text: '' },
     ]);
     try {
-      let id = sessionId;
-      if (!id) {
-        const session = await api.createSession();
-        id = session.sessionId;
-        setSessionId(id);
-      }
+      const id = await ensureSession();
       const turn = await api.postMessage(id, message, (chunk) => {
         setLines((current) => {
           const next = [...current];
@@ -101,6 +133,23 @@ export function ChatPanel({ api }: ChatPanelProps) {
           </li>
         ))}
       </ul>
+      {suggestions.length > 0 ? (
+        <div className="eva-chat__topics" role="group" aria-label="Tematy rozmowy">
+          {suggestions.map((chip) => (
+            <button
+              key={chip.id}
+              type="button"
+              className="eva-chat__topic"
+              disabled={busy}
+              onClick={() => {
+                void send(chip.message);
+              }}
+            >
+              {chip.label}
+            </button>
+          ))}
+        </div>
+      ) : null}
       <form
         className="eva-chat__composer"
         onSubmit={(event) => {

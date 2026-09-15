@@ -101,6 +101,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Query orderBy Studio | [api/mastra/coerce-mastra-query.md](api/mastra/coerce-mastra-query.md) | `tests/api/mastra/coerce-mastra-query.spec.ts` |
 | Agent czatu Mastra | [api/chat/mastra-chat-agent.md](api/chat/mastra-chat-agent.md) | `tests/api/chat/mastra-chat.agent.spec.ts` |
 | Kontrakt HTTP czatu | [api/chat/chat-http.md](api/chat/chat-http.md) | `tests/api/chat/chat.contract.spec.ts` |
+| Powitanie sesji czatu | [api/chat/session-opener.md](api/chat/session-opener.md) | `tests/api/chat/session-opener.spec.ts` |
 | Zdarzenia domenowe agenta | [api/agent-events/agent-events.md](api/agent-events/agent-events.md) | `tests/api/agent-events/agent-events.spec.ts` |
 | Persystencja zdarzeń agenta | [api/agent-events/agent-events-store.md](api/agent-events/agent-events-store.md) | `tests/api/agent-events/supabase-agent-events.spec.ts` |
 | API odczytu dashboardu | [api/dashboard/dashboard-api.md](api/dashboard/dashboard-api.md) | `tests/api/dashboard/dashboard-read.spec.ts` |

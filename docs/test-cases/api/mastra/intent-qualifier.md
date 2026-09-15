@@ -15,6 +15,7 @@ Czat / SSE nietknięte (Slice 3).
 | qualify-005 | high | general_agent odrzucony przez schemat |
 | qualify-006 | high | Mapa tooli kwalifikatora pusta |
 | qualify-007 | high | Krok workflow zwraca ShopIntent (stub, bez klucza) |
+| qualify-008 | medium | Powitanie → product_info |
 
 ### qualify-001 — Pytanie o cenę → pricing
 
@@ -71,3 +72,11 @@ Czat / SSE nietknięte (Slice 3).
 - **Logika:** `executeQualifyStep` to krok qualify; Jest nie bootuje Mastra ESM (`TD-003` analog).
 - **Wejście:** stub + `Ile kosztują dywaniki do Golfa 8?`
 - **Wyjście:** `{ intent: 'pricing', confidence: 1 }`
+
+### qualify-008 — Powitanie → product_info
+
+- **Kod:** `tests/api/mastra/intents/intent-qualifier.spec.ts` → `it('maps a greeting to product_info')`
+- **Krytyczność:** medium
+- **Logika:** samo „Dzień dobry” jest wejściem do sklepu, nie `out_of_scope`.
+- **Wejście:** `Dzień dobry`
+- **Wyjście:** `intent: product_info`

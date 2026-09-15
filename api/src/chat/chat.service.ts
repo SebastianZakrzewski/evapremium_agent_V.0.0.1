@@ -6,6 +6,7 @@ import {
   type ChatSessions,
 } from './chat-session';
 import { postChatMessage } from './post-chat-message';
+import { persistOpenedChatSession, type CreatedChatSession } from './session-opener';
 import { streamChatMessage } from './stream-chat-message';
 
 @Injectable()
@@ -15,8 +16,8 @@ export class ChatService {
     @Inject(CHAT_SESSIONS) private readonly sessions: ChatSessions,
   ) {}
 
-  createSession(): Promise<{ sessionId: string }> {
-    return this.sessions.create();
+  createSession(): Promise<CreatedChatSession> {
+    return persistOpenedChatSession(this.sessions);
   }
 
   async postMessage(sessionId: string, message: string) {

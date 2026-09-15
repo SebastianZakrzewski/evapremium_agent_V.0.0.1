@@ -1,4 +1,4 @@
-import type { ChatApi, ChatTurn } from './chat-api';
+import type { ChatApi, CreatedSession, ChatTurn } from './chat-api';
 import { consumeChatSse } from './consume-chat-sse';
 
 export function createHttpChatApi(baseUrl: string): ChatApi {
@@ -10,7 +10,7 @@ export function createHttpChatApi(baseUrl: string): ChatApi {
       if (!response.ok) {
         throw new Error('session_create_failed');
       }
-      return (await response.json()) as { sessionId: string };
+      return (await response.json()) as CreatedSession;
     },
     async postMessage(sessionId, message, onDelta) {
       const response = await fetch(`${root}/v1/sessions/${sessionId}/messages`, {

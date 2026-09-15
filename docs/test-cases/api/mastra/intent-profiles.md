@@ -18,7 +18,7 @@ nieznany klucz → `undefined`.
 - **Krytyczność:** high
 - **Logika:** Gałąź produktu ma kaskadę i liść, nie macierz cen — kwota nie wycieka na Q&A.
 - **Wejście:** `'product_info'`
-- **Wyjście:** profil `id=product_info`, niepusty `context`, `tools` = `resolve-template` + `lookup-leaf` + `search-leaves`, bez `quote-price`
+- **Wyjście:** profil `id=product_info`, niepusty `context`, `tools` = `resolve-template` + `lookup-leaf` + `search-leaves`, bez `quote-price`; instrukcja: samo powitanie bez search/lookup
 
 ### intent-002 — Nieznany intent → undefined
 

@@ -3,6 +3,8 @@
 Widget na `evapremium.pl` przez **snippet** ładujący czat z **Vercel/CDN**;
 API NestJS na **Hetznerze**. Cel: informacje o produkcie i wycena orientacyjna.
 Język agenta w MVP: **tylko polski**.
+Nowa sesja: **stałe** powitanie (Nest, bez modelu) i pięć przycisków tematów
+w widgecie; klik wysyła gotową wiadomość jak zwykły czat.
 Aktualizuj przy zmianie zachowania MVP.
 
 ## Aktorzy

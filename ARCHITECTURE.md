@@ -8,7 +8,8 @@ samym procesie za portem `CHAT_AGENT`), `widget/` (React / Vite) i
 wycena i context tree: serwisy Nest; przy `SUPABASE_URL` +
 `SUPABASE_SERVICE_ROLE_KEY` katalogi ładują PROD (`evapremium_shop` /
 `eva_bot`) raz przy starcie, bez env zostaje fixture. HTTP czatu:
-`POST /v1/sessions`; wiadomości SSE. Transkrypt: `ChatSessions` — in-memory
+`POST /v1/sessions` (powitanie + chipy tematów, bez LLM; pierwsza linia
+asystenta w transkrypcie); wiadomości SSE. Transkrypt: `ChatSessions` — in-memory
 w teście, `eva_bot.chat_sessions` / `chat_messages` (kolumny PROD `text` +
 `direction`) przy Supabase. DeepSeek za adapterem Mastry; stub bez klucza.
 CORS: originy sklepu + opcjonalny `WIDGET_ORIGIN` (HTTPS). Przy

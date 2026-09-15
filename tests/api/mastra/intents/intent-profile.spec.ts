@@ -22,6 +22,7 @@ describe('intentProfileFor', () => {
       expect(allowedTools.has(tool)).toBe(true);
     }
     expect(profile?.tools).not.toContain('quote-price');
+    expect(profile?.instructions).toContain('Samo powitanie');
   });
 
   it('returns undefined for an unknown intent', () => {

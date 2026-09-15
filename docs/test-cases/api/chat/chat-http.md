@@ -101,3 +101,5 @@ env Supabase. Bez Bitrix w tym zestawie.
 - **Logika:** `GET /v1/health` zwraca stały token, żeby sprawdzić, czy nowy obraz jest na VPS.
 - **Wejście:** `apiHealth()`
 - **Wyjście:** `{ status: 'ok', probe: 'cd-probe-wait-ready' }`
+
+Powitanie i chipy: [session-opener.md](session-opener.md) (`opener-001`, `opener-002`).
