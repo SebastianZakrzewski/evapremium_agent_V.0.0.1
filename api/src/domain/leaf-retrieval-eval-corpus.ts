@@ -1,6 +1,6 @@
 import type { ContextNode } from './context-tree';
 
-/** Polish FAQ leaves aligned with PROD RAG index (~16 searchable FAQ slugs). */
+/** Polish FAQ leaves aligned with PROD RAG index (~17 searchable FAQ slugs). */
 export type LeafRetrievalBusinessArea =
   | 'product'
   | 'delivery'
@@ -55,7 +55,14 @@ export const LEAF_RETRIEVAL_EVAL_CORPUS: LeafRetrievalEvalCorpusEntry[] = [
     title: 'Właściwości',
     businessArea: 'product',
     retrievalText:
-      'właściwości parametry odporność woda brud trwałość sztywność',
+      'właściwości parametry odporność woda brud sztywność antypoślizgowe',
+  },
+  {
+    slug: 'trwalosc-dywanikow',
+    title: 'Trwałość dywaników',
+    businessArea: 'product',
+    retrievalText:
+      'trwałość dywaników jak długo wytrzymują dywaniki ile lat służą dywaniki żywotność dywaników czy dywaniki są trwałe czy szybko się niszczą odporność materiału wytrzymałość dywaników',
   },
   {
     slug: 'uzytkowanie-zima-lato',

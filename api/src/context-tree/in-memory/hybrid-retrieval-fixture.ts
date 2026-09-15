@@ -17,6 +17,8 @@ export const HYBRID_RETRIEVAL_TEXT_BY_SLUG: Record<string, string> = {
   kolory: 'kolory odcienie paleta',
   montaz: 'montaż instalacja dywaników',
   wlasciwosci: 'właściwości parametry materiału',
+  'trwalosc-dywanikow':
+    'trwałość dywaników jak długo wytrzymują ile lat służą żywotność czy szybko się niszczą wytrzymałość',
   'uzytkowanie-zima-lato': 'użytkowanie zima lato temperatura',
   reklamacja: 'reklamacja zwrot procedura',
   kontakt: 'kontakt telefon mail sklep',

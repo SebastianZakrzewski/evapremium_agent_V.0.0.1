@@ -47,7 +47,7 @@ export class ProductInfoIntentProfile implements IntentProfile {
   readonly context =
     'Q&A o ofercie EvaPremium: dopasowanie dywaników EVA pod model auta, komplet, materiał, wymiary, karta produktu.';
   readonly instructions =
-    `${FAQ_TURN_PROCEDURE} Samo powitanie (cześć, hej, dzień dobry) bez pytania o fakt: przywitaj się krótko i zaproś do wyboru tematu albo auta; bez search-leaves i lookup-leaf. Z listy search preferuj (tylko jeśli tam są): material-eva, kolory, wlasciwosci, parametry, 3d-bez-rantow, 3d-z-rantami. resolve-template tylko gdy klient podał markę/model albo pyta o dopasowanie auta. Nie zgaduj VIN. Bez kwoty.`;
+    `${FAQ_TURN_PROCEDURE} Samo powitanie (cześć, hej, dzień dobry) bez pytania o fakt: przywitaj się krótko i zaproś do wyboru tematu albo auta; bez search-leaves i lookup-leaf. Z listy search preferuj (tylko jeśli tam są): material-eva, kolory, wlasciwosci, trwalosc-dywanikow, parametry, 3d-bez-rantow, 3d-z-rantami. resolve-template tylko gdy klient podał markę/model albo pyta o dopasowanie auta. Nie zgaduj VIN. Bez kwoty.`;
   readonly tools: ShopToolId[] = [
     'resolve-template',
     'lookup-leaf',

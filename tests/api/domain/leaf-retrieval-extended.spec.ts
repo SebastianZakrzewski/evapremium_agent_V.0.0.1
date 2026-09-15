@@ -54,7 +54,7 @@ describe('extended leaf retrieval offline eval', () => {
   it('meets FAQ recall@K and collision hit@1 lift on offline proxy', () => {
     const report = runLeafRetrievalOfflineEval(LEAF_RETRIEVAL_EXTENDED_DATASET);
     expect(report.caseCount).toBeGreaterThanOrEqual(100);
-    expect(report.indexSize).toBe(16);
+    expect(report.indexSize).toBe(17);
     expect(report.faqOnly.cosine.recallAtKRate).toBeGreaterThanOrEqual(0.8);
     expect(report.faqOnly.hybrid.recallAtKRate).toBeGreaterThanOrEqual(0.8);
 
