@@ -7,6 +7,14 @@ export function eligibleLeavesForEmbedding(nodes: ContextNode[]): ContextNode[] 
   });
 }
 
-export function embeddingChunk(node: ContextNode): string {
+export function retrievalTextForSearch(node: ContextNode): string {
+  const custom = node.retrievalText?.trim();
+  if (custom) {
+    return custom;
+  }
   return `${node.title}\n${node.body}`;
+}
+
+export function embeddingChunk(node: ContextNode): string {
+  return retrievalTextForSearch(node);
 }

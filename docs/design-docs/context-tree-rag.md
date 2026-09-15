@@ -206,3 +206,8 @@ Nie są częścią niezmiennika; blokują dopiero Slice 3+:
 - próg cosine i `topK`;
 - tryb poolera Supabase do pgvector;
 - czy karta dashboardu „Prawda” liczy `context_search` osobno od miss.
+
+Kolejność slugów (hit@1): wdrożone w Nest — cosine (sitko 0.49) + BM25 na
+`retrieval_text` + RRF + rerank + `confidence`. Szczegół:
+`docs/design-docs/context-leaf-hybrid-retrieval.md`. Fakt nadal tylko
+`lookup-leaf`; `search-leaves` bez `body`.

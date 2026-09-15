@@ -51,6 +51,7 @@ export class ShopTools {
     recordAgentEvent(this.events, 'context_search', {
       slugs: matches.map((row) => row.slug),
       matched: matches.length > 0,
+      confidence: matches[0]?.confidence,
     });
     return matches;
   }

@@ -7,9 +7,12 @@ export const CONTEXT_LEAF_SEARCH_THRESHOLD = 0.49;
 /** Cap candidates returned to the agent after threshold filter. */
 export const CONTEXT_LEAF_SEARCH_TOP_K = 4;
 
+export type LeafSearchConfidence = 'high' | 'ambiguous';
+
 export type ContextLeafSearchHit = {
   slug: string;
   score: number;
+  confidence?: LeafSearchConfidence;
 };
 
 export type ContextLeafVector = {

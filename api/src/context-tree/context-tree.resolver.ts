@@ -2,12 +2,8 @@ import {
   lookupContextLeaf,
   type ContextLeafLookupResult,
 } from '../domain/context-tree';
-import {
-  CONTEXT_LEAF_SEARCH_THRESHOLD,
-  CONTEXT_LEAF_SEARCH_TOP_K,
-  searchContextLeaves,
-  type ContextLeafSearchHit,
-} from '../domain/context-leaf-search';
+import { hybridSearchLeaves } from '../domain/leaf-retrieval-rank';
+import type { ContextLeafSearchHit } from '../domain/context-leaf-search';
 import type {
   ContextLeafVectorIndex,
   ContextNodeCatalog,
@@ -34,12 +30,11 @@ export class ContextTreeResolver {
     if (queryVector === null) {
       return [];
     }
-    return searchContextLeaves(
+    return hybridSearchLeaves(
+      query,
       queryVector,
       await this.vectors.list(),
       this.nodes.list(),
-      CONTEXT_LEAF_SEARCH_THRESHOLD,
-      CONTEXT_LEAF_SEARCH_TOP_K,
     );
   }
 }

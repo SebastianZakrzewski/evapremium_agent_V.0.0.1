@@ -151,7 +151,11 @@ describe('agent domain events', () => {
     expect(events.list()).toEqual([
       expect.objectContaining({
         type: 'context_search',
-        payload: { slugs: ['dostawa'], matched: true },
+        payload: expect.objectContaining({
+          slugs: ['dostawa'],
+          matched: true,
+          confidence: 'high',
+        }),
       }),
       expect.objectContaining({
         type: 'context_search',

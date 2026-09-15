@@ -4,6 +4,8 @@ export type ContextNode = {
   slug: string;
   title: string;
   body: string;
+  /** Search-only copy; lookup still uses body. */
+  retrievalText?: string;
   sortOrder: number;
   isActive: boolean;
 };

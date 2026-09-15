@@ -11,7 +11,8 @@
     "lint": "eslint \"src/**/*.ts\"",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
     "studio:prod": "node scripts/studio-prod.mjs",
-    "ingest:leaves": "node scripts/ingest-context-leaves.mjs"
+    "ingest:leaves": "node scripts/ingest-context-leaves.mjs",
+    "eval:leaf-retrieval": "npx jiti scripts/eval-leaf-retrieval.mts"
   },
   "dependencies": {
     "@mastra/core": "^1.66.0",

@@ -7,6 +7,7 @@ type NodeRow = {
   slug: string;
   title: string;
   body: string;
+  retrieval_text?: string;
   sort_order: number;
   is_active: boolean;
 };
@@ -19,6 +20,7 @@ export async function loadContextNodes(store: DataStore): Promise<ContextNode[]>
     slug: row.slug,
     title: row.title,
     body: row.body,
+    retrievalText: row.retrieval_text ?? '',
     sortOrder: row.sort_order,
     isActive: row.is_active,
   }));

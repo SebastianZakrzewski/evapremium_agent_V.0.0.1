@@ -1,4 +1,8 @@
 import { CONTEXT_TREE_NODES } from '@api/context-tree/in-memory/context-tree-fixture';
+import {
+  HYBRID_RETRIEVAL_TEXT_BY_SLUG,
+  withHybridRetrievalText,
+} from '@api/context-tree/in-memory/hybrid-retrieval-fixture';
 import { InMemoryContextNodeCatalog } from '@api/context-tree/in-memory/in-memory-context-node-catalog';
 import {
   CONTEXT_LEAF_SEARCH_FIXTURE,
@@ -35,8 +39,43 @@ describe('ContextTreeResolver', () => {
       new InMemoryContextLeafVectors(CONTEXT_LEAF_SEARCH_FIXTURE),
     );
     const matches = await searching.searchLeaves('kiedy wyślecie dywaniki');
-    expect(matches).toEqual([{ slug: 'dostawa', score: expect.any(Number) }]);
+    expect(matches).toEqual([
+      {
+        slug: 'dostawa',
+        score: expect.any(Number),
+        confidence: 'high',
+      },
+    ]);
     expect(matches[0]).not.toHaveProperty('body');
+  });
+
+  it('ranks dostawa first for Q3 when hybrid retrieval_text disambiguates', async () => {
+    const nodes = withHybridRetrievalText([
+      ...CONTEXT_TREE_NODES,
+      {
+        id: 'node-czas',
+        parentId: 'node-root-info',
+        slug: 'czas-produkcji',
+        title: 'Czas produkcji',
+        body: 'Szycie trwa kilka dni.',
+        retrievalText: HYBRID_RETRIEVAL_TEXT_BY_SLUG['czas-produkcji'],
+        sortOrder: 2,
+        isActive: true,
+      },
+    ]);
+    const searching = new ContextTreeResolver(
+      new InMemoryContextNodeCatalog(nodes),
+      new MapTextEmbedder({
+        'Kiedy wyślecie zamówienie?': [0.9, 0.1, 0, 0],
+        'kiedy wyślecie dywaniki': [1, 0, 0, 0],
+      }),
+      new InMemoryContextLeafVectors([
+        { slug: 'czas-produkcji', vector: [0.9, 0.1, 0, 0] },
+        { slug: 'dostawa', vector: [0.85, 0.15, 0, 0] },
+      ]),
+    );
+    const matches = await searching.searchLeaves('Kiedy wyślecie zamówienie?');
+    expect(matches[0]?.slug).toBe('dostawa');
   });
 
   it('returns empty when embedder is missing', async () => {

@@ -86,9 +86,12 @@ serwerowo (nie anon z widgetu).
    migracja `20260913220000_context_node_embeddings.sql` w repo; na PROD
    zastosowany). Nest: `OPENAI_API_KEY` → `text-embedding-3-small`; indeks
    `context_node_embeddings` ładuje ten sam `DataStore` co liście (service
-   role, bez `DATABASE_URL` w turze czatu). Wyszukiwanie: cosine ≥
-   `CONTEXT_LEAF_SEARCH_THRESHOLD` (0.49) i cap `CONTEXT_LEAF_SEARCH_TOP_K`
-   (4); zwrot tylko `{ slug, score }`. Ingest: skrypt
+   role, bez `DATABASE_URL` w turze czatu). Wyszukiwanie liści (`search-leaves`):
+   cosine (sitko ≥ `CONTEXT_LEAF_SEARCH_THRESHOLD` 0.49, pula do 10) + BM25 na
+   `retrieval_text` (fallback `title`+`body`) + RRF + rerank leksykalny +
+   `confidence` (`high` / `ambiguous`); do agenta max 4 slugi `{ slug, score,
+   confidence }` — bez `body`. Kolumna `retrieval_text` na
+   `context_nodes` (migracja w repo; apply PROD za zgodą). Ingest: skrypt
    `npm run ingest:leaves --workspace api` (nadal `DATABASE_URL` / pg), nie
    boot czatu. Bez klucza OpenAI albo bez wierszy indeksu: puste
    wyszukiwanie. Fakt nadal `lookup-leaf` po slugu;
@@ -239,6 +242,10 @@ zapisie rozmowy.
   kodzie. Apply pgvector na PROD tylko za zgodą. Mechanizm:
   `docs/design-docs/context-tree-rag.md`. Plan:
   `docs/exec-plans/active/context-tree-rag.md`.
+- Ranking slugów (hit@1): baza cosine 2026-09-15 i cele rury —
+  `docs/eval/leaf-retrieval-metrics.md`. Projekt:
+  `docs/design-docs/context-leaf-hybrid-retrieval.md`,
+  `docs/exec-plans/active/context-leaf-hybrid-retrieval.md`.
 
 ## Zasady utrzymania
 
@@ -255,6 +262,8 @@ zapisie rozmowy.
 - `docs/DEPLOY.md`
 - `docs/design-docs/core-beliefs.md`
 - `docs/design-docs/intent-workflow.md`
+- `docs/design-docs/context-tree-rag.md`
+- `docs/design-docs/context-leaf-hybrid-retrieval.md`
 - `docs/exec-plans/completed/intent-workflow.md`
 - `docs/SECURITY.md`
 - `docs/exec-plans/completed/mvp-tdd.md`

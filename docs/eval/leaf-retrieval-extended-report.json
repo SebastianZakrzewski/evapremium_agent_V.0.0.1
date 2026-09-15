@@ -1,0 +1,3817 @@
+{
+  "generatedAt": "2026-09-15T11:29:30.943Z",
+  "methodNote": "Offline TF-IDF vectors on retrieval_text (proxy). Cosine pool threshold 0, K=4. Not PROD OpenAI scores.",
+  "indexSize": 16,
+  "caseCount": 174,
+  "overall": {
+    "cosine": {
+      "n": 174,
+      "hitAt1Rate": 0.6206896551724138,
+      "recallAtKRate": 0.7183908045977011,
+      "wrongTopRate": 0.3793103448275862
+    },
+    "hybrid": {
+      "n": 174,
+      "hitAt1Rate": 0.6149425287356322,
+      "recallAtKRate": 0.7126436781609196,
+      "wrongTopRate": 0.3850574712643678
+    }
+  },
+  "faqOnly": {
+    "cosine": {
+      "n": 152,
+      "hitAt1Rate": 0.7105263157894737,
+      "recallAtKRate": 0.8223684210526315,
+      "wrongTopRate": 0.2894736842105263
+    },
+    "hybrid": {
+      "n": 152,
+      "hitAt1Rate": 0.7039473684210527,
+      "recallAtKRate": 0.8157894736842105,
+      "wrongTopRate": 0.29605263157894735
+    }
+  },
+  "faqMiss": {
+    "label": "faq_miss",
+    "cosine": {
+      "n": 22,
+      "hitAt1Rate": 0,
+      "recallAtKRate": 0,
+      "wrongTopRate": 1
+    },
+    "hybrid": {
+      "n": 22,
+      "hitAt1Rate": 0,
+      "recallAtKRate": 0,
+      "wrongTopRate": 1
+    },
+    "falsePositiveRate": 0.09090909090909091
+  },
+  "byIntent": {
+    "product_info": {
+      "label": "product_info",
+      "cosine": {
+        "n": 80,
+        "hitAt1Rate": 0.775,
+        "recallAtKRate": 0.8875,
+        "wrongTopRate": 0.225
+      },
+      "hybrid": {
+        "n": 80,
+        "hitAt1Rate": 0.75,
+        "recallAtKRate": 0.875,
+        "wrongTopRate": 0.25
+      }
+    },
+    "pricing": {
+      "label": "pricing",
+      "cosine": {
+        "n": 8,
+        "hitAt1Rate": 0,
+        "recallAtKRate": 0,
+        "wrongTopRate": 1
+      },
+      "hybrid": {
+        "n": 8,
+        "hitAt1Rate": 0,
+        "recallAtKRate": 0,
+        "wrongTopRate": 1
+      }
+    },
+    "delivery": {
+      "label": "delivery",
+      "cosine": {
+        "n": 24,
+        "hitAt1Rate": 0.8333333333333334,
+        "recallAtKRate": 0.8333333333333334,
+        "wrongTopRate": 0.16666666666666666
+      },
+      "hybrid": {
+        "n": 24,
+        "hitAt1Rate": 0.8333333333333334,
+        "recallAtKRate": 0.8333333333333334,
+        "wrongTopRate": 0.16666666666666666
+      }
+    },
+    "after_sales": {
+      "label": "after_sales",
+      "cosine": {
+        "n": 54,
+        "hitAt1Rate": 0.48148148148148145,
+        "recallAtKRate": 0.6296296296296297,
+        "wrongTopRate": 0.5185185185185185
+      },
+      "hybrid": {
+        "n": 54,
+        "hitAt1Rate": 0.5,
+        "recallAtKRate": 0.6296296296296297,
+        "wrongTopRate": 0.5
+      }
+    },
+    "out_of_scope": {
+      "label": "out_of_scope",
+      "cosine": {
+        "n": 8,
+        "hitAt1Rate": 0,
+        "recallAtKRate": 0,
+        "wrongTopRate": 1
+      },
+      "hybrid": {
+        "n": 8,
+        "hitAt1Rate": 0,
+        "recallAtKRate": 0,
+        "wrongTopRate": 1
+      }
+    }
+  },
+  "byBusinessArea": {
+    "product": {
+      "label": "product",
+      "cosine": {
+        "n": 80,
+        "hitAt1Rate": 0.775,
+        "recallAtKRate": 0.8875,
+        "wrongTopRate": 0.225
+      },
+      "hybrid": {
+        "n": 80,
+        "hitAt1Rate": 0.75,
+        "recallAtKRate": 0.875,
+        "wrongTopRate": 0.25
+      }
+    },
+    "delivery": {
+      "label": "delivery",
+      "cosine": {
+        "n": 24,
+        "hitAt1Rate": 0.8333333333333334,
+        "recallAtKRate": 0.8333333333333334,
+        "wrongTopRate": 0.16666666666666666
+      },
+      "hybrid": {
+        "n": 24,
+        "hitAt1Rate": 0.8333333333333334,
+        "recallAtKRate": 0.8333333333333334,
+        "wrongTopRate": 0.16666666666666666
+      }
+    },
+    "after_sales": {
+      "label": "after_sales",
+      "cosine": {
+        "n": 40,
+        "hitAt1Rate": 0.6,
+        "recallAtKRate": 0.75,
+        "wrongTopRate": 0.4
+      },
+      "hybrid": {
+        "n": 40,
+        "hitAt1Rate": 0.6,
+        "recallAtKRate": 0.75,
+        "wrongTopRate": 0.4
+      }
+    },
+    "contact": {
+      "label": "contact",
+      "cosine": {
+        "n": 8,
+        "hitAt1Rate": 0.25,
+        "recallAtKRate": 0.5,
+        "wrongTopRate": 0.75
+      },
+      "hybrid": {
+        "n": 8,
+        "hitAt1Rate": 0.375,
+        "recallAtKRate": 0.5,
+        "wrongTopRate": 0.625
+      }
+    },
+    "miss": {
+      "label": "miss",
+      "cosine": {
+        "n": 22,
+        "hitAt1Rate": 0,
+        "recallAtKRate": 0,
+        "wrongTopRate": 1
+      },
+      "hybrid": {
+        "n": 22,
+        "hitAt1Rate": 0,
+        "recallAtKRate": 0,
+        "wrongTopRate": 1
+      },
+      "falsePositiveRate": 0.09090909090909091
+    }
+  },
+  "rows": [
+    {
+      "id": "ext-material-01",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "material-eva"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "material-eva",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-material-02",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "material-eva"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "material-eva",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-material-03",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "material-eva"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "dopasowanie-model"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "material-eva",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-material-04",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "material-eva"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "material-eva",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-material-05",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "material-eva"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "material-eva",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-material-06",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "material-eva"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "material-eva",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-material-07",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "material-eva"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "material-eva",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-material-08",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "material-eva"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "montaz",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-material-09",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "material-eva"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "material-eva",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-material-10",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "material-eva"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "gwarancja"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "material-eva",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-kolory-01",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "kolory"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "kolory"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "kolory",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-kolory-02",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "kolory"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "kolory"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "kolory",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-kolory-03",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "kolory"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "czyszczenie"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "czyszczenie",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-kolory-04",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "kolory"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "kolory"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "kolory",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-kolory-05",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "kolory"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "kolory"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "3d-bez-rantow",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-kolory-06",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "kolory"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "kolory"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "kolory",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-kolory-07",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "kolory"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "podpietki"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "podpietki",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-kolory-08",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "kolory"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "kolory"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "kolory",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-3d-rant-01",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-z-rantami"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-z-rantami"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-z-rantami",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-3d-rant-02",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-z-rantami"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-z-rantami"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-z-rantami",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-3d-rant-03",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-z-rantami"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-z-rantami"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-z-rantami",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-3d-rant-04",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-z-rantami"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-z-rantami"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-z-rantami",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-3d-rant-05",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-z-rantami"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-z-rantami"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-z-rantami",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-3d-rant-06",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-z-rantami"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-z-rantami"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-z-rantami",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-3d-rant-07",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-z-rantami"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-z-rantami"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-z-rantami",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-3d-rant-08",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-z-rantami"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "3d-bez-rantow"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "3d-bez-rantow",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-3d-bez-01",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-bez-rantow"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-3d-bez-02",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-bez-rantow"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-3d-bez-03",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-bez-rantow"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-3d-bez-04",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-bez-rantow"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-3d-bez-05",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-bez-rantow"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-3d-bez-06",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-bez-rantow"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-3d-bez-07",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-bez-rantow"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-3d-bez-08",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-bez-rantow"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-montaz-01",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "montaz"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "montaz",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-montaz-02",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "montaz"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-montaz-03",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "montaz"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "montaz",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-montaz-04",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "montaz"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "montaz",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-montaz-05",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "montaz"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "montaz",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-montaz-06",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "montaz"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "montaz",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-montaz-07",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "montaz"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "montaz",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-montaz-08",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "montaz"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "montaz",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-wlasc-01",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "wlasciwosci"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-wlasc-02",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "wlasciwosci"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "gwarancja"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "gwarancja",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-wlasc-03",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "wlasciwosci"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "wlasciwosci"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "wlasciwosci",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-wlasc-04",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "wlasciwosci"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-wlasc-05",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "wlasciwosci"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "wlasciwosci"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "wlasciwosci",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-wlasc-06",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "wlasciwosci"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "wlasciwosci"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "wlasciwosci",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-wlasc-07",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "wlasciwosci"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-wlasc-08",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "wlasciwosci"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "kolory"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "kolory",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-sezon-01",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "uzytkowanie-zima-lato"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "uzytkowanie-zima-lato"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "gwarancja",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-sezon-02",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "uzytkowanie-zima-lato"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "uzytkowanie-zima-lato"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "uzytkowanie-zima-lato",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-sezon-03",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "uzytkowanie-zima-lato"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "uzytkowanie-zima-lato"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "uzytkowanie-zima-lato",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-sezon-04",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "uzytkowanie-zima-lato"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "uzytkowanie-zima-lato"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-sezon-05",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "uzytkowanie-zima-lato"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "uzytkowanie-zima-lato"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "uzytkowanie-zima-lato",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-sezon-06",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "uzytkowanie-zima-lato"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "uzytkowanie-zima-lato"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-sezon-07",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "uzytkowanie-zima-lato"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "uzytkowanie-zima-lato"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "uzytkowanie-zima-lato",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-sezon-08",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "uzytkowanie-zima-lato"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "uzytkowanie-zima-lato"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "uzytkowanie-zima-lato",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-dopas-01",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "dopasowanie-model"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "montaz",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-dopas-02",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "dopasowanie-model"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dopasowanie-model"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dopasowanie-model",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-dopas-03",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "dopasowanie-model"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dopasowanie-model"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dopasowanie-model",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-dopas-04",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "dopasowanie-model"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dopasowanie-model"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dopasowanie-model",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-dopas-05",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "dopasowanie-model"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "montaz",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-dopas-06",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "dopasowanie-model"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dopasowanie-model"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dopasowanie-model",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-dopas-07",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "dopasowanie-model"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "podpietki"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "podpietki",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-dopas-08",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "dopasowanie-model"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "gwarancja"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-dopas-09",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "dopasowanie-model"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dopasowanie-model"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dopasowanie-model",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-dopas-10",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "dopasowanie-model"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dopasowanie-model"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dopasowanie-model",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-podp-01",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "podpietki"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "podpietki"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "podpietki",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-podp-02",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "podpietki"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "podpietki"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "podpietki",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-podp-03",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "podpietki"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "podpietki"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "podpietki",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-podp-04",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "podpietki"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-podp-05",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "podpietki"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "podpietki"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "podpietki",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-podp-06",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "podpietki"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "podpietki"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "podpietki",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-podp-07",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "podpietki"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "montaz",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-podp-08",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "podpietki"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "podpietki"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "podpietki",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-dost-01",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "dostawa"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dostawa"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dostawa",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-dost-02",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "dostawa"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dostawa"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dostawa",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-dost-03",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "dostawa"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dostawa"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dostawa",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-dost-04",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "dostawa"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "czas-produkcji"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "czas-produkcji",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-dost-05",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "dostawa"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "montaz",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-dost-06",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "dostawa"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dostawa"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dostawa",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-dost-07",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "dostawa"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dostawa"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dostawa",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-dost-08",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "dostawa"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dostawa"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dostawa",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-dost-09",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "dostawa"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dostawa"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dostawa",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-dost-10",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "dostawa"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-dost-11",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "dostawa"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dostawa"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dostawa",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-dost-12",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "dostawa"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dostawa"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "dostawa",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-prod-01",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "czas-produkcji"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-prod-02",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "czas-produkcji"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-prod-03",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "czas-produkcji"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-prod-04",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "czas-produkcji"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-prod-05",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "czas-produkcji"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "dostawa"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "dostawa",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-prod-06",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "czas-produkcji"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-prod-07",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "czas-produkcji"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-prod-08",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "czas-produkcji"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-prod-09",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "czas-produkcji"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-prod-10",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "czas-produkcji"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-prod-11",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "czas-produkcji"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-prod-12",
+      "intent": "delivery",
+      "kind": "faq",
+      "expectSlugs": [
+        "czas-produkcji"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czas-produkcji",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-gwar-01",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "gwarancja"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "gwarancja"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "gwarancja",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-gwar-02",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "gwarancja"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "czas-produkcji"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "czas-produkcji",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-gwar-03",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "gwarancja"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "gwarancja"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "gwarancja",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-gwar-04",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "gwarancja"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "gwarancja"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "gwarancja",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-gwar-05",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "gwarancja"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "gwarancja"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "gwarancja",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-gwar-06",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "gwarancja"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "gwarancja"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "gwarancja",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-gwar-07",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "gwarancja"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "gwarancja",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-gwar-08",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "gwarancja"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-gwar-09",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "gwarancja"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "gwarancja"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "gwarancja",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-gwar-10",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "gwarancja"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "gwarancja"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "gwarancja",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-czys-01",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "czyszczenie"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czyszczenie"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-czys-02",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "czyszczenie"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czyszczenie"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czyszczenie",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-czys-03",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "czyszczenie"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czyszczenie"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czyszczenie",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-czys-04",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "czyszczenie"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "montaz",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-czys-05",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "czyszczenie"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czyszczenie"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-czys-06",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "czyszczenie"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-czys-07",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "czyszczenie"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czyszczenie"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czyszczenie",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-czys-08",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "czyszczenie"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "montaz",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-czys-09",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "czyszczenie"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czyszczenie"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "czyszczenie",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-czys-10",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "czyszczenie"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "montaz",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-rekl-01",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "reklamacja"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "montaz",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-rekl-02",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "reklamacja"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "reklamacja"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "reklamacja",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-rekl-03",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "reklamacja"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "reklamacja"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "reklamacja",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-rekl-04",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "reklamacja"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-rekl-05",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "reklamacja"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "reklamacja"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "reklamacja",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-rekl-06",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "reklamacja"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-rekl-07",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "reklamacja"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "czas-produkcji"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "czas-produkcji",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-rekl-08",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "reklamacja"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "reklamacja"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "reklamacja",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-rekl-09",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "reklamacja"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "reklamacja",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-rekl-10",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "reklamacja"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-niedop-01",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "niedopasowanie-wymiana"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "niedopasowanie-wymiana"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "niedopasowanie-wymiana",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-niedop-02",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "niedopasowanie-wymiana"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "niedopasowanie-wymiana"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "niedopasowanie-wymiana",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-niedop-03",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "niedopasowanie-wymiana"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "niedopasowanie-wymiana"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "niedopasowanie-wymiana",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-niedop-04",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "niedopasowanie-wymiana"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-niedop-05",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "niedopasowanie-wymiana"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "dopasowanie-model"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "dopasowanie-model",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-niedop-06",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "niedopasowanie-wymiana"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "niedopasowanie-wymiana"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "niedopasowanie-wymiana",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-niedop-07",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "niedopasowanie-wymiana"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "niedopasowanie-wymiana"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "niedopasowanie-wymiana",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-niedop-08",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "niedopasowanie-wymiana"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "reklamacja"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "reklamacja",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-niedop-09",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "niedopasowanie-wymiana"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "niedopasowanie-wymiana"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "niedopasowanie-wymiana",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-niedop-10",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "niedopasowanie-wymiana"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "niedopasowanie-wymiana"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "niedopasowanie-wymiana",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-kont-01",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "kontakt"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "montaz",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-kont-02",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "kontakt"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "dostawa"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "dostawa",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-kont-03",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "kontakt"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "dostawa"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "dostawa",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-kont-04",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "kontakt"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "kontakt"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "kontakt",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-kont-05",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "kontakt"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "kontakt"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "kontakt",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-kont-06",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "kontakt"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": true,
+        "wrongTop": true,
+        "top1": "reklamacja"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "kontakt",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-kont-07",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "kontakt"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-kont-08",
+      "intent": "after_sales",
+      "kind": "faq",
+      "expectSlugs": [
+        "kontakt"
+      ],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "gwarancja"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-chip-3d-rant-01",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-z-rantami"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-z-rantami"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-z-rantami",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-chip-3d-rant-02",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-z-rantami"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-z-rantami"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-z-rantami",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-chip-3d-bez-01",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-bez-rantow"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-chip-3d-bez-02",
+      "intent": "product_info",
+      "kind": "faq",
+      "expectSlugs": [
+        "3d-bez-rantow"
+      ],
+      "cosineOnly": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow"
+      },
+      "hybrid": {
+        "hitAt1": true,
+        "recallAtK": true,
+        "wrongTop": false,
+        "top1": "3d-bez-rantow",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-miss-price-01",
+      "intent": "pricing",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "czas-produkcji"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "czas-produkcji",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-miss-price-02",
+      "intent": "pricing",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-miss-price-03",
+      "intent": "pricing",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "gwarancja"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "gwarancja",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-miss-price-04",
+      "intent": "pricing",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-miss-price-05",
+      "intent": "pricing",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-miss-price-06",
+      "intent": "pricing",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "gwarancja"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "gwarancja",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-miss-price-07",
+      "intent": "pricing",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "dostawa"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "dostawa",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-miss-price-08",
+      "intent": "pricing",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "gwarancja"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-miss-scope-01",
+      "intent": "out_of_scope",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-miss-scope-02",
+      "intent": "out_of_scope",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-miss-scope-03",
+      "intent": "out_of_scope",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-miss-scope-04",
+      "intent": "out_of_scope",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "montaz",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-miss-scope-05",
+      "intent": "out_of_scope",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "montaz"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "montaz",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-miss-scope-06",
+      "intent": "out_of_scope",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-miss-scope-07",
+      "intent": "out_of_scope",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-miss-scope-08",
+      "intent": "out_of_scope",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "dostawa"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "dostawa",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-miss-policy-01",
+      "intent": "after_sales",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-miss-policy-02",
+      "intent": "after_sales",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "czas-produkcji"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "czas-produkcji",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-miss-policy-03",
+      "intent": "after_sales",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "3d-bez-rantow"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "3d-bez-rantow",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-miss-policy-04",
+      "intent": "after_sales",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "gwarancja"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "gwarancja",
+        "confidence": "ambiguous"
+      }
+    },
+    {
+      "id": "ext-miss-policy-05",
+      "intent": "after_sales",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "niedopasowanie-wymiana"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "niedopasowanie-wymiana",
+        "confidence": "high"
+      }
+    },
+    {
+      "id": "ext-miss-policy-06",
+      "intent": "after_sales",
+      "kind": "faq_miss",
+      "expectSlugs": [],
+      "cosineOnly": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva"
+      },
+      "hybrid": {
+        "hitAt1": false,
+        "recallAtK": false,
+        "wrongTop": true,
+        "top1": "material-eva",
+        "confidence": "ambiguous"
+      }
+    }
+  ]
+}

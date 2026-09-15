@@ -1,4 +1,8 @@
-import { prepareIntentTurn } from '@api/mastra/intents/prepare-intent-turn';
+import {
+  assembleTurnInstructions,
+  prepareIntentTurn,
+} from '@api/mastra/intents/prepare-intent-turn';
+import { intentProfileFor } from '@api/mastra/intents/profiles';
 import {
   profileAllowsTool,
   selectTurnTools,
@@ -67,5 +71,19 @@ describe('prepareIntentTurn', () => {
         'quote-price',
       ]),
     ).toThrow('unknown shop tool: quote-price');
+  });
+
+  it('adds dataset few-shot lines for delivery and after_sales profiles', () => {
+    const delivery = intentProfileFor('delivery');
+    const afterSales = intentProfileFor('after_sales');
+    expect(delivery).toBeDefined();
+    expect(afterSales).toBeDefined();
+    const deliveryText = assembleTurnInstructions(delivery!);
+    const afterText = assembleTurnInstructions(afterSales!);
+    expect(deliveryText).toContain('dostawa');
+    expect(deliveryText).toContain('czas-produkcji');
+    expect(afterText).toContain('gwarancja');
+    expect(deliveryText).toContain('confidence=high');
+    expect(deliveryText).not.toContain('od najwyższego score');
   });
 });

@@ -82,6 +82,10 @@ Przy wątpliwości wybierz wyższy poziom.
 | Wycena (domena) | [api/domain/pricing.md](api/domain/pricing.md) | `tests/api/domain/pricing.spec.ts` |
 | Context tree (domena) | [api/domain/context-tree.md](api/domain/context-tree.md) | `tests/api/domain/context-tree.spec.ts` |
 | Wyszukiwanie liści (domena) | [api/domain/context-leaf-search.md](api/domain/context-leaf-search.md) | `tests/api/domain/context-leaf-search.spec.ts` |
+| Dataset rankingu liści | [api/domain/leaf-retrieval-dataset.md](api/domain/leaf-retrieval-dataset.md) | `tests/api/domain/leaf-retrieval-dataset.spec.ts` |
+| Hybrid ranking (BM25/RRF) | [api/domain/leaf-retrieval-rank.md](api/domain/leaf-retrieval-rank.md) | `tests/api/domain/leaf-retrieval-rank.spec.ts` |
+| Hybrid vs baseline cosine | [api/domain/hybrid-retrieval-baseline.md](api/domain/hybrid-retrieval-baseline.md) | `tests/api/domain/hybrid-retrieval-baseline.spec.ts` |
+| Extended leaf retrieval eval | [api/domain/leaf-retrieval-extended.md](api/domain/leaf-retrieval-extended.md) | `tests/api/domain/leaf-retrieval-extended.spec.ts` |
 | Lead Bitrix (domena) | [api/domain/lead.md](api/domain/lead.md) | `tests/api/domain/lead.spec.ts` |
 | Resolver kaskady | [api/templates/template-cascade-resolver.md](api/templates/template-cascade-resolver.md) | `tests/api/templates/template-cascade.resolver.spec.ts` |
 | Resolver wyceny | [api/pricing/pricing-resolver.md](api/pricing/pricing-resolver.md) | `tests/api/pricing/pricing.resolver.spec.ts` |

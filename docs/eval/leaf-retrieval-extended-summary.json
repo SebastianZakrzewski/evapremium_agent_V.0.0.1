@@ -1,0 +1,195 @@
+{
+  "generatedAt": "2026-09-15T11:29:30.943Z",
+  "methodNote": "Offline TF-IDF vectors on retrieval_text (proxy). Cosine pool threshold 0, K=4. Not PROD OpenAI scores.",
+  "indexSize": 16,
+  "caseCount": 174,
+  "overall": {
+    "cosine": {
+      "n": 174,
+      "hitAt1Rate": 0.6206896551724138,
+      "recallAtKRate": 0.7183908045977011,
+      "wrongTopRate": 0.3793103448275862
+    },
+    "hybrid": {
+      "n": 174,
+      "hitAt1Rate": 0.6149425287356322,
+      "recallAtKRate": 0.7126436781609196,
+      "wrongTopRate": 0.3850574712643678
+    }
+  },
+  "faqOnly": {
+    "cosine": {
+      "n": 152,
+      "hitAt1Rate": 0.7105263157894737,
+      "recallAtKRate": 0.8223684210526315,
+      "wrongTopRate": 0.2894736842105263
+    },
+    "hybrid": {
+      "n": 152,
+      "hitAt1Rate": 0.7039473684210527,
+      "recallAtKRate": 0.8157894736842105,
+      "wrongTopRate": 0.29605263157894735
+    }
+  },
+  "faqMiss": {
+    "n": 22,
+    "cosineHitAt1Rate": 0,
+    "hybridHitAt1Rate": 0,
+    "falsePositiveRate": 0.09090909090909091
+  },
+  "byIntent": {
+    "product_info": {
+      "label": "product_info",
+      "cosine": {
+        "n": 80,
+        "hitAt1Rate": 0.775,
+        "recallAtKRate": 0.8875,
+        "wrongTopRate": 0.225
+      },
+      "hybrid": {
+        "n": 80,
+        "hitAt1Rate": 0.75,
+        "recallAtKRate": 0.875,
+        "wrongTopRate": 0.25
+      }
+    },
+    "pricing": {
+      "label": "pricing",
+      "cosine": {
+        "n": 8,
+        "hitAt1Rate": 0,
+        "recallAtKRate": 0,
+        "wrongTopRate": 1
+      },
+      "hybrid": {
+        "n": 8,
+        "hitAt1Rate": 0,
+        "recallAtKRate": 0,
+        "wrongTopRate": 1
+      }
+    },
+    "delivery": {
+      "label": "delivery",
+      "cosine": {
+        "n": 24,
+        "hitAt1Rate": 0.8333333333333334,
+        "recallAtKRate": 0.8333333333333334,
+        "wrongTopRate": 0.16666666666666666
+      },
+      "hybrid": {
+        "n": 24,
+        "hitAt1Rate": 0.8333333333333334,
+        "recallAtKRate": 0.8333333333333334,
+        "wrongTopRate": 0.16666666666666666
+      }
+    },
+    "after_sales": {
+      "label": "after_sales",
+      "cosine": {
+        "n": 54,
+        "hitAt1Rate": 0.48148148148148145,
+        "recallAtKRate": 0.6296296296296297,
+        "wrongTopRate": 0.5185185185185185
+      },
+      "hybrid": {
+        "n": 54,
+        "hitAt1Rate": 0.5,
+        "recallAtKRate": 0.6296296296296297,
+        "wrongTopRate": 0.5
+      }
+    },
+    "out_of_scope": {
+      "label": "out_of_scope",
+      "cosine": {
+        "n": 8,
+        "hitAt1Rate": 0,
+        "recallAtKRate": 0,
+        "wrongTopRate": 1
+      },
+      "hybrid": {
+        "n": 8,
+        "hitAt1Rate": 0,
+        "recallAtKRate": 0,
+        "wrongTopRate": 1
+      }
+    }
+  },
+  "byBusinessArea": {
+    "product": {
+      "label": "product",
+      "cosine": {
+        "n": 80,
+        "hitAt1Rate": 0.775,
+        "recallAtKRate": 0.8875,
+        "wrongTopRate": 0.225
+      },
+      "hybrid": {
+        "n": 80,
+        "hitAt1Rate": 0.75,
+        "recallAtKRate": 0.875,
+        "wrongTopRate": 0.25
+      }
+    },
+    "delivery": {
+      "label": "delivery",
+      "cosine": {
+        "n": 24,
+        "hitAt1Rate": 0.8333333333333334,
+        "recallAtKRate": 0.8333333333333334,
+        "wrongTopRate": 0.16666666666666666
+      },
+      "hybrid": {
+        "n": 24,
+        "hitAt1Rate": 0.8333333333333334,
+        "recallAtKRate": 0.8333333333333334,
+        "wrongTopRate": 0.16666666666666666
+      }
+    },
+    "after_sales": {
+      "label": "after_sales",
+      "cosine": {
+        "n": 40,
+        "hitAt1Rate": 0.6,
+        "recallAtKRate": 0.75,
+        "wrongTopRate": 0.4
+      },
+      "hybrid": {
+        "n": 40,
+        "hitAt1Rate": 0.6,
+        "recallAtKRate": 0.75,
+        "wrongTopRate": 0.4
+      }
+    },
+    "contact": {
+      "label": "contact",
+      "cosine": {
+        "n": 8,
+        "hitAt1Rate": 0.25,
+        "recallAtKRate": 0.5,
+        "wrongTopRate": 0.75
+      },
+      "hybrid": {
+        "n": 8,
+        "hitAt1Rate": 0.375,
+        "recallAtKRate": 0.5,
+        "wrongTopRate": 0.625
+      }
+    },
+    "miss": {
+      "label": "miss",
+      "cosine": {
+        "n": 22,
+        "hitAt1Rate": 0,
+        "recallAtKRate": 0,
+        "wrongTopRate": 1
+      },
+      "hybrid": {
+        "n": 22,
+        "hitAt1Rate": 0,
+        "recallAtKRate": 0,
+        "wrongTopRate": 1
+      },
+      "falsePositiveRate": 0.09090909090909091
+    }
+  }
+}

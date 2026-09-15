@@ -8,6 +8,7 @@ import {
 } from './intent-fallback';
 import type { IntentTurnLog } from './intent-turn-log';
 import { executeQualifyStep } from './qualify-step';
+import { fewShotLinesForIntent } from '../../domain/leaf-retrieval-few-shot';
 import type { QualifyResult, ShopIntent, ShopToolId } from './schema';
 
 export const EVA_TURN_BASE_INSTRUCTIONS =
@@ -21,13 +22,16 @@ export type PreparedTurn = {
 };
 
 export function assembleTurnInstructions(profile: IntentProfile): string {
-  return [
+  const fewShot = fewShotLinesForIntent(profile.id);
+  const parts = [
     EVA_TURN_BASE_INSTRUCTIONS,
     profile.context,
     profile.instructions,
-  ]
-    .filter((part): part is string => Boolean(part?.trim()))
-    .join('\n\n');
+    fewShot.length > 0
+      ? `Przykłady slugów z pytań klientów:\n${fewShot.join('\n')}`
+      : undefined,
+  ];
+  return parts.filter((part): part is string => Boolean(part?.trim())).join('\n\n');
 }
 
 function assembledTurn(profile: IntentProfile): PreparedTurn {

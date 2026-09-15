@@ -1,0 +1,393 @@
+{
+  "index_size": 18,
+  "cases": [
+    {
+      "id": "Q1",
+      "query": "Z czego wykonane są dywaniki?",
+      "expectSlugs": [
+        "material-eva"
+      ],
+      "raw_top5": [
+        {
+          "slug": "material-eva",
+          "score": 0.7012
+        },
+        {
+          "slug": "montaz",
+          "score": 0.5522
+        },
+        {
+          "slug": "3d-bez-rantow",
+          "score": 0.5491
+        },
+        {
+          "slug": "niedopasowanie-wymiana",
+          "score": 0.5302
+        },
+        {
+          "slug": "czyszczenie",
+          "score": 0.5253
+        }
+      ]
+    },
+    {
+      "id": "Q2",
+      "query": "Jak czyścić dywaniki EVA?",
+      "expectSlugs": [
+        "czyszczenie"
+      ],
+      "raw_top5": [
+        {
+          "slug": "czyszczenie",
+          "score": 0.7918
+        },
+        {
+          "slug": "material-eva",
+          "score": 0.6506
+        },
+        {
+          "slug": "wlasciwosci",
+          "score": 0.6432
+        },
+        {
+          "slug": "uzytkowanie-zima-lato",
+          "score": 0.5708
+        },
+        {
+          "slug": "gwarancja",
+          "score": 0.568
+        }
+      ]
+    },
+    {
+      "id": "Q3",
+      "query": "Kiedy wyślecie zamówienie?",
+      "expectSlugs": [
+        "dostawa"
+      ],
+      "raw_top5": [
+        {
+          "slug": "czas-produkcji",
+          "score": 0.584
+        },
+        {
+          "slug": "dostawa",
+          "score": 0.5504
+        },
+        {
+          "slug": "reklamacja",
+          "score": 0.4783
+        },
+        {
+          "slug": "niedopasowanie-wymiana",
+          "score": 0.4783
+        },
+        {
+          "slug": "kontakt",
+          "score": 0.4485
+        }
+      ]
+    },
+    {
+      "id": "Q4",
+      "query": "Ile trwa realizacja / produkcja?",
+      "expectSlugs": [
+        "czas-produkcji"
+      ],
+      "raw_top5": [
+        {
+          "slug": "czas-produkcji",
+          "score": 0.5765
+        },
+        {
+          "slug": "reklamacja",
+          "score": 0.3918
+        },
+        {
+          "slug": "kontakt",
+          "score": 0.3817
+        },
+        {
+          "slug": "gwarancja",
+          "score": 0.3438
+        },
+        {
+          "slug": "niedopasowanie-wymiana",
+          "score": 0.3368
+        }
+      ]
+    },
+    {
+      "id": "Q5",
+      "query": "Jaka jest gwarancja na dywaniki?",
+      "expectSlugs": [
+        "gwarancja"
+      ],
+      "raw_top5": [
+        {
+          "slug": "niedopasowanie-wymiana",
+          "score": 0.7026
+        },
+        {
+          "slug": "gwarancja",
+          "score": 0.6971
+        },
+        {
+          "slug": "material-eva",
+          "score": 0.5928
+        },
+        {
+          "slug": "3d-bez-rantow",
+          "score": 0.5184
+        },
+        {
+          "slug": "reklamacja",
+          "score": 0.5165
+        }
+      ]
+    },
+    {
+      "id": "Q6",
+      "query": "Dywaniki nie pasują do auta — co robić?",
+      "expectSlugs": [
+        "niedopasowanie-wymiana"
+      ],
+      "raw_top5": [
+        {
+          "slug": "dopasowanie-model",
+          "score": 0.6533
+        },
+        {
+          "slug": "podpietki",
+          "score": 0.526
+        },
+        {
+          "slug": "niedopasowanie-wymiana",
+          "score": 0.5186
+        },
+        {
+          "slug": "montaz",
+          "score": 0.5134
+        },
+        {
+          "slug": "reklamacja",
+          "score": 0.5112
+        }
+      ]
+    },
+    {
+      "id": "Q8",
+      "query": "Czy są warianty z rantami i bez?",
+      "expectSlugs": [
+        "3d-z-rantami",
+        "3d-bez-rantow"
+      ],
+      "raw_top5": [
+        {
+          "slug": "3d-bez-rantow",
+          "score": 0.5216
+        },
+        {
+          "slug": "3d-z-rantami",
+          "score": 0.4451
+        },
+        {
+          "slug": "podpietki",
+          "score": 0.4276
+        },
+        {
+          "slug": "montaz",
+          "score": 0.385
+        },
+        {
+          "slug": "reklamacja",
+          "score": 0.3571
+        }
+      ]
+    }
+  ],
+  "grid": [
+    {
+      "threshold": 0.5,
+      "hit_at_1": 0.5714285714285714,
+      "hit_at_3": 1,
+      "recall_expected": 1,
+      "empty_rate": 0,
+      "wrong_top_rate": 0.42857142857142855,
+      "score": 23.5
+    },
+    {
+      "threshold": 0.55,
+      "hit_at_1": 0.42857142857142855,
+      "hit_at_3": 0.7142857142857143,
+      "recall_expected": 0.7142857142857143,
+      "empty_rate": 0.14285714285714285,
+      "wrong_top_rate": 0.42857142857142855,
+      "score": 13
+    },
+    {
+      "threshold": 0.58,
+      "hit_at_1": 0.2857142857142857,
+      "hit_at_3": 0.42857142857142855,
+      "recall_expected": 0.42857142857142855,
+      "empty_rate": 0.2857142857142857,
+      "wrong_top_rate": 0.42857142857142855,
+      "score": 2.5
+    },
+    {
+      "threshold": 0.6,
+      "hit_at_1": 0.2857142857142857,
+      "hit_at_3": 0.42857142857142855,
+      "recall_expected": 0.42857142857142855,
+      "empty_rate": 0.42857142857142855,
+      "wrong_top_rate": 0.2857142857142857,
+      "score": 2
+    },
+    {
+      "threshold": 0.62,
+      "hit_at_1": 0.2857142857142857,
+      "hit_at_3": 0.42857142857142855,
+      "recall_expected": 0.42857142857142855,
+      "empty_rate": 0.42857142857142855,
+      "wrong_top_rate": 0.2857142857142857,
+      "score": 2
+    },
+    {
+      "threshold": 0.65,
+      "hit_at_1": 0.2857142857142857,
+      "hit_at_3": 0.42857142857142855,
+      "recall_expected": 0.42857142857142855,
+      "empty_rate": 0.42857142857142855,
+      "wrong_top_rate": 0.2857142857142857,
+      "score": 2
+    },
+    {
+      "threshold": 0.68,
+      "hit_at_1": 0.2857142857142857,
+      "hit_at_3": 0.42857142857142855,
+      "recall_expected": 0.42857142857142855,
+      "empty_rate": 0.5714285714285714,
+      "wrong_top_rate": 0.14285714285714285,
+      "score": 1.5
+    },
+    {
+      "threshold": 0.7,
+      "hit_at_1": 0.2857142857142857,
+      "hit_at_3": 0.2857142857142857,
+      "recall_expected": 0.2857142857142857,
+      "empty_rate": 0.5714285714285714,
+      "wrong_top_rate": 0.14285714285714285,
+      "score": -1
+    },
+    {
+      "threshold": 0.75,
+      "hit_at_1": 0.14285714285714285,
+      "hit_at_3": 0.14285714285714285,
+      "recall_expected": 0.14285714285714285,
+      "empty_rate": 0.8571428571428571,
+      "wrong_top_rate": 0,
+      "score": -9.5
+    },
+    {
+      "threshold": 0.8,
+      "hit_at_1": 0,
+      "hit_at_3": 0,
+      "recall_expected": 0,
+      "empty_rate": 1,
+      "wrong_top_rate": 0,
+      "score": -17.5
+    }
+  ],
+  "best": {
+    "threshold": 0.5,
+    "hit_at_1": 0.5714285714285714,
+    "hit_at_3": 1,
+    "recall_expected": 1,
+    "empty_rate": 0,
+    "wrong_top_rate": 0.42857142857142855,
+    "score": 23.5,
+    "perCase": [
+      {
+        "id": "Q1",
+        "top": {
+          "slug": "material-eva",
+          "score": 0.7012
+        },
+        "inTop1": true,
+        "inTop3": true,
+        "empty": false,
+        "wrongTop": false
+      },
+      {
+        "id": "Q2",
+        "top": {
+          "slug": "czyszczenie",
+          "score": 0.7918
+        },
+        "inTop1": true,
+        "inTop3": true,
+        "empty": false,
+        "wrongTop": false
+      },
+      {
+        "id": "Q3",
+        "top": {
+          "slug": "czas-produkcji",
+          "score": 0.584
+        },
+        "inTop1": false,
+        "inTop3": true,
+        "empty": false,
+        "wrongTop": true
+      },
+      {
+        "id": "Q4",
+        "top": {
+          "slug": "czas-produkcji",
+          "score": 0.5765
+        },
+        "inTop1": true,
+        "inTop3": true,
+        "empty": false,
+        "wrongTop": false
+      },
+      {
+        "id": "Q5",
+        "top": {
+          "slug": "niedopasowanie-wymiana",
+          "score": 0.7026
+        },
+        "inTop1": false,
+        "inTop3": true,
+        "empty": false,
+        "wrongTop": true
+      },
+      {
+        "id": "Q6",
+        "top": {
+          "slug": "dopasowanie-model",
+          "score": 0.6533
+        },
+        "inTop1": false,
+        "inTop3": true,
+        "empty": false,
+        "wrongTop": true
+      },
+      {
+        "id": "Q8",
+        "top": {
+          "slug": "3d-bez-rantow",
+          "score": 0.5216
+        },
+        "inTop1": true,
+        "inTop3": true,
+        "empty": false,
+        "wrongTop": false
+      }
+    ]
+  },
+  "recommendation": {
+    "threshold": 0.5,
+    "rationale": "Najlepszy kompromis: hit@1=0.5714285714285714, hit@3=1, empty=0, wrongTop=0.42857142857142855"
+  }
+}

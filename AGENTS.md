@@ -20,7 +20,9 @@ poznawania projektu, wprowadzania zmian i utrzymywania dokumentacji.
    Dashboard operatora: `docs/product-specs/evapremium-agents-dashboard.md`,
    `docs/exec-plans/active/evapremium-agents-dashboard.md`.
    RAG context tree (po MVP): `docs/design-docs/context-tree-rag.md`,
-   `docs/exec-plans/active/context-tree-rag.md`.
+   `docs/exec-plans/active/context-tree-rag.md`. Hybrid retrieval slugów
+   (dataset, BM25, RRF, rerank): `docs/design-docs/context-leaf-hybrid-retrieval.md`,
+   `docs/exec-plans/active/context-leaf-hybrid-retrieval.md`.
    Mastra: `docs/references/mastra/INDEX.md`, potem jeden fragment.
 6. Przed zmianą kodu sprawdź istniejące wzorce i testy.
    Katalog przypadków (wejście / wyjście / logika / krytyczność):
@@ -52,7 +54,8 @@ Nie twórz infrastruktury planów dla prostych, jednorazowych zmian.
 Plan MVP (`docs/exec-plans/completed/mvp-tdd.md`): slice’e 0–7 zamknięte.
 Dashboard operatora: `docs/exec-plans/active/evapremium-agents-dashboard.md`
 (jeden slice na iterację). RAG FAQ (slug, nie fakt):
-`docs/exec-plans/active/context-tree-rag.md`. Bramka historyczna MVP agenta:
+`docs/exec-plans/active/context-tree-rag.md`. Ranking slugów (BM25+RRF):
+`docs/exec-plans/active/context-leaf-hybrid-retrieval.md`. Bramka historyczna MVP agenta:
 `.cursor/rules/mvp-tdd-quality-gate.mdc`.
 
 ## Weryfikacja

@@ -25,7 +25,7 @@ const faqExecution: IntentExecution = {
 };
 
 const FAQ_TURN_PROCEDURE =
-  'Fakty tylko z lookup-leaf (status hit i body). Nie zmyślaj polityki. search-leaves najwyżej raz w turze; query = pytanie klienta. lookup-leaf tylko ze slugów z tego wyniku, od najwyższego score. Nie wymyślaj sluga. Po 1 hicie, którego body odpowiada na pytanie: odpowiedz po polsku i nie wołaj więcej tooli. Drugi lookup tylko gdy pierwszy body nie pokrywa pytania. Nie uśredniaj sprzecznych liści. Pusty search albo sam miss: powiedz, że nie masz faktu. Bez drugiego search. Bez obietnicy kontaktu bez leada Nest.';
+  'Fakty tylko z lookup-leaf (status hit i body). Nie zmyślaj polityki. search-leaves najwyżej raz w turze; query = pytanie klienta. lookup-leaf tylko ze slugów z tego wyniku. Gdy confidence=high: jeden lookup (pierwszy slug). Gdy confidence=ambiguous: nie bierz #1 w ciemno — wybierz slug, którego body odpowiada na pytanie, albo drugi lookup. Nie wymyślaj sluga. Po 1 hicie, którego body odpowiada na pytanie: odpowiedz po polsku i nie wołaj więcej tooli. Drugi lookup tylko gdy pierwszy body nie pokrywa pytania. Nie uśredniaj sprzecznych liści. Pusty search albo sam miss: powiedz, że nie masz faktu. Bez drugiego search. Bez obietnicy kontaktu bez leada Nest.';
 
 const defaultFallback: IntentFallback = {
   onLowConfidence: 'reclassify',
