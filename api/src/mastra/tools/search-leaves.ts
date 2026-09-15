@@ -11,7 +11,7 @@ export function createSearchLeavesTool(
   return createTool({
     id: 'search-leaves',
     description:
-      'Return similar context tree slugs for a natural-language question. No leaf body — call lookup-leaf next. Empty means miss.',
+      'Return similar context tree slugs for a natural-language question. Call at most once per turn. Query should be the customer question. No leaf body — call lookup-leaf next with a slug from this result. Empty means miss.',
     inputSchema: z.object({ query: z.string() }),
     execute: async ({ query }) =>
       executeShopTool(events, 'search-leaves', () => tools.searchLeaves(query)),

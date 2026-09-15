@@ -19,6 +19,14 @@ const defaultExecution: IntentExecution = {
   maxToolCalls: 8,
 };
 
+const faqExecution: IntentExecution = {
+  mode: 'agent_loop',
+  maxToolCalls: 4,
+};
+
+const FAQ_TURN_PROCEDURE =
+  'Fakty tylko z lookup-leaf (status hit i body). Nie zmyślaj polityki. search-leaves najwyżej raz w turze; query = pytanie klienta. lookup-leaf tylko ze slugów z tego wyniku, od najwyższego score. Nie wymyślaj sluga. Po 1 hicie, którego body odpowiada na pytanie: odpowiedz po polsku i nie wołaj więcej tooli. Drugi lookup tylko gdy pierwszy body nie pokrywa pytania. Nie uśredniaj sprzecznych liści. Pusty search albo sam miss: powiedz, że nie masz faktu. Bez drugiego search. Bez obietnicy kontaktu bez leada Nest.';
+
 const defaultFallback: IntentFallback = {
   onLowConfidence: 'reclassify',
   onToolFailure: 'retry',
@@ -39,7 +47,7 @@ export class ProductInfoIntentProfile implements IntentProfile {
   readonly context =
     'Q&A o ofercie EvaPremium: dopasowanie dywaników EVA pod model auta, komplet, materiał, wymiary, karta produktu.';
   readonly instructions =
-    'Prezentuj produkt i odpowiadaj na pytania. Nie zmyślaj katalogu. Dopasowanie auta tylko toolem resolve-template. Przy status many dopytaj i wywołaj tool ponownie — nie wybieraj nowszej generacji. one to tożsamość szablonu, nie stan magazynu. Fakty oferty tylko z lookup-leaf. Niepewny slug: search-leaves, potem lookup-leaf. Nie zgaduj VIN. Bez kwoty.';
+    `${FAQ_TURN_PROCEDURE} Z listy search preferuj (tylko jeśli tam są): material-eva, kolory, wlasciwosci, parametry, 3d-bez-rantow, 3d-z-rantami. resolve-template tylko gdy klient podał markę/model albo pyta o dopasowanie auta. Nie zgaduj VIN. Bez kwoty.`;
   readonly tools: ShopToolId[] = [
     'resolve-template',
     'lookup-leaf',
@@ -79,9 +87,9 @@ export class DeliveryIntentProfile implements IntentProfile {
   readonly context =
     'Dostawa i terminy wyłącznie z liści context tree (lookup-leaf).';
   readonly instructions =
-    'Odpowiadaj tylko z lookup-leaf. Niepewny slug: search-leaves, potem lookup-leaf. Miss = brak faktu, nie zgaduj polityki dostawy.';
+    `${FAQ_TURN_PROCEDURE} Z listy search preferuj (tylko jeśli tam są): dostawa, czas-produkcji. Nie otwieraj gwarancji ani czyszczenia. Miss = brak faktu, nie zgaduj polityki dostawy.`;
   readonly tools: ShopToolId[] = ['lookup-leaf', 'search-leaves'];
-  readonly execution = defaultExecution;
+  readonly execution = faqExecution;
   readonly permissions = shopPermissions(['answer_delivery']);
   readonly routing: IntentRouting = {
     allowIntentSwitch: true,
@@ -95,9 +103,9 @@ export class AfterSalesIntentProfile implements IntentProfile {
   readonly context =
     'Pielęgnacja, gwarancja, montaż — fakty z liści context tree.';
   readonly instructions =
-    'Odpowiadaj tylko z lookup-leaf. Niepewny slug: search-leaves, potem lookup-leaf. Miss = brak faktu; nie obiecuj kontaktu bez leada Nest.';
+    `${FAQ_TURN_PROCEDURE} Z listy search preferuj (tylko jeśli tam są): gwarancja, reklamacja, czyszczenie, montaz, niedopasowanie-wymiana. Miss = brak faktu; nie obiecuj kontaktu bez leada Nest.`;
   readonly tools: ShopToolId[] = ['lookup-leaf', 'search-leaves'];
-  readonly execution = defaultExecution;
+  readonly execution = faqExecution;
   readonly permissions = shopPermissions(['answer_after_sales']);
   readonly routing: IntentRouting = {
     allowIntentSwitch: true,

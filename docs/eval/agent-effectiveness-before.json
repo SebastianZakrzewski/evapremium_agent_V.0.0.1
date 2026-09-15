@@ -1,0 +1,165 @@
+{
+  "label": "before",
+  "n": 8,
+  "rates": {
+    "m1_intent": 87.5,
+    "m2_tools_in_bounds": 100,
+    "m3_tool_scenario": 37.5,
+    "m4_no_slug_hallucination": 100,
+    "m5_no_fact_hallucination": 100,
+    "m6_answer_quality": 87.5,
+    "m7_loop_discipline": 37.5
+  },
+  "weighted": 81.25,
+  "perScenario": [
+    {
+      "id": "S1",
+      "scores": {
+        "m1_intent": 1,
+        "m2_tools_in_bounds": 1,
+        "m3_tool_scenario": 0,
+        "m4_no_slug_hallucination": 1,
+        "m5_no_fact_hallucination": 1,
+        "m6_answer_quality": 1,
+        "m7_loop_discipline": 0
+      },
+      "acceptedIntent": "product_info",
+      "tools": [
+        "search-leaves",
+        "search-leaves",
+        "lookup-leaf",
+        "lookup-leaf",
+        "lookup-leaf",
+        "lookup-leaf",
+        "search-leaves",
+        "lookup-leaf"
+      ]
+    },
+    {
+      "id": "S2",
+      "scores": {
+        "m1_intent": 1,
+        "m2_tools_in_bounds": 1,
+        "m3_tool_scenario": 1,
+        "m4_no_slug_hallucination": 1,
+        "m5_no_fact_hallucination": 1,
+        "m6_answer_quality": 1,
+        "m7_loop_discipline": 1
+      },
+      "acceptedIntent": "product_info",
+      "tools": [
+        "search-leaves",
+        "lookup-leaf"
+      ]
+    },
+    {
+      "id": "S3",
+      "scores": {
+        "m1_intent": 1,
+        "m2_tools_in_bounds": 1,
+        "m3_tool_scenario": 0,
+        "m4_no_slug_hallucination": 1,
+        "m5_no_fact_hallucination": 1,
+        "m6_answer_quality": 1,
+        "m7_loop_discipline": 0
+      },
+      "acceptedIntent": "after_sales",
+      "tools": [
+        "search-leaves",
+        "search-leaves",
+        "lookup-leaf",
+        "lookup-leaf"
+      ]
+    },
+    {
+      "id": "S4",
+      "scores": {
+        "m1_intent": 0,
+        "m2_tools_in_bounds": 1,
+        "m3_tool_scenario": 0,
+        "m4_no_slug_hallucination": 1,
+        "m5_no_fact_hallucination": 1,
+        "m6_answer_quality": 1,
+        "m7_loop_discipline": 0
+      },
+      "acceptedIntent": "product_info",
+      "tools": [
+        "search-leaves",
+        "search-leaves",
+        "lookup-leaf",
+        "lookup-leaf"
+      ]
+    },
+    {
+      "id": "S5",
+      "scores": {
+        "m1_intent": 1,
+        "m2_tools_in_bounds": 1,
+        "m3_tool_scenario": 0,
+        "m4_no_slug_hallucination": 1,
+        "m5_no_fact_hallucination": 1,
+        "m6_answer_quality": 1,
+        "m7_loop_discipline": 0
+      },
+      "acceptedIntent": "delivery",
+      "tools": [
+        "search-leaves",
+        "search-leaves",
+        "lookup-leaf",
+        "lookup-leaf"
+      ]
+    },
+    {
+      "id": "S6",
+      "scores": {
+        "m1_intent": 1,
+        "m2_tools_in_bounds": 1,
+        "m3_tool_scenario": 1,
+        "m4_no_slug_hallucination": 1,
+        "m5_no_fact_hallucination": 1,
+        "m6_answer_quality": 1,
+        "m7_loop_discipline": 1
+      },
+      "acceptedIntent": "pricing",
+      "tools": [
+        "resolve-template"
+      ]
+    },
+    {
+      "id": "S7",
+      "scores": {
+        "m1_intent": 1,
+        "m2_tools_in_bounds": 1,
+        "m3_tool_scenario": 1,
+        "m4_no_slug_hallucination": 1,
+        "m5_no_fact_hallucination": 1,
+        "m6_answer_quality": 0,
+        "m7_loop_discipline": 1
+      },
+      "acceptedIntent": "out_of_scope",
+      "tools": []
+    },
+    {
+      "id": "S8",
+      "scores": {
+        "m1_intent": 1,
+        "m2_tools_in_bounds": 1,
+        "m3_tool_scenario": 0,
+        "m4_no_slug_hallucination": 1,
+        "m5_no_fact_hallucination": 1,
+        "m6_answer_quality": 1,
+        "m7_loop_discipline": 0
+      },
+      "acceptedIntent": "after_sales",
+      "tools": [
+        "search-leaves",
+        "search-leaves",
+        "search-leaves",
+        "search-leaves",
+        "search-leaves",
+        "lookup-leaf",
+        "lookup-leaf"
+      ]
+    }
+  ]
+}

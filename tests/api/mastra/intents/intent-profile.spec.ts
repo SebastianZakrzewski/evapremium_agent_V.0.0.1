@@ -49,6 +49,11 @@ describe('intentProfileFor', () => {
     }
 
     expect(intentProfileFor('out_of_scope')?.tools).toEqual([]);
+    expect(intentProfileFor('delivery')?.execution.maxToolCalls).toBe(4);
+    expect(intentProfileFor('after_sales')?.execution.maxToolCalls).toBe(4);
+    expect(intentProfileFor('delivery')?.instructions).toContain(
+      'najwyżej raz',
+    );
     expect(intentProfileFor('pricing')?.tools).toEqual(
       expect.arrayContaining(['resolve-template', 'quote-price']),
     );

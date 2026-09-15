@@ -87,6 +87,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Resolver wyceny | [api/pricing/pricing-resolver.md](api/pricing/pricing-resolver.md) | `tests/api/pricing/pricing.resolver.spec.ts` |
 | Resolver context tree | [api/context-tree/context-tree-resolver.md](api/context-tree/context-tree-resolver.md) | `tests/api/context-tree/context-tree.resolver.spec.ts` |
 | IntentProfile (rejestr) | [api/mastra/intent-profiles.md](api/mastra/intent-profiles.md) | `tests/api/mastra/intents/intent-profile.spec.ts` |
+| Skuteczność agenta (M1–M7) | [api/mastra/agent-effectiveness.md](api/mastra/agent-effectiveness.md) | `tests/api/mastra/eval/agent-effectiveness.spec.ts` |
 | Kwalifikator intencji | [api/mastra/intent-qualifier.md](api/mastra/intent-qualifier.md) | `tests/api/mastra/intents/intent-qualifier.spec.ts` |
 | Gałąź tury (tool-e) | [api/mastra/intent-turn.md](api/mastra/intent-turn.md) | `tests/api/mastra/intents/prepare-intent-turn.spec.ts` |
 | Fallback intencji i lead | [api/mastra/intent-fallback.md](api/mastra/intent-fallback.md) | `tests/api/mastra/intents/intent-fallback.spec.ts` |

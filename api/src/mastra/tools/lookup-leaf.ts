@@ -11,7 +11,7 @@ export function createLookupLeafTool(
   return createTool({
     id: 'lookup-leaf',
     description:
-      'Return context tree leaf body by slug. Miss means no fact — do not invent policy.',
+      'Return context tree leaf body by slug from the latest search-leaves result. Miss means no fact — do not invent policy. After a hit that answers the question, reply and stop.',
     inputSchema: z.object({ slug: z.string() }),
     execute: async ({ slug }) =>
       executeShopTool(events, 'lookup-leaf', () => tools.lookupLeaf(slug)),
