@@ -27,7 +27,7 @@ export const LEAF_RETRIEVAL_EVAL_CORPUS: LeafRetrievalEvalCorpusEntry[] = [
     title: 'Kolory',
     businessArea: 'product',
     retrievalText:
-      'jakie kolory dywaników paleta odcieni barwy czarny szary beż czerwony niebieski wybór koloru obwódki lista kolorów',
+      'jakie kolory dywaników paleta odcieni barwy czarny szary beż czerwony niebieski wybór koloru obwódki lista kolorów czy dywaniki są w różnych kolorach czy macie dywaniki w kolorach jakie kolory macie w ofercie czy są różne kolory dostępność kolorów warianty kolorystyczne jakie odcienie są dostępne czy są dywaniki czarne czy jest kolor beżowy brąz kość słoniowa czy mogę wybrać kolor mata w kolorze lista dostępnych barw czy dywaniki mają kolory jaki kolor dywanika kolory do wyboru barwa obwódki',
   },
   {
     slug: '3d-z-rantami',
