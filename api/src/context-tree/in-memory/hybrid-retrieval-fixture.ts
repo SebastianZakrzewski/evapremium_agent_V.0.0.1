@@ -3,26 +3,37 @@ import type { ContextNode } from '../../domain/context-tree';
 /** Disjoint retrieval_text for calibration collision pairs (verify fixture). */
 export const HYBRID_RETRIEVAL_TEXT_BY_SLUG: Record<string, string> = {
   dostawa:
-    'wysyłka kurier paczka zamówienie kiedy wyślecie dostawa do klienta',
+    'kiedy wyślecie zamówienie wysyłka kurier paczka nadanie przesyłki tracking dostawa do klienta magazyn wyjazd',
   'czas-produkcji':
-    'dni szycia produkcja realizacja ile trwa wykonanie dywaników',
-  gwarancja: 'gwarancja okres lat miesięcy na dywaniki EVA',
+    'ile trwa szycie dni szycia ile czeka na uszycie dni robocze produkcja realizacja na zamówienie termin wykonania',
+  gwarancja:
+    'jak długo jest gwarancja okres gwarancji ile lat rękojmia wady fabryczne warunki gwarancji producenta',
   'niedopasowanie-wymiana':
-    'nie pasują wymiana reklamacja niedopasowanie po zakupie',
-  'dopasowanie-model': 'dobór model auta marka dopasowanie szablonu',
-  'material-eva': 'materiał pianka EVA z czego wykonane',
-  czyszczenie: 'czyścić prać myć dywaniki pielęgnacja',
-  '3d-bez-rantow': 'ranty bez rantów wariant 3D',
-  '3d-z-rantami': 'ranty z rantami wariant 3D',
-  kolory: 'kolory odcienie paleta',
-  montaz: 'montaż instalacja dywaników',
-  wlasciwosci: 'właściwości parametry materiału',
+    'nie pasują co robić zły rozmiar niedopasowanie po dostawie wymiana za duże za małe nie leżą',
+  'dopasowanie-model':
+    'jak dobrać pomóżcie dobrać model marka rok generacja szablon pojazdu wybór samochodu konfigurator czy pasują do każdego auta',
+  'material-eva':
+    'z czego wykonane materiał pianka EVA skład chemiczny tworzywo piankowe czy gumowe czy piankowe mata podłogowa',
+  czyszczenie: 'czyścić prać myć pielęgnacja odkurzanie myjka detergent pralka jak dbać',
+  '3d-bez-rantow':
+    'wariant 3D bez rantów płaski brzeg bez obwódki bez wysokiego brzegu niski profil krawędzi',
+  '3d-z-rantami':
+    'wariant 3D z rantami rant boczny obwódka wysoki brzeg model z rantami rant dookoła krawędź',
+  kolory:
+    'paleta kolorów odcienie barwy czarny szary beż czerwony niebieski brąz kość słoniowa wybór koloru obwódki lista barw warianty kolorystyczne',
+  montaz:
+    'montaż instalacja jak zamontować jak założyć w aucie instrukcja pierwszego zakładania',
+  wlasciwosci:
+    'właściwości parametry odporność na wodę brud sztywność antypoślizgowe cechy pianki',
   'trwalosc-dywanikow':
-    'trwałość dywaników jak długo wytrzymują ile lat służą żywotność czy szybko się niszczą wytrzymałość',
-  'uzytkowanie-zima-lato': 'użytkowanie zima lato temperatura',
-  reklamacja: 'reklamacja zwrot procedura',
-  kontakt: 'kontakt telefon mail sklep',
-  podpietki: 'podpietki mocowanie dywaników',
+    'trwałość żywotność ile lat wytrzymują szybko się niszczą zużycie przy codziennym użytkowaniu wytrzymałe na lata',
+  'uzytkowanie-zima-lato':
+    'użytkowanie zima lato mróz upał temperatura sezon całoroczne',
+  reklamacja:
+    'jak zgłosić reklamację procedura formularz wada uszkodzenie w transporcie co podać w zgłoszeniu',
+  kontakt: 'kontakt telefon mail infolinia godziny otwarcia adres sklepu konsultant',
+  podpietki:
+    'podpiętki mocowanie klipsy haczyki trzymanie pod piętą dokupić do zestawu',
 };
 
 export function withHybridRetrievalText(nodes: ContextNode[]): ContextNode[] {

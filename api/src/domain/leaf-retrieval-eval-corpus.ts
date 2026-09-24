@@ -20,49 +20,49 @@ export const LEAF_RETRIEVAL_EVAL_CORPUS: LeafRetrievalEvalCorpusEntry[] = [
     title: 'Materiał EVA',
     businessArea: 'product',
     retrievalText:
-      'z czego wykonane dywaniki materiał pianka EVA skład chemiczny tworzywo piankowe guma piankowa mata podłogowa nie gumowa',
+      'z czego wykonane materiał pianka EVA skład chemiczny tworzywo piankowe czy gumowe czy piankowe mata podłogowa',
   },
   {
     slug: 'kolory',
     title: 'Kolory',
     businessArea: 'product',
     retrievalText:
-      'jakie kolory dywaników paleta odcieni barwy czarny szary beż czerwony niebieski wybór koloru obwódki lista kolorów czy dywaniki są w różnych kolorach czy macie dywaniki w kolorach jakie kolory macie w ofercie czy są różne kolory dostępność kolorów warianty kolorystyczne jakie odcienie są dostępne czy są dywaniki czarne czy jest kolor beżowy brąz kość słoniowa czy mogę wybrać kolor mata w kolorze lista dostępnych barw czy dywaniki mają kolory jaki kolor dywanika kolory do wyboru barwa obwódki',
+      'paleta kolorów odcienie barwy czarny szary beż czerwony niebieski brąz kość słoniowa wybór koloru obwódki lista barw warianty kolorystyczne',
   },
   {
     slug: '3d-z-rantami',
     title: '3D z rantami',
     businessArea: 'product',
     retrievalText:
-      'dywaniki 3D z rantami wariant z rantem bocznym obwódka krawędź wysoki brzeg model z rantami',
+      'wariant 3D z rantami rant boczny obwódka wysoki brzeg model z rantami rant dookoła krawędź',
   },
   {
     slug: '3d-bez-rantow',
     title: '3D bez rantów',
     businessArea: 'product',
     retrievalText:
-      'dywaniki 3D bez rantów wariant płaski brzeg bez obwódki bez rantów przy krawędzi niski brzeg',
+      'wariant 3D bez rantów płaski brzeg bez obwódki bez wysokiego brzegu niski profil krawędzi',
   },
   {
     slug: 'montaz',
     title: 'Montaż',
     businessArea: 'product',
     retrievalText:
-      'montaż instalacja zakładanie dywaników w aucie jak zamocować',
+      'montaż instalacja jak zamontować jak założyć w aucie instrukcja pierwszego zakładania',
   },
   {
     slug: 'wlasciwosci',
     title: 'Właściwości',
     businessArea: 'product',
     retrievalText:
-      'właściwości parametry odporność woda brud sztywność antypoślizgowe',
+      'właściwości parametry odporność na wodę brud sztywność antypoślizgowe cechy pianki',
   },
   {
     slug: 'trwalosc-dywanikow',
     title: 'Trwałość dywaników',
     businessArea: 'product',
     retrievalText:
-      'trwałość dywaników jak długo wytrzymują dywaniki ile lat służą dywaniki żywotność dywaników czy dywaniki są trwałe czy szybko się niszczą odporność materiału wytrzymałość dywaników',
+      'trwałość żywotność ile lat wytrzymują szybko się niszczą zużycie przy codziennym użytkowaniu wytrzymałe na lata',
   },
   {
     slug: 'uzytkowanie-zima-lato',
@@ -76,14 +76,14 @@ export const LEAF_RETRIEVAL_EVAL_CORPUS: LeafRetrievalEvalCorpusEntry[] = [
     title: 'Dopasowanie modelu',
     businessArea: 'product',
     retrievalText:
-      'dopasowanie model auta marka rok generacja szablon wybór pojazdu',
+      'jak dobrać pomóżcie dobrać model marka rok generacja szablon pojazdu wybór samochodu konfigurator czy pasują do każdego auta',
   },
   {
     slug: 'podpietki',
     title: 'Podpietki',
     businessArea: 'product',
     retrievalText:
-      'podpietki mocowanie klipsy haczyki trzymanie dywanika pod stopą',
+      'podpiętki mocowanie klipsy haczyki trzymanie pod piętą dokupić do zestawu',
   },
   {
     slug: 'dostawa',
@@ -97,42 +97,42 @@ export const LEAF_RETRIEVAL_EVAL_CORPUS: LeafRetrievalEvalCorpusEntry[] = [
     title: 'Czas produkcji',
     businessArea: 'delivery',
     retrievalText:
-      'ile trwa realizacja produkcja dni szycia wykonanie dywaników na zamówienie termin uszycia robocze dni produkcyjne',
+      'ile trwa szycie dni szycia ile czeka na uszycie dni robocze produkcja realizacja na zamówienie termin wykonania',
   },
   {
     slug: 'gwarancja',
     title: 'Gwarancja',
     businessArea: 'after_sales',
     retrievalText:
-      'gwarancja okres lat miesięcy na dywaniki EVA rękojmia ustawowa',
+      'jak długo jest gwarancja okres gwarancji ile lat rękojmia wady fabryczne warunki gwarancji producenta',
   },
   {
     slug: 'czyszczenie',
     title: 'Czyszczenie',
     businessArea: 'after_sales',
     retrievalText:
-      'czyścić prać myć dywaniki pielęgnacja odkurzanie woda myjka',
+      'czyścić prać myć pielęgnacja odkurzanie myjka detergent pralka jak dbać',
   },
   {
     slug: 'reklamacja',
     title: 'Reklamacja',
     businessArea: 'after_sales',
     retrievalText:
-      'reklamacja procedura zgłoszenie wada uszkodzenie formularz kontakt',
+      'jak zgłosić reklamację procedura formularz wada uszkodzenie w transporcie co podać w zgłoszeniu',
   },
   {
     slug: 'niedopasowanie-wymiana',
     title: 'Niedopasowanie i wymiana',
     businessArea: 'after_sales',
     retrievalText:
-      'nie pasują wymiana reklamacja niedopasowanie po zakupie zły rozmiar',
+      'nie pasują co robić zły rozmiar niedopasowanie po dostawie wymiana za duże za małe nie leżą',
   },
   {
     slug: 'kontakt',
     title: 'Kontakt',
     businessArea: 'contact',
     retrievalText:
-      'kontakt telefon mail sklep infolinia godziny otwarcia adres',
+      'kontakt telefon mail infolinia godziny otwarcia adres sklepu konsultant',
   },
 ];
 
