@@ -50,6 +50,22 @@ describe('shop tool catalog', () => {
     }
   });
 
+  it('quotes through quote-vehicle when slots and variant resolve to one matrix row', async () => {
+    const catalog = createShopToolCatalog(fixtureShopTools());
+
+    await expect(
+      catalog['quote-vehicle'].execute?.(
+        {
+          brand: 'vw',
+          model: 'golf 8',
+          bodyType: 'hatchback',
+          variantKey: 'komplet-5szt',
+        },
+        { observe: () => undefined } as never,
+      ),
+    ).resolves.toEqual({ status: 'quoted', amount: 599, currency: 'PLN' });
+  });
+
   it('registers the full catalog on the Mastra instance for Studio', () => {
     const catalog = createShopToolCatalog(fixtureShopTools());
     const registry = mastraInstanceToolRegistry(catalog);

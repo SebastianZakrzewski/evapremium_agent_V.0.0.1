@@ -1,7 +1,9 @@
 import {
   listCategoryVariants,
+  listMatTypes,
   quotePrice,
   type CategoryVariantOption,
+  type MatType,
   type QuotePriceInput,
   type QuotePriceResult,
 } from '../domain/pricing';
@@ -23,6 +25,14 @@ export class PricingResolver {
       dealerPricingCategoryKey,
       this.categoryVariants.list(),
       this.variants.list(),
+    );
+  }
+
+  matTypes(dealerPricingCategoryKey: string, variantKey: string): MatType[] {
+    return listMatTypes(
+      dealerPricingCategoryKey,
+      variantKey,
+      this.matrix.list(),
     );
   }
 

@@ -50,6 +50,21 @@ export function listCategoryVariants(
     });
 }
 
+export function listMatTypes(
+  dealerPricingCategoryKey: string,
+  variantKey: string,
+  matrix: PricingMatrixRow[],
+): MatType[] {
+  const types = matrix
+    .filter(
+      (row) =>
+        row.dealerPricingCategoryKey === dealerPricingCategoryKey &&
+        row.variantKey === variantKey,
+    )
+    .map((row) => row.matType);
+  return [...new Set(types)];
+}
+
 function isOnCategory(
   categoryVariants: PricingCategoryVariant[],
   dealerPricingCategoryKey: string,

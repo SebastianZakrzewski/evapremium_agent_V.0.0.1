@@ -14,7 +14,7 @@ export function createShopToolCatalog(
   return {
     'resolve-template': createResolveTemplateTool(tools, events),
     'quote-price': createQuotePriceTool(tools, events),
-    'quote-vehicle': createQuoteVehicleTool(),
+    'quote-vehicle': createQuoteVehicleTool(tools, events),
     'lookup-leaf': createLookupLeafTool(tools, events),
     'search-leaves': createSearchLeavesTool(tools, events),
   };

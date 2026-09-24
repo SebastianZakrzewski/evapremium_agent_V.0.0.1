@@ -90,6 +90,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Katalog sub-intencji | [api/domain/sub-intent-catalog.md](api/domain/sub-intent-catalog.md) | `tests/api/domain/sub-intent-catalog.spec.ts` |
 | Wybór wykonania tury | [api/domain/choose-execution.md](api/domain/choose-execution.md) | `tests/api/domain/choose-execution.spec.ts` |
 | Workflow slotów wyceny | [api/domain/quote-vehicle.md](api/domain/quote-vehicle.md) | `tests/api/domain/quote-vehicle.spec.ts` |
+| Składanie wyceny auta | [api/domain/quote-vehicle-price.md](api/domain/quote-vehicle-price.md) | `tests/api/domain/quote-vehicle-price.spec.ts` |
 | Retrieval gałęzi | [api/domain/branch-retrieval.md](api/domain/branch-retrieval.md) | `tests/api/domain/branch-retrieval.spec.ts` |
 | Ślad decyzji | [api/domain/decision-trace.md](api/domain/decision-trace.md) | `tests/api/domain/decision-trace.spec.ts` |
 | Lead Bitrix (domena) | [api/domain/lead.md](api/domain/lead.md) | `tests/api/domain/lead.spec.ts` |

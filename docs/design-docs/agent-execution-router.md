@@ -58,8 +58,10 @@ Czysta funkcja `chooseExecution` po kwalifikacji:
 
 `indicative_quote`: `directTool = quote-vehicle`, wymagane `car_brand`
 i `car_model`, brak → workflow `quote_vehicle`. Agent widzi jedną operację.
-`resolve-template` i `quote-price` zostają w Neście; funkcja, która je składa,
-nie jest podłączona. Przy `knowledge` wycena nie woła `quote-vehicle`.
+`resolve-template` i `quote-price` zostają w Neście. `composeQuoteVehicle`
+składa je w `quote-vehicle`: kaskada `none` / `many`, jeden szablon bez
+wariantu → `need_variant`, potem jedna kwota z macierzy. Przy `knowledge`
+wycena nie woła `quote-vehicle`.
 
 ## Workflow `quote_vehicle`
 

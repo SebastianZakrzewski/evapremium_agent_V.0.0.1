@@ -5,6 +5,11 @@ import { ContextTreeResolver } from '../context-tree/context-tree.resolver';
 import type { ContextLeafSearchHit } from '../domain/context-leaf-search';
 import type { ContextLeafLookupResult } from '../domain/context-tree';
 import type { QuotePriceInput, QuotePriceResult } from '../domain/pricing';
+import {
+  composeQuoteVehicle,
+  type QuoteVehiclePriceInput,
+  type QuoteVehiclePriceResult,
+} from '../domain/quote-vehicle-price';
 import type {
   TemplateCascadeInput,
   TemplateCascadeResult,
@@ -28,6 +33,23 @@ export class ShopTools {
 
   quotePrice(input: QuotePriceInput): QuotePriceResult {
     const result = this.pricing.quote(input);
+    if (result.status === 'quoted') {
+      recordAgentEvent(this.events, 'quote_issued', {
+        amount: result.amount,
+        currency: result.currency,
+      });
+    }
+    return result;
+  }
+
+  quoteVehicle(input: QuoteVehiclePriceInput): QuoteVehiclePriceResult {
+    const result = composeQuoteVehicle(input, {
+      resolveTemplate: (slots) => this.templates.resolve(slots),
+      listCategoryVariants: (key) => this.pricing.listCategoryVariants(key),
+      quotePrice: (quote) => this.pricing.quote(quote),
+      matTypes: (category, variantKey) =>
+        this.pricing.matTypes(category, variantKey),
+    });
     if (result.status === 'quoted') {
       recordAgentEvent(this.events, 'quote_issued', {
         amount: result.amount,

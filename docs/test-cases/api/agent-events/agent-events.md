@@ -10,6 +10,7 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 | --- | --- | --- |
 | events-001 | high | Kaskada 0/1/N → cascade_resolved |
 | events-002 | critical | quote_issued tylko z macierzy |
+| events-011 | critical | quote-vehicle: quote_issued tylko przy quoted |
 | events-003 | high | Hit i miss drzewa bez body |
 | events-004 | critical | lead_attempted zgoda i skip |
 | events-005 | high | intent_accepted bez tekstu użytkownika |
@@ -34,6 +35,14 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 - **Logika:** kwota na osi tylko gdy macierz zwróciła amount.
 - **Wejście:** poprawny wariant `komplet-5szt` oraz nieznany wariant
 - **Wyjście:** jeden event `{ amount: 599, currency: 'PLN' }`
+
+### events-011 — quote-vehicle: quote_issued tylko przy quoted
+
+- **Kod:** `tests/api/agent-events/agent-events.spec.ts` → `it('records quote_issued from quote-vehicle only when the composition quotes')`
+- **Krytyczność:** critical
+- **Logika:** składanie Golf 8 hatch + wariant emituje kwotę; `many` bez nadwozia nie emituje drugiej kwoty.
+- **Wejście:** `quoteVehicle` z `hatchback` i `komplet-5szt`, potem samo `vw` / `golf 8`
+- **Wyjście:** jeden `quote_issued` `{ amount: 599, currency: 'PLN' }`
 
 ### events-003 — Hit i miss drzewa bez body
 

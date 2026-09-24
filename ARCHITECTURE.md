@@ -123,7 +123,8 @@ wymyślonej odpowiedzi.
 6. 1 szablon → dopytanie o **wariant z `pricing_category_variants` dla kategorii
    tego szablonu** (nie pełna globalna lista 40 kluczy) → jedna wycena z
    `pricing_matrix` (**orientacyjna, nie wiążąca**). Ostateczna cena: konfigurator
-   / potwierdzenie sklepu.
+   / potwierdzenie sklepu. Agent woła jedno narzędzie `quote-vehicle`; Nest
+   składa kaskadę i macierz (`composeQuoteVehicle`).
 
 Kategorie cennika (slug): `passenger_car`, `minivan`, `bus`, `pickup`,
 `heavy_truck`, `passenger_car_legacy`. Typy maty w macierzy: `3d-with-rims`,
