@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from 'react';
+import { ContextGraphView } from './ContextGraph';
 import {
   fetchDaySummary,
   fetchSession,
@@ -20,7 +21,8 @@ interface AppProps {
 type DashboardView =
   | { kind: 'overview' }
   | { kind: 'sessions' }
-  | { kind: 'session'; sessionId: string };
+  | { kind: 'session'; sessionId: string }
+  | { kind: 'graph' };
 
 const markerLabels: Record<SessionMarker, string> = {
   intent: 'Intencja',
@@ -37,6 +39,9 @@ function today(): string {
 
 function readView(): DashboardView {
   const path = window.location.hash.replace(/^#/, '');
+  if (path === '/graf') {
+    return { kind: 'graph' };
+  }
   if (path.startsWith('/sessions/')) {
     try {
       return {
@@ -111,7 +116,11 @@ function TokenGate({ onSubmit }: { onSubmit: (token: string) => void }) {
   );
 }
 
-function PageNavigation({ current }: { current: 'overview' | 'sessions' }) {
+function PageNavigation({
+  current,
+}: {
+  current: 'overview' | 'sessions' | 'graph';
+}) {
   return (
     <nav className="page-navigation" aria-label="Widoki dashboardu">
       <a className={current === 'overview' ? 'active' : ''} href="#/">
@@ -119,6 +128,9 @@ function PageNavigation({ current }: { current: 'overview' | 'sessions' }) {
       </a>
       <a className={current === 'sessions' ? 'active' : ''} href="#/sessions">
         Sesje
+      </a>
+      <a className={current === 'graph' ? 'active' : ''} href="#/graf">
+        Graf
       </a>
     </nav>
   );
@@ -586,6 +598,17 @@ export function App({ initialDate = today() }: AppProps) {
         sessionId={view.sessionId}
         token={token}
         onSignOut={signOut}
+      />
+    );
+  }
+
+  if (view.kind === 'graph') {
+    return (
+      <ContextGraphView
+        date={date}
+        token={token}
+        onSignOut={signOut}
+        navigation={<PageNavigation current="graph" />}
       />
     );
   }

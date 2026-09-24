@@ -154,6 +154,43 @@ export function timelineEvents(events: AgentEvent[]): AgentEvent[] {
   return [...events].sort((a, b) => a.occurredAt.localeCompare(b.occurredAt));
 }
 
+const CONTEXT_ACTIVITY_TYPES = new Set<AgentEvent['type']>([
+  'context_search',
+  'context_hit',
+  'context_miss',
+]);
+
+export function contextActivityRange(
+  since: string | undefined,
+  now: Date,
+): DayRange {
+  const parsed = since === undefined ? Number.NaN : Date.parse(since);
+  if (!Number.isNaN(parsed)) {
+    return {
+      fromIso: new Date(parsed).toISOString(),
+      toIso: new Date(now.getTime() + 60_000).toISOString(),
+    };
+  }
+  return utcDayRange(now.toISOString().slice(0, 10));
+}
+
+export function contextActivityEvents(
+  events: AgentEvent[],
+  since?: string,
+): AgentEvent[] {
+  const sinceMs = since === undefined ? Number.NaN : Date.parse(since);
+  const hasSince = !Number.isNaN(sinceMs);
+  return timelineEvents(events).filter((event) => {
+    if (!CONTEXT_ACTIVITY_TYPES.has(event.type)) {
+      return false;
+    }
+    if (!hasSince) {
+      return true;
+    }
+    return Date.parse(event.occurredAt) >= sinceMs;
+  });
+}
+
 export type SessionMessageView = {
   direction: 'inbound' | 'outbound';
   text: string;

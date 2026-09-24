@@ -210,3 +210,106 @@ describe('dashboard sessions', () => {
     fetchMock.mockRestore();
   });
 });
+
+describe('dashboard context graph', () => {
+  it('draws mocked leaves and lights search and hit slugs on the next frame', async () => {
+    sessionStorage.setItem('eva-dashboard-token', 'dashboard-secret');
+    window.location.hash = '#/graf';
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
+      const url = String(input);
+      const json = (body: unknown) =>
+        Promise.resolve(
+          new Response(JSON.stringify(body), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
+      if (url.includes('/v1/dashboard/context-graph')) {
+        return json({
+          nodes: [
+            { slug: 'kolory', title: 'Kolory', x: 0.2, y: 0.4 },
+            { slug: 'material-eva', title: 'Materiał EVA', x: 0.7, y: 0.5 },
+          ],
+          edges: [
+            { source: 'kolory', target: 'material-eva', similarity: 0.8 },
+          ],
+        });
+      }
+      if (url.includes('/v1/dashboard/sessions/session-tree')) {
+        return json({
+          sessionId: 'session-tree',
+          messages: [],
+          events: [
+            {
+              id: 'search-1',
+              sessionId: 'session-tree',
+              occurredAt: '2026-09-13T10:00:00.000Z',
+              type: 'context_search',
+              payload: {
+                slugs: ['kolory', 'material-eva'],
+                matched: true,
+                confidence: 'ambiguous',
+              },
+            },
+            {
+              id: 'hit-1',
+              sessionId: 'session-tree',
+              occurredAt: '2026-09-13T10:00:01.000Z',
+              type: 'context_hit',
+              payload: { slug: 'material-eva' },
+            },
+          ],
+        });
+      }
+      if (url.includes('/v1/dashboard/sessions?')) {
+        return json([{ sessionId: 'session-tree', markers: ['tree'] }]);
+      }
+      return Promise.resolve(new Response('{}', { status: 404 }));
+    });
+
+    render(<App initialDate="2026-09-13" />);
+
+    expect(
+      await screen.findByRole('heading', { name: 'Graf kontekstu' }),
+    ).toBeInTheDocument();
+    expect(await screen.findByText('Kolory')).toBeInTheDocument();
+    expect(screen.getByText('Materiał EVA')).toBeInTheDocument();
+    expect(screen.getByTestId('graph-node-kolory')).toHaveAttribute(
+      'data-state',
+      'idle',
+    );
+    expect(screen.getByTestId('graph-node-material-eva')).toHaveAttribute(
+      'data-state',
+      'idle',
+    );
+
+    await screen.findByRole('option', { name: 'session-tree' });
+    fireEvent.change(screen.getByLabelText('Sesja'), {
+      target: { value: 'session-tree' },
+    });
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'Następna klatka' }),
+      ).toBeEnabled(),
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Następna klatka' }));
+
+    expect(screen.getByTestId('graph-node-kolory')).toHaveAttribute(
+      'data-state',
+      'candidate',
+    );
+    expect(screen.getByTestId('graph-node-material-eva')).toHaveAttribute(
+      'data-state',
+      'hit',
+    );
+    expect(screen.getByTestId('turn-path')).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/v1/dashboard/context-graph',
+      expect.objectContaining({
+        headers: { Authorization: 'Bearer dashboard-secret' },
+      }),
+    );
+
+    fetchMock.mockRestore();
+  });
+});

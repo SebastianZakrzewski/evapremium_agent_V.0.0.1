@@ -2,6 +2,10 @@ import {
   lookupContextLeaf,
   type ContextLeafLookupResult,
 } from '../domain/context-tree';
+import {
+  buildContextSimilarityGraph,
+  type ContextSimilarityGraph,
+} from '../domain/context-similarity-graph';
 import { hybridSearchLeaves } from '../domain/leaf-retrieval-rank';
 import type { ContextLeafSearchHit } from '../domain/context-leaf-search';
 import type {
@@ -35,6 +39,13 @@ export class ContextTreeResolver {
       queryVector,
       await this.vectors.list(),
       this.nodes.list(),
+    );
+  }
+
+  async similarityGraph(): Promise<ContextSimilarityGraph> {
+    return buildContextSimilarityGraph(
+      this.nodes.list(),
+      await this.vectors.list(),
     );
   }
 }

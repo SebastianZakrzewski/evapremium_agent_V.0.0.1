@@ -82,6 +82,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Wycena (domena) | [api/domain/pricing.md](api/domain/pricing.md) | `tests/api/domain/pricing.spec.ts` |
 | Context tree (domena) | [api/domain/context-tree.md](api/domain/context-tree.md) | `tests/api/domain/context-tree.spec.ts` |
 | Wyszukiwanie liści (domena) | [api/domain/context-leaf-search.md](api/domain/context-leaf-search.md) | `tests/api/domain/context-leaf-search.spec.ts` |
+| Graf podobieństwa liści (domena) | [api/domain/context-similarity-graph.md](api/domain/context-similarity-graph.md) | `tests/api/domain/context-similarity-graph.spec.ts` |
 | Dataset rankingu liści | [api/domain/leaf-retrieval-dataset.md](api/domain/leaf-retrieval-dataset.md) | `tests/api/domain/leaf-retrieval-dataset.spec.ts` |
 | Hybrid ranking (BM25/RRF) | [api/domain/leaf-retrieval-rank.md](api/domain/leaf-retrieval-rank.md) | `tests/api/domain/leaf-retrieval-rank.spec.ts` |
 | Hybrid vs baseline cosine | [api/domain/hybrid-retrieval-baseline.md](api/domain/hybrid-retrieval-baseline.md) | `tests/api/domain/hybrid-retrieval-baseline.spec.ts` |
@@ -121,6 +122,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Snippet sklepu | [widget/snippet.md](widget/snippet.md) | `tests/widget/embed/shop-snippet.test.ts` |
 | Dashboard — przegląd doby | [dashboard/overview.md](dashboard/overview.md) | `tests/dashboard/App.test.tsx` |
 | Dashboard — sesje | [dashboard/sessions.md](dashboard/sessions.md) | `tests/dashboard/App.test.tsx` |
+| Dashboard — graf kontekstu | [dashboard/context-graph.md](dashboard/context-graph.md) | `tests/dashboard/App.test.tsx` |
 | Aktualizacja kontenera API | [deploy/update-container.md](deploy/update-container.md) | `tests/deploy/update-container.test.mjs` |
 | Vercel dashboard (bez proxy czatu) | [deploy/dashboard-vercel.md](deploy/dashboard-vercel.md) | `tests/deploy/dashboard-vercel.test.mjs` |
 | Obraz Docker Studio | [deploy/studio-image.md](deploy/studio-image.md) | `tests/deploy/studio.test.mjs` |

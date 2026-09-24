@@ -19,6 +19,16 @@ export class DashboardController {
     return this.queries.summary(date);
   }
 
+  @Get('context-graph')
+  contextGraph() {
+    return this.queries.contextGraph();
+  }
+
+  @Get('context-activity')
+  contextActivity(@Query('since') since?: string) {
+    return this.queries.contextActivity(since);
+  }
+
   @Get('sessions')
   listSessions(
     @Query('date') date: string,

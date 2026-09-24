@@ -21,6 +21,10 @@ Env: `DEEPSEEK_API_KEY`, `BITRIX_WEBHOOK_URL`, `SUPABASE_URL`
 `WIDGET_ORIGIN` (HTTPS origin Vercel, bez slasha), `PORT=3000`,
 `SENTRY_DSN` (adres ingest projektu, nie token `sntryu_`).
 Opcjonalnie RAG FAQ (Nest, nie widget): `OPENAI_API_KEY` (`text-embedding-3-small`).
+Bez tego klucza w `/opt/evabot/api/.env` `search-leaves` zwraca pustą listę
+(embedder wyłączony). Po zmianie `.env` **odtwórz** kontener API (`deploy/update-container.sh`
+albo `deploy/patch-hetzner-openai-and-restart.py`) — samo `docker restart` nie
+ładuje nowych zmiennych z `--env-file`.
 Indeks `eva_bot.context_node_embeddings` Nest czyta przez Supabase service
 role (jak `context_nodes`). `DATABASE_URL` jest tylko do skryptu ingestu,
 nie do tury czatu. Migracja

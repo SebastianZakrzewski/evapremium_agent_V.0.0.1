@@ -37,12 +37,21 @@ Konwersja sklepu (zamówienie, lift widget on/off) jest **poza** tą specyfikacj
    lead, naruszenie). Filtr: data + jeden wymiar.
 4. **Widok sesji** — transkrypt (`chat_messages`) obok osi zdarzeń Nest.
 5. **Wejście** — jeden sekret dashboardu, inny niż `MASTRA_STUDIO_TOKEN`.
+6. **Graf kontekstu** — hash `#/graf`. Mapa aktywnych liści z embeddingiem:
+   pozycja z MDS, krawędzie k-NN (k = 3), liczone w Neście. Odpowiedź: slug,
+   tytuł, współrzędne i podobieństwo krawędzi. Bez wektora i bez `body`.
+   Panel rysuje to jako obracający się atlas 3D (kora, móżdżek, pień):
+   węzły na powierzchni, krawędzie jako ścieżki. Przeciągnięcie obraca widok,
+   kółko przybliża.
+   Odtwarzanie sesji zapala klatkę `context_search` / `context_hit` /
+   `context_miss`. „Na żywo” odpytuje `GET /v1/dashboard/context-activity`
+   co około 2 s i pokazuje najnowszą klatkę drzewa, bez transkryptu.
 
 ## Poza 0.0.1
 
 Kolejka Bitrix, UI Studio / traces Mastry, Sentry w panelu, alerty, CSV,
-wyszukiwanie pełnotekstowe, koszt tokenów, oceny LLM, role/SSO, live-tail,
-CTA do konfiguratora, zszycie z zamówieniem, eksperyment konwersji.
+wyszukiwanie pełnotekstowe, koszt tokenów, oceny LLM, role/SSO, live-tail
+transkryptu, CTA do konfiguratora, zszycie z zamówieniem, eksperyment konwersji.
 
 ## Kryteria akceptacji
 
@@ -52,6 +61,8 @@ CTA do konfiguratora, zszycie z zamówieniem, eksperyment konwersji.
 - Widget sklepu nie woła API dashboardu.
 - `/mastra` nie jest panelem KPI.
 - Bez sekretu brak odczytu sesji i transkryptu.
+- Graf kontekstu nie zwraca wektorów ani `body`. Podświetlenie węzła bierze się
+  ze zdarzeń drzewa, nie z tekstu odpowiedzi agenta.
 
 ## Źródła
 

@@ -22,8 +22,8 @@ przy `SENTRY_DSN` (`instrument.ts` przed Nest, `SentryGlobalFilter`; awarie
 SSE przez `reportUnexpectedError`). DSN, nie token użytkownika.
 Dashboard operatora: eventy domenowe in-memory albo `eva_bot.agent_events`;
 odczyt `GET /v1/dashboard/*` za `DASHBOARD_TOKEN`; UI ma bramkę tokenu
-sesyjnego, przegląd doby, listę sesji ze znacznikami eventów i szczegół
-z transkryptem oraz osią eventów.
+sesyjnego, przegląd doby, listę sesji ze znacznikami eventów, szczegół
+z transkryptem oraz osią eventów i graf podobieństwa liści (`#/graf`).
 Poniżej są **zaakceptowane granice MVP**.
 
 Ten dokument jest źródłem prawdy o architekturze wysokiego poziomu.
@@ -200,11 +200,19 @@ sklepu) — zaimplementowana bramka `DASHBOARD_TOKEN` w `sessionStorage`,
 przegląd doby z czterema hipotezami, lista sesji filtrowana po dacie i jednym
 znaczniku oraz szczegół z transkryptem i chronologiczną osią eventów. Kwota
 jest renderowana wyłącznie z `quote_issued`; naruszenie w przeglądzie prowadzi
-do sesji. Widoki używają nawigacji hash bez dodatkowego routera. Nie Mastra Studio
+do sesji. Widoki używają nawigacji hash bez dodatkowego routera, w tym
+`#/graf`. Nie Mastra Studio
 (`/mastra`) i nie kolejka Bitrix. Nest emituje zdarzenia domenowe za portem `AGENT_EVENTS`
 (in-memory albo `eva_bot.agent_events`). Odczyt: `GET /v1/dashboard/summary`,
-`/sessions`, `/sessions/:id` za `DASHBOARD_TOKEN`; CORS tylko
-`DASHBOARD_ORIGIN`. Payload eventów bez treści wiadomości. KPI doby z
+`/sessions`, `/sessions/:id`, `/context-graph`, `/context-activity` za
+`DASHBOARD_TOKEN`; CORS tylko
+`DASHBOARD_ORIGIN`. `/context-graph` liczy w procesie pozycje MDS i krawędzie
+k-NN (k = 3) z indeksu embeddingów już załadowanego do pamięci. Do przeglądarki
+idą slug, tytuł i współrzędne — nie wektor 1536 i nie `body`.
+`/context-activity?since=` zwraca wyłącznie `context_search`, `context_hit` i
+`context_miss` (od `since` albo z bieżącej doby UTC). Widok grafu odtwarza
+klatki sesji albo odpytuje tę trasę; nie jest to podgląd transkryptu na żywo.
+Payload eventów bez treści wiadomości. KPI doby z
 eventów, nie z tekstu agenta. Zachowanie:
 `docs/product-specs/evapremium-agents-dashboard.md`.
 Plan: `docs/exec-plans/active/evapremium-agents-dashboard.md`.

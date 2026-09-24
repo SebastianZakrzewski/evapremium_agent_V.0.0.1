@@ -16,6 +16,8 @@ dashboardu, KPI i znaczniki z eventów Nest, nie z tekstu agenta.
 | dash-api-006 | high | Znaczniki sesji z typów eventów |
 | dash-api-007 | high | Transkrypt + oś eventów |
 | dash-api-008 | medium | Sort osi po occurredAt |
+| dash-api-009 | high | Aktywność drzewa bez innych typów |
+| dash-api-010 | medium | Zakres `since` albo doba UTC |
 
 ### dash-api-001 — Brak Bearer i token Studio → 401
 
@@ -80,3 +82,19 @@ dashboardu, KPI i znaczniki z eventów Nest, nie z tekstu agenta.
 - **Logika:** oś czasu eventów jest niezależna od kolejności tablicy.
 - **Wejście:** event 2 przed eventem 1
 - **Wyjście:** id `1`, potem `2`
+
+### dash-api-009 — Aktywność drzewa bez innych typów
+
+- **Kod:** `tests/api/dashboard/dashboard-read.spec.ts` → `it('keeps context tree events at or after since and drops other types')`
+- **Krytyczność:** high
+- **Logika:** podgląd grafu dostaje tylko `context_search`, `context_hit` i `context_miss`, nie wycenę ani transkrypt.
+- **Wejście:** `quote_issued`, search i hit po `since`, miss przed `since`
+- **Wyjście:** id `search`, potem `hit`
+
+### dash-api-010 — Zakres `since` albo doba UTC
+
+- **Kod:** `tests/api/dashboard/dashboard-read.spec.ts` → `it('reads from since through a short clock skew, otherwise the UTC day')`
+- **Krytyczność:** medium
+- **Logika:** poprawne `since` otwiera okno od tej chwili z minutą zapasu; nieparsowalna wartość zostaje przy dobie UTC.
+- **Wejście:** `2026-09-13T10:01:00.000Z` oraz `not-a-date`, teraz `2026-09-13T12:00:00.000Z`
+- **Wyjście:** okno do `12:01:00.000Z` albo pełna doba `2026-09-13`

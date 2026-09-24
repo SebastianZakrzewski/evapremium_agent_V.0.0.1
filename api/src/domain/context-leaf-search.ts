@@ -20,7 +20,7 @@ export type ContextLeafVector = {
   vector: number[];
 };
 
-function cosine(a: number[], b: number[]): number {
+export function cosineSimilarity(a: number[], b: number[]): number {
   if (a.length === 0 || a.length !== b.length) {
     return 0;
   }
@@ -60,7 +60,7 @@ export function searchContextLeaves(
     ) {
       continue;
     }
-    const score = cosine(queryVector, entry.vector);
+    const score = cosineSimilarity(queryVector, entry.vector);
     if (score >= threshold) {
       hits.push({ slug: entry.slug, score });
     }

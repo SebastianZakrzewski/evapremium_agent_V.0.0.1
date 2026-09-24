@@ -17,4 +17,4 @@ set
   body = excluded.body,
   sort_order = excluded.sort_order,
   is_active = excluded.is_active,
-  retrieval_text = excluded.retrieval_text;wq
+  retrieval_text = excluded.retrieval_text

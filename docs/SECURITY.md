@@ -49,6 +49,9 @@ publiczny). Widget nie woła tych tras. Sekret wpisuje operator w UI (albo
 później env projektu Vercel dashboardu) — nie snippet sklepu i nie
 `MASTRA_STUDIO_TOKEN`. `VITE_API_BASE_URL` to publiczny URL Nest, nie sekret.
 `dashboard/vercel.json` nie proxy’uje `/v1` na Hetzner.
+`GET /v1/dashboard/context-graph` zwraca slug, tytuł i pozycję 2D, nie wektor
+embeddingu i nie `body` liścia. `context-activity` zwraca tylko zdarzenia
+drzewa (`context_search`, `context_hit`, `context_miss`), bez transkryptu.
 
 ## Dane
 

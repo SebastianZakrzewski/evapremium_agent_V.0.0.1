@@ -6,6 +6,8 @@ import {
 } from '@api/dashboard/dashboard-cors';
 import type { AgentEvent } from '@api/agent-events/agent-event';
 import {
+  contextActivityEvents,
+  contextActivityRange,
   listSessionMarkers,
   sessionView,
   summarizeDay,
@@ -164,6 +166,62 @@ describe('dashboard KPI from events', () => {
         { direction: 'outbound', text: 'quoted' },
       ],
       events: [events[0], events[1]],
+    });
+  });
+});
+
+describe('dashboard context activity', () => {
+  const treeEvents: AgentEvent[] = [
+    {
+      id: 'quote',
+      sessionId: 's-1',
+      occurredAt: '2026-09-13T10:00:00.000Z',
+      type: 'quote_issued',
+      payload: { amount: 100 },
+    },
+    {
+      id: 'search',
+      sessionId: 's-1',
+      occurredAt: '2026-09-13T10:01:00.000Z',
+      type: 'context_search',
+      payload: { slugs: ['kolory'], matched: true, confidence: 'high' },
+    },
+    {
+      id: 'hit',
+      sessionId: 's-1',
+      occurredAt: '2026-09-13T10:02:00.000Z',
+      type: 'context_hit',
+      payload: { slug: 'kolory' },
+    },
+    {
+      id: 'miss',
+      sessionId: 's-2',
+      occurredAt: '2026-09-13T09:00:00.000Z',
+      type: 'context_miss',
+      payload: { slug: 'dostawa' },
+    },
+  ];
+
+  it('keeps context tree events at or after since and drops other types', () => {
+    expect(
+      contextActivityEvents(treeEvents, '2026-09-13T10:00:00.000Z').map(
+        (row) => row.id,
+      ),
+    ).toEqual(['search', 'hit']);
+  });
+
+  it('reads from since through a short clock skew, otherwise the UTC day', () => {
+    expect(
+      contextActivityRange('2026-09-13T10:01:00.000Z', new Date('2026-09-13T12:00:00.000Z')),
+    ).toEqual({
+      fromIso: '2026-09-13T10:01:00.000Z',
+      toIso: '2026-09-13T12:01:00.000Z',
+    });
+    expect(
+      contextActivityRange('not-a-date', new Date('2026-09-13T12:00:00.000Z')),
+    ).toEqual({
+      fromIso: '2026-09-13T00:00:00.000Z',
+      toIso: '2026-09-13T23:59:59.999Z',
     });
   });
 });

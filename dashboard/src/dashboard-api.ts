@@ -47,6 +47,24 @@ export interface SessionDetails {
   events: SessionEvent[];
 }
 
+export interface ContextGraphNode {
+  slug: string;
+  title: string;
+  x: number;
+  y: number;
+}
+
+export interface ContextGraphEdge {
+  source: string;
+  target: string;
+  similarity: number;
+}
+
+export interface ContextGraph {
+  nodes: ContextGraphNode[];
+  edges: ContextGraphEdge[];
+}
+
 function apiUrl(path: string): string {
   const baseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
   return `${baseUrl}${path}`;
@@ -106,6 +124,27 @@ export async function fetchSession(
 ): Promise<SessionDetails> {
   return dashboardFetch<SessionDetails>(
     `/v1/dashboard/sessions/${encodeURIComponent(sessionId)}`,
+    token,
+    signal,
+  );
+}
+
+export async function fetchContextGraph(
+  token: string,
+  signal?: AbortSignal,
+): Promise<ContextGraph> {
+  return dashboardFetch<ContextGraph>('/v1/dashboard/context-graph', token, signal);
+}
+
+export async function fetchContextActivity(
+  since: string | undefined,
+  token: string,
+  signal?: AbortSignal,
+): Promise<SessionEvent[]> {
+  const sinceQuery =
+    since === undefined ? '' : `?since=${encodeURIComponent(since)}`;
+  return dashboardFetch<SessionEvent[]>(
+    `/v1/dashboard/context-activity${sinceQuery}`,
     token,
     signal,
   );

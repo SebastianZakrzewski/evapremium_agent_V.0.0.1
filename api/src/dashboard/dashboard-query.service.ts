@@ -8,7 +8,10 @@ import {
   UnknownSessionError,
   type ChatSessions,
 } from '../chat/chat-session';
+import { ContextTreeService } from '../context-tree/context-tree.service';
 import {
+  contextActivityEvents,
+  contextActivityRange,
   listSessionMarkers,
   sessionView,
   summarizeDay,
@@ -21,6 +24,7 @@ export class DashboardQueryService {
   constructor(
     @Inject(AGENT_EVENTS) private readonly events: AgentEventStore,
     @Inject(CHAT_SESSIONS) private readonly sessions: ChatSessions,
+    private readonly contextTree: ContextTreeService,
   ) {}
 
   async summary(date: string) {
@@ -48,5 +52,15 @@ export class DashboardQueryService {
       }
       throw error;
     }
+  }
+
+  contextGraph() {
+    return this.contextTree.similarityGraph();
+  }
+
+  async contextActivity(since?: string, now: Date = new Date()) {
+    const range = contextActivityRange(since, now);
+    const events = await this.events.listInRange(range.fromIso, range.toIso);
+    return contextActivityEvents(events, since);
   }
 }

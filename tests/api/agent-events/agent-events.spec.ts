@@ -36,7 +36,10 @@ import { LeadAttemptService } from '@api/lead/lead-attempt.service';
 import { MastraChatAgent } from '@api/chat/mastra-chat.agent';
 import { InMemoryIntentSessionState } from '@api/mastra/intents/intent-session-state';
 import { StubIntentQualifier } from '@api/mastra/intents/stub-intent-qualifier';
-import { executeShopTool } from '@api/agent-events/execute-shop-tool';
+import {
+  executeShopTool,
+  formatUsedToolLog,
+} from '@api/agent-events/execute-shop-tool';
 import { InMemoryAgentEvents } from '@api/agent-events/in-memory-agent-events';
 import { runWithTurnSession } from '@api/agent-events/turn-session-context';
 
@@ -233,6 +236,19 @@ describe('agent domain events', () => {
       }),
     ]);
     expect(JSON.stringify(events.list())).not.toContain('Ile kosztują');
+  });
+
+  it('logs the shop tool id when a tool runs', async () => {
+    const info = jest.spyOn(console, 'info').mockImplementation(() => undefined);
+    try {
+      await executeShopTool(undefined, 'search-leaves', () => 'ok');
+      expect(info).toHaveBeenCalledWith(formatUsedToolLog('search-leaves'));
+      expect(formatUsedToolLog('search-leaves')).toBe(
+        'użyte narzędzie: "search-leaves"',
+      );
+    } finally {
+      info.mockRestore();
+    }
   });
 
   it('records tool_failed without chat copy when a shop tool throws', async () => {

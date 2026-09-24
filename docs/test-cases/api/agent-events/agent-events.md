@@ -14,6 +14,7 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 | events-004 | critical | lead_attempted zgoda i skip |
 | events-005 | high | intent_accepted bez tekstu użytkownika |
 | events-006 | medium | tool_failed bez kopii czatu |
+| events-009 | medium | Konsola: użyte narzędzie z id toola |
 | events-007 | high | Stub czatu emituje wycenę w sesji |
 | events-008 | high | context_search bez body FAQ |
 
@@ -64,6 +65,14 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 - **Logika:** awaria toola to `toolId`, nie komunikat wyjątku z czatu.
 - **Wejście:** `executeShopTool` rzuca Error z tekstem użytkownika
 - **Wyjście:** `{ toolId: 'quote-price' }`; JSON bez tego tekstu
+
+### events-009 — Konsola: użyte narzędzie z id toola
+
+- **Kod:** `tests/api/agent-events/agent-events.spec.ts` → `it('logs the shop tool id when a tool runs')`
+- **Krytyczność:** medium
+- **Logika:** każde wywołanie shop-toola dopisuje jedną linię konsoli z id, zanim tool wykona się albo rzuci.
+- **Wejście:** `executeShopTool` z id `search-leaves`
+- **Wyjście:** `użyte narzędzie: "search-leaves"`
 
 ### events-007 — Stub czatu emituje wycenę w sesji
 
