@@ -29,6 +29,11 @@ export class DashboardController {
     return this.queries.contextActivity(since);
   }
 
+  @Get('container-log')
+  containerLog(@Query('after') after?: string, @Query('since') since?: string) {
+    return this.queries.containerLog(after, since);
+  }
+
   @Get('sessions')
   listSessions(
     @Query('date') date: string,

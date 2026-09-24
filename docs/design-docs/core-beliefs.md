@@ -26,10 +26,11 @@ Aktualizuj, gdy zmieni się trwała zasada projektowa, nie przy każdej funkcji.
 - Panel KPI operatora (Vercel) nie jest Mastra Studio i nie zastępuje kolejki
   Bitrix; fakty do KPI pochodzą z eventów Nest, nie z tekstu LLM.
 - Wykresy Studio Observability: DuckDB, nie LibSQL (Editor zostaje w LibSQL).
-- Intencja tury: LLM tylko etykieta; `IntentProfile` to pakiet kontekstu
-  wgrywany w runtime. `acceptIntentTransition` filtruje kandydata względem
-  stanu sesji (`allowedTransitions`). Agent ze wszystkimi shop-toolami na raz
-  jest zakazany.
+- Intencja tury: LLM tylko etykieta (intent, sub-intent, mode, entities);
+  `IntentProfile` to pakiet kontekstu wgrywany w runtime.
+  `acceptIntentTransition` filtruje kandydata względem stanu sesji
+  (`allowedTransitions`). Wiedzę, tool albo workflow wybiera backend.
+  Agent ze wszystkimi shop-toolami na raz jest zakazany.
 
 ## Odrzucone na MVP (nie wracać bez nowych faktów)
 

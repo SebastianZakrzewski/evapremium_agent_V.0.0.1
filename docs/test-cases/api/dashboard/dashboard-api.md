@@ -18,6 +18,8 @@ dashboardu, KPI i znaczniki z eventów Nest, nie z tekstu agenta.
 | dash-api-008 | medium | Sort osi po occurredAt |
 | dash-api-009 | high | Aktywność drzewa bez innych typów |
 | dash-api-010 | medium | Zakres `since` albo doba UTC |
+| dash-api-011 | high | Ślad decyzji do logu, bez innych typów |
+| dash-api-012 | high | Sub-intencja ze śladu uzupełnia pustą linię bufora |
 
 ### dash-api-001 — Brak Bearer i token Studio → 401
 
@@ -98,3 +100,19 @@ dashboardu, KPI i znaczniki z eventów Nest, nie z tekstu agenta.
 - **Logika:** poprawne `since` otwiera okno od tej chwili z minutą zapasu; nieparsowalna wartość zostaje przy dobie UTC.
 - **Wejście:** `2026-09-13T10:01:00.000Z` oraz `not-a-date`, teraz `2026-09-13T12:00:00.000Z`
 - **Wyjście:** okno do `12:01:00.000Z` albo pełna doba `2026-09-13`
+
+### dash-api-011 — Ślad decyzji do logu, bez innych typów
+
+- **Kod:** `tests/api/dashboard/dashboard-read.spec.ts` → `it('keeps decision traces after since and drops other event types')`
+- **Krytyczność:** high
+- **Logika:** log dashboardu dociąga tylko `decision_trace` nowsze niż `since`. Hit drzewa nie wchodzi do tego zestawu.
+- **Wejście:** ślad `available_colors` po `since` i `context_hit` w tej samej sesji
+- **Wyjście:** samo id `trace-colors`
+
+### dash-api-012 — Sub-intencja ze śladu uzupełnia pustą linię bufora
+
+- **Kod:** `tests/api/dashboard/dashboard-read.spec.ts` → `it('fills an empty intent line from a nearby trace and keeps a trace without a buffer line')`
+- **Krytyczność:** high
+- **Logika:** pusta sub-intencja w buforze procesu bierze `sub_intent`, tryb i wykonanie z bliskiego `decision_trace`. Ślad bez linii bufora zostaje osobnym wpisem. Treść pytania nie wchodzi do JSON.
+- **Wejście:** linia `intent-turn` z `subIntent: null` oraz ślady `available_colors` (ta sama sesja) i `delivery_info` (inna sesja)
+- **Wyjście:** pierwsza linia ma `available_colors` / `knowledge`; druga to `decision-trace` z `delivery_info`

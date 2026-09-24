@@ -28,7 +28,7 @@ profilu → zero shop-tooli; `general_agent` zakazany; lead tylko Nest
 - **Krytyczność:** medium
 - **Logika:** Jedno ponowne qualify może odzyskać gałąź wyceny.
 - **Wejście:** 0.1 potem 0.9, intent `pricing`
-- **Wyjście:** tura `pricing` z `quote-price` i `resolve-template`
+- **Wyjście:** tura `pricing` z `quote-vehicle`
 
 ### fallback-003 — Brak profilu / general_agent → out_of_scope
 

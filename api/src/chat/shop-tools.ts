@@ -1,5 +1,6 @@
 import type { AgentEventSink } from '../agent-events/agent-event';
 import { recordAgentEvent } from '../agent-events/record-agent-event';
+import { currentRelatedBranches } from '../agent-events/turn-session-context';
 import { ContextTreeResolver } from '../context-tree/context-tree.resolver';
 import type { ContextLeafSearchHit } from '../domain/context-leaf-search';
 import type { ContextLeafLookupResult } from '../domain/context-tree';
@@ -47,7 +48,10 @@ export class ShopTools {
   }
 
   async searchLeaves(query: string): Promise<ContextLeafSearchHit[]> {
-    const matches = await this.contextTree.searchLeaves(query);
+    const matches = await this.contextTree.searchLeaves(
+      query,
+      currentRelatedBranches(),
+    );
     recordAgentEvent(this.events, 'context_search', {
       slugs: matches.map((row) => row.slug),
       matched: matches.length > 0,

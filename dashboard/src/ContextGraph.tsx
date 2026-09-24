@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { BrainAtlasCanvas } from './brain-atlas-canvas';
+import { ContainerLog } from './ContainerLog';
 import {
   fetchContextActivity,
   fetchContextGraph,
@@ -60,6 +61,7 @@ export function ContextGraphView({
   const [liveFrame, setLiveFrame] = useState<ContextTurnFrame | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activityError, setActivityError] = useState<string | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -136,6 +138,7 @@ export function ContextGraphView({
         if (stopped) {
           return;
         }
+        setActivityError(null);
         const nextFrames = contextTurnFrames(fresh);
         const latest = nextFrames[nextFrames.length - 1];
         if (latest) {
@@ -143,7 +146,7 @@ export function ContextGraphView({
         }
       } catch (reason: unknown) {
         if (!stopped) {
-          setError(
+          setActivityError(
             requestError(reason, 'Nie udało się pobrać aktywności drzewa.'),
           );
         }
@@ -232,9 +235,9 @@ export function ContextGraphView({
       </section>
 
       {loading && <p className="status">Pobieram graf…</p>}
-      {error && (
+      {(error ?? activityError) && (
         <p className="status status-error" role="alert">
-          {error}
+          {error ?? activityError}
         </p>
       )}
       {graph && graph.nodes.length === 0 && (
@@ -259,6 +262,7 @@ export function ContextGraphView({
           <BrainAtlasCanvas nodes={graph.nodes} edges={graph.edges} frame={frame} />
         </>
       )}
+      <ContainerLog token={token} />
     </main>
   );
 }

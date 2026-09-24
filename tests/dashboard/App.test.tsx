@@ -1,4 +1,5 @@
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -261,6 +262,42 @@ describe('dashboard context graph', () => {
           ],
         });
       }
+      if (url.includes('/v1/dashboard/container-log')) {
+        return json([
+          {
+            seq: 1,
+            occurredAt: '2026-09-24T00:50:00.000Z',
+            kind: 'intent-turn',
+            sessionId: 'session-tree',
+            currentIntent: 'product_info',
+            candidateIntent: 'delivery',
+            acceptedIntent: 'delivery',
+            subIntent: null,
+            mode: null,
+            execution: 'profile',
+            tools: ['search-leaves', 'lookup-leaf'],
+            forcedOutOfScope: false,
+          },
+          {
+            kind: 'decision-trace',
+            id: 'trace-colors',
+            occurredAt: '2026-09-24T00:50:00.500Z',
+            sessionId: 'session-tree',
+            acceptedIntent: 'product_info',
+            subIntent: 'available_colors',
+            mode: 'knowledge',
+            execution: 'knowledge',
+            tools: ['lookup-leaf', 'search-leaves'],
+            forcedOutOfScope: false,
+          },
+          {
+            seq: 2,
+            occurredAt: '2026-09-24T00:50:01.000Z',
+            kind: 'tool',
+            toolId: 'search-leaves',
+          },
+        ]);
+      }
       if (url.includes('/v1/dashboard/sessions?')) {
         return json([{ sessionId: 'session-tree', markers: ['tree'] }]);
       }
@@ -303,6 +340,14 @@ describe('dashboard context graph', () => {
       'hit',
     );
     expect(screen.getByTestId('turn-path')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Log kontenera' })).toHaveTextContent(
+      '[intent-turn] sesja session-tree',
+    );
+    expect(screen.getByRole('region', { name: 'Log kontenera' })).toHaveTextContent(
+      /sub-intencja\s*available_colors/,
+    );
+    expect(screen.getByText(/użyte narzędzie: "search-leaves"/)).toBeInTheDocument();
+    expect(screen.getAllByText('w ofercie').length).toBeGreaterThan(0);
     expect(fetchMock).toHaveBeenCalledWith(
       '/v1/dashboard/context-graph',
       expect.objectContaining({
@@ -311,5 +356,103 @@ describe('dashboard context graph', () => {
     );
 
     fetchMock.mockRestore();
+  });
+
+  it('keeps the container log empty when the API has no log route', async () => {
+    sessionStorage.setItem('eva-dashboard-token', 'dashboard-secret');
+    window.location.hash = '#/graf';
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
+      const url = String(input);
+      const json = (body: unknown, status = 200) =>
+        Promise.resolve(
+          new Response(JSON.stringify(body), {
+            status,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
+      if (url.includes('/v1/dashboard/container-log')) {
+        return json({ error: 'Route not found' }, 404);
+      }
+      if (url.includes('/v1/dashboard/context-graph')) {
+        return json({
+          nodes: [{ slug: 'kolory', title: 'Kolory', x: 0.2, y: 0.4 }],
+          edges: [],
+        });
+      }
+      if (url.includes('/v1/dashboard/sessions?')) {
+        return json([]);
+      }
+      return json([]);
+    });
+
+    render(<App initialDate="2026-09-13" />);
+
+    expect(await screen.findByText('Kolory')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Log kontenera' })).toHaveTextContent(
+      'Brak linii w tym procesie.',
+    );
+    expect(
+      screen.queryByText('Nie udało się pobrać danych dashboardu. Spróbuj ponownie.'),
+    ).not.toBeInTheDocument();
+    fetchMock.mockRestore();
+  });
+
+  it('clears a live activity failure after the next poll succeeds', async () => {
+    sessionStorage.setItem('eva-dashboard-token', 'dashboard-secret');
+    window.location.hash = '#/graf';
+    let activityCalls = 0;
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
+      const url = String(input);
+      const json = (body: unknown, status = 200) =>
+        Promise.resolve(
+          new Response(JSON.stringify(body), {
+            status,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
+      if (url.includes('/v1/dashboard/context-activity')) {
+        activityCalls += 1;
+        if (activityCalls === 1) {
+          return json({}, 502);
+        }
+        return json([]);
+      }
+      if (url.includes('/v1/dashboard/container-log')) {
+        return json([]);
+      }
+      if (url.includes('/v1/dashboard/context-graph')) {
+        return json({
+          nodes: [{ slug: 'kolory', title: 'Kolory', x: 0.2, y: 0.4 }],
+          edges: [],
+        });
+      }
+      if (url.includes('/v1/dashboard/sessions?')) {
+        return json([]);
+      }
+      return json({});
+    });
+
+    render(<App initialDate="2026-09-13" />);
+
+    expect(await screen.findByText('Kolory')).toBeInTheDocument();
+    vi.useFakeTimers();
+    try {
+      fireEvent.click(screen.getByRole('button', { name: 'Na żywo' }));
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(2000);
+      });
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        'Nie udało się pobrać danych dashboardu. Spróbuj ponownie.',
+      );
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(2000);
+      });
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      expect(screen.getByText('Kolory')).toBeInTheDocument();
+    } finally {
+      fetchMock.mockRestore();
+      vi.useRealTimers();
+    }
   });
 });

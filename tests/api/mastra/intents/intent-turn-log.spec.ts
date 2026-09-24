@@ -19,11 +19,15 @@ describe('formatIntentTurnLog', () => {
     expect(line).toBe(
       [
         '[intent-turn] sesja session-1',
-        '  było        product_info',
-        '  kandydat    pricing',
-        '  przyjęto    pricing',
-        '  narzędzia   resolve-template, quote-price',
-        '  zakres      w ofercie',
+        '  było          product_info',
+        '  kandydat      pricing',
+        '  przyjęto      pricing',
+        '  sub-intencja  —',
+        '  tryb          —',
+        '  wykonanie     profile',
+        '  cel           —',
+        '  narzędzia     resolve-template, quote-price',
+        '  zakres        w ofercie',
       ].join('\n'),
     );
     expect(line).not.toMatch(/Golf|dywan/i);
@@ -87,6 +91,10 @@ describe('prepareIntentTurn logging', () => {
       currentIntent: 'product_info',
       candidateIntent: 'pricing',
       acceptedIntent: 'pricing',
+      subIntent: 'indicative_quote',
+      mode: 'action',
+      execution: 'workflow',
+      executionTarget: 'quote_vehicle',
       tools: turn.toolIds,
       forcedOutOfScope: false,
     });

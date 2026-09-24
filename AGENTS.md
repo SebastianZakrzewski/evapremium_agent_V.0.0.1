@@ -55,7 +55,9 @@ Plan MVP (`docs/exec-plans/completed/mvp-tdd.md`): slice’e 0–7 zamknięte.
 Dashboard operatora: `docs/exec-plans/active/evapremium-agents-dashboard.md`
 (jeden slice na iterację). RAG FAQ (slug, nie fakt):
 `docs/exec-plans/active/context-tree-rag.md`. Ranking slugów (BM25+RRF):
-`docs/exec-plans/active/context-leaf-hybrid-retrieval.md`. Bramka historyczna MVP agenta:
+`docs/exec-plans/active/context-leaf-hybrid-retrieval.md`. Router wykonania
+(sub-intent, mode, workflow wyceny): `docs/design-docs/agent-execution-router.md`,
+`docs/exec-plans/active/agent-execution-router.md`. Bramka historyczna MVP agenta:
 `.cursor/rules/mvp-tdd-quality-gate.mdc`.
 
 ## Weryfikacja

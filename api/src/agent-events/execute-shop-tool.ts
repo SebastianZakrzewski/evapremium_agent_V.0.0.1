@@ -1,4 +1,5 @@
 import type { AgentEventSink } from './agent-event';
+import { containerLogs } from './container-log-buffer';
 import { recordAgentEvent } from './record-agent-event';
 
 export function formatUsedToolLog(toolId: string): string {
@@ -10,6 +11,7 @@ export async function executeShopTool<T>(
   toolId: string,
   execute: () => Promise<T> | T,
 ): Promise<T> {
+  containerLogs.appendTool(toolId);
   console.info(formatUsedToolLog(toolId));
   try {
     return await execute();

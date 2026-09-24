@@ -7,18 +7,27 @@ Nest. `quote-price` tylko na `pricing`. SSE bez zmiany (`stream-chat-message.spe
 
 | id | Krytyczność | Tytuł |
 | --- | --- | --- |
-| turn-001 | critical | pricing: resolve-template + quote-price |
+| turn-001 | critical | pricing z marką i modelem: quote-vehicle |
+| turn-005 | high | wycena bez marki → workflow, zero quote-price |
 | turn-002 | critical | product_info bez quote-price |
 | turn-003 | high | Brak id w katalogu → błąd, nie cichy drop |
 | turn-004 | critical | delivery: search-leaves + lookup-leaf |
 
-### turn-001 — pricing: resolve-template + quote-price
+### turn-001 — pricing: quote-vehicle
 
-- **Kod:** `tests/api/mastra/intents/prepare-intent-turn.spec.ts` → `it('gives pricing the quote-price and resolve-template tools')`
+- **Kod:** `tests/api/mastra/intents/prepare-intent-turn.spec.ts` → `it('gives a complete pricing turn the quote-vehicle tool')`
 - **Krytyczność:** critical
 - **Logika:** Gałąź wyceny widzi macierz i kaskadę; instrukcja profilu trafia do tury.
-- **Wejście:** stub qualify `Ile kosztują dywaniki do Golfa 8?` + katalog 3 tooli
-- **Wyjście:** `intent: pricing`, klucze `quote-price` i `resolve-template`
+- **Wejście:** stub qualify `Ile kosztują dywaniki Volkswagen Golf 8?` + katalog tooli
+- **Wyjście:** `intent: pricing`, wykonanie `tool` / `quote-vehicle`, jedyny klucz `quote-vehicle`
+
+### turn-005 — wycena bez marki → workflow
+
+- **Kod:** `tests/api/mastra/intents/prepare-intent-turn.spec.ts` → `it('holds quote tools until the vehicle workflow has both slots')`
+- **Krytyczność:** high
+- **Logika:** Sam model bez marki nie wystawia `quote-price`. Tura czeka na slot.
+- **Wejście:** `Ile kosztują dywaniki do Golfa 8?`
+- **Wyjście:** `execution.kind: workflow`, `toolIds: []`, krok `waiting_for_vehicle`
 
 ### turn-002 — product_info bez quote-price
 

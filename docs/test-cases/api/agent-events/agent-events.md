@@ -15,6 +15,7 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 | events-005 | high | intent_accepted bez tekstu użytkownika |
 | events-006 | medium | tool_failed bez kopii czatu |
 | events-009 | medium | Konsola: użyte narzędzie z id toola |
+| events-010 | medium | Bufor logu kontenera: tura i narzędzie, bez treści czatu |
 | events-007 | high | Stub czatu emituje wycenę w sesji |
 | events-008 | high | context_search bez body FAQ |
 
@@ -54,9 +55,9 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 
 - **Kod:** `tests/api/agent-events/agent-events.spec.ts` → `it('records intent_accepted from the Mastra chat turn without the user text')`
 - **Krytyczność:** high
-- **Logika:** zaakceptowana intencja tury, nie kopia wiadomości.
-- **Wejście:** `MastraChatAgent.stream` z pytaniem o cenę
-- **Wyjście:** `{ intent: 'pricing' }`; JSON bez pytania
+- **Logika:** zaakceptowana intencja tury i ślad decyzji, nie kopia wiadomości.
+- **Wejście:** `MastraChatAgent.stream` z pytaniem o cenę bez marki
+- **Wyjście:** `intent_accepted` `{ intent: 'pricing' }` oraz `decision_trace` z `execution: workflow` i `workflow: quote_vehicle`; JSON bez pytania
 
 ### events-006 — tool_failed bez kopii czatu
 
@@ -74,7 +75,15 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 - **Wejście:** `executeShopTool` z id `search-leaves`
 - **Wyjście:** `użyte narzędzie: "search-leaves"`
 
-### events-007 — Stub czatu emituje wycenę w sesji
+### events-010 — Bufor logu kontenera: tura i narzędzie, bez treści czatu
+
+- **Kod:** `tests/api/agent-events/container-log-buffer.spec.ts` → `it('keeps an intent block and a tool line in order, without message text')`, `it('records the console intent block and the used-tool line in the process buffer')`
+- **Krytyczność:** medium
+- **Logika:** panel pod grafem czyta ten sam ślad co stdout: blok tury (w tym sub-intencja, tryb, wykonanie, cel) i id toola. Treść wiadomości klienta do bufora nie wchodzi.
+- **Wejście:** tura `session-1` product_info → delivery z toolami `search-leaves`, `lookup-leaf`; potem `executeShopTool` `quote-price`
+- **Wyjście:** kolejność `intent-turn`, `tool`; `list(1)` zwraca tylko drugą linię; JSON bez treści pytania
+
+
 
 - **Kod:** `tests/api/agent-events/agent-events.spec.ts` → `it('emits quote_issued when the stub chat agent quotes in a session')`
 - **Krytyczność:** high

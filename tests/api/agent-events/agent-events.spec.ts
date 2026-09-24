@@ -234,6 +234,17 @@ describe('agent domain events', () => {
         type: 'intent_accepted',
         payload: { intent: 'pricing' },
       }),
+      expect.objectContaining({
+        sessionId: 'session-intent',
+        type: 'decision_trace',
+        payload: {
+          intent: 'pricing',
+          sub_intent: 'indicative_quote',
+          mode: 'action',
+          execution: 'workflow',
+          workflow: 'quote_vehicle',
+        },
+      }),
     ]);
     expect(JSON.stringify(events.list())).not.toContain('Ile kosztują');
   });

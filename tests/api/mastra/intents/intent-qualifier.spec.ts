@@ -13,6 +13,9 @@ describe('StubIntentQualifier', () => {
     expect(qualifyResultSchema.parse(result)).toEqual({
       intent: 'pricing',
       confidence: 1,
+      sub_intent: 'indicative_quote',
+      mode: 'action',
+      entities: { car_model: 'Golf 8' },
     });
   });
 
@@ -42,6 +45,9 @@ describe('MastraIntentQualifier', () => {
     await expect(qualifier.qualify('kiedy wysyłka')).resolves.toEqual({
       intent: 'delivery',
       confidence: 0.9,
+      sub_intent: null,
+      mode: 'knowledge',
+      entities: {},
     });
   });
 
@@ -66,6 +72,12 @@ describe('executeQualifyStep', () => {
     const result = await executeQualifyStep(new StubIntentQualifier(), {
       message: 'Ile kosztują dywaniki do Golfa 8?',
     });
-    expect(result).toEqual({ intent: 'pricing', confidence: 1 });
+    expect(result).toEqual({
+      intent: 'pricing',
+      confidence: 1,
+      sub_intent: 'indicative_quote',
+      mode: 'action',
+      entities: { car_model: 'Golf 8' },
+    });
   });
 });

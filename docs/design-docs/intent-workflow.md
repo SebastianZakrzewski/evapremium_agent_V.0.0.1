@@ -80,7 +80,7 @@ Id w `tools` = id `createTool` z `api/src/mastra/tools/`, execute → Nest.
 | `ShopIntent` | Tool-e tury | Rola |
 | --- | --- | --- |
 | `product_info` | `resolve-template`, `lookup-leaf`, `search-leaves` | Dopasowanie auta (kaskada) + fakty produktu z liścia |
-| `pricing` | `resolve-template`, `quote-price` | Szablon, potem jedna kwota z macierzy |
+| `pricing` | `quote-vehicle` | Jedna operacja wyceny; kaskada i macierz zostają w Neście |
 | `delivery` | `lookup-leaf`, `search-leaves` | Liście dostawy / terminów (slug z drzewa) |
 | `after_sales` | `lookup-leaf`, `search-leaves` | Pielęgnacja, gwarancja, montaż; miss → ścieżka leada Nest |
 | `out_of_scope` | `[]` | Brak fetcha sklepu; ewentualnie zbieranie kontaktu (lead = Nest) |
@@ -90,7 +90,7 @@ Id w `tools` = id `createTool` z `api/src/mastra/tools/`, execute → Nest.
 wybiera „nowszej generacji”. `one` to tożsamość szablonu, nie stan magazynu.
 VIN poza zakresem.
 
-`quote-price` tylko na gałęzi `pricing`. Kwota nigdy z profilu `product_info`.
+`quote-vehicle` tylko na gałęzi `pricing`. Kwota nigdy z profilu `product_info`.
 
 ## Maszyna stanów
 
@@ -105,7 +105,9 @@ kwalifikacji).
 | `allowIntentSwitch: false` | Ignoruj kandydata; zostań w bieżącym stanie |
 | Brak pola `routing` | Brak krawędzi — nie wychodzi ze stanu, dopóki profil tego nie zdefiniuje |
 
-Kwalifikator: structured output `ShopIntent` + `confidence`. Próg
+Kwalifikator: structured output `ShopIntent` + `sub_intent` + `mode` +
+`entities` + `confidence` (jedno wywołanie). Wybór wiedzy / toola / workflow:
+`docs/design-docs/agent-execution-router.md`. Próg
 `LOW_INTENT_CONFIDENCE` (0.5): jedno `reclassify`, potem `out_of_scope` z
 pustą mapą tooli. Brak profilu, `general_agent` i wyjątek qualify →
 `out_of_scope`. Lead nie jest tool-em.

@@ -12,6 +12,7 @@ import { StubIntentQualifier } from '@api/mastra/intents/stub-intent-qualifier';
 const shopCatalog = {
   'resolve-template': { id: 'resolve-template' },
   'quote-price': { id: 'quote-price' },
+  'quote-vehicle': { id: 'quote-vehicle' },
   'lookup-leaf': { id: 'lookup-leaf' },
   'search-leaves': { id: 'search-leaves' },
 };
@@ -19,19 +20,35 @@ const shopCatalog = {
 describe('prepareIntentTurn', () => {
   const qualifier = new StubIntentQualifier();
 
-  it('gives pricing the quote-price and resolve-template tools', async () => {
+  it('gives a complete pricing turn the quote-vehicle tool', async () => {
     const turn = await prepareIntentTurn(
       qualifier,
-      'Ile kosztują dywaniki do Golfa 8?',
+      'Ile kosztują dywaniki Volkswagen Golf 8?',
     );
     const tools = selectTurnTools(shopCatalog, turn.toolIds);
 
     expect(turn.intent).toBe('pricing');
-    expect(Object.keys(tools).sort()).toEqual(
-      ['quote-price', 'resolve-template'].sort(),
+    expect(turn.execution).toEqual({
+      kind: 'tool',
+      tool: 'quote-vehicle',
+      tools: ['quote-vehicle'],
+    });
+    expect(Object.keys(tools)).toEqual(['quote-vehicle']);
+    expect(profileAllowsTool(turn.toolIds, 'quote-vehicle')).toBe(true);
+    expect(turn.instructions).toContain('Wykonanie: wywołaj quote-vehicle.');
+  });
+
+  it('holds quote tools until the vehicle workflow has both slots', async () => {
+    const turn = await prepareIntentTurn(
+      qualifier,
+      'Ile kosztują dywaniki do Golfa 8?',
     );
-    expect(profileAllowsTool(turn.toolIds, 'quote-price')).toBe(true);
-    expect(turn.instructions).toContain(turn.profile.context);
+
+    expect(turn.intent).toBe('pricing');
+    expect(turn.execution.kind).toBe('workflow');
+    expect(turn.toolIds).toEqual([]);
+    expect(turn.quoteWorkflow?.step).toBe('waiting_for_vehicle');
+    expect(turn.instructions).toContain('Brakuje marki auta');
   });
 
   it('does not expose quote-price on product_info', async () => {

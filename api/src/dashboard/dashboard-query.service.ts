@@ -3,6 +3,7 @@ import {
   AGENT_EVENTS,
   type AgentEventStore,
 } from '../agent-events/agent-event';
+import { containerLogs } from '../agent-events/container-log-buffer';
 import {
   CHAT_SESSIONS,
   UnknownSessionError,
@@ -12,7 +13,9 @@ import { ContextTreeService } from '../context-tree/context-tree.service';
 import {
   contextActivityEvents,
   contextActivityRange,
+  decisionTraceEvents,
   listSessionMarkers,
+  mergeContainerLog,
   sessionView,
   summarizeDay,
   utcDayRange,
@@ -62,5 +65,13 @@ export class DashboardQueryService {
     const range = contextActivityRange(since, now);
     const events = await this.events.listInRange(range.fromIso, range.toIso);
     return contextActivityEvents(events, since);
+  }
+
+  async containerLog(after?: string, since?: string, now: Date = new Date()) {
+    const parsed = after === undefined ? Number.NaN : Number(after);
+    const memory = containerLogs.list(Number.isInteger(parsed) ? parsed : undefined);
+    const range = contextActivityRange(since, now);
+    const events = await this.events.listInRange(range.fromIso, range.toIso);
+    return mergeContainerLog(memory, decisionTraceEvents(events, since));
   }
 }

@@ -5,7 +5,7 @@ import {
   profileOrOutOfScope,
 } from '@api/mastra/intents/intent-fallback';
 import { prepareIntentTurn } from '@api/mastra/intents/prepare-intent-turn';
-import { SHOP_TOOL_IDS } from '@api/mastra/intents/schema';
+import { SHOP_TOOL_IDS, coarseQualifyResult } from '@api/mastra/intents/schema';
 import type { QualifyResult } from '@api/mastra/intents/schema';
 
 class ScriptedQualifier implements IntentQualifier {
@@ -37,8 +37,8 @@ class RecordingBitrix implements BitrixLeadGateway {
 describe('IntentFallback', () => {
   it('uses out_of_scope and zero shop tools when confidence stays low', async () => {
     const qualifier = new ScriptedQualifier([
-      { intent: 'pricing', confidence: 0.1 },
-      { intent: 'pricing', confidence: 0.2 },
+      coarseQualifyResult('pricing', 0.1),
+      coarseQualifyResult('pricing', 0.2),
     ]);
     const turn = await prepareIntentTurn(qualifier, 'hmm');
 
@@ -50,14 +50,14 @@ describe('IntentFallback', () => {
 
   it('keeps pricing when reclassify raises confidence', async () => {
     const qualifier = new ScriptedQualifier([
-      { intent: 'pricing', confidence: 0.1 },
-      { intent: 'pricing', confidence: 0.9 },
+      coarseQualifyResult('pricing', 0.1),
+      coarseQualifyResult('pricing', 0.9),
     ]);
     const turn = await prepareIntentTurn(qualifier, 'Ile kosztują dywaniki?');
 
     expect(turn.intent).toBe('pricing');
     expect(turn.toolIds).toEqual(
-      expect.arrayContaining(['quote-price', 'resolve-template']),
+      ['quote-vehicle'],
     );
   });
 
@@ -77,7 +77,7 @@ describe('IntentFallback', () => {
   it('does not put Bitrix lead on Mastra tools; Nest still requires consent', async () => {
     expect(SHOP_TOOL_IDS).not.toContain('create-lead');
     const turn = await prepareIntentTurn(
-      new ScriptedQualifier([{ intent: 'out_of_scope', confidence: 1 }]),
+      new ScriptedQualifier([coarseQualifyResult('out_of_scope', 1)]),
       'chcę rozmawiać z człowiekiem',
     );
     expect(turn.toolIds).toEqual([]);

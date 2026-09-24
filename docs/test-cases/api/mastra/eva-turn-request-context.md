@@ -39,7 +39,7 @@ instancji `Agent`. Brak klucza = `out_of_scope`.
 - **Krytyczność:** critical
 - **Logika:** Bez Editora system prompt tury = `assembleTurnInstructions(pricing)`; tool `quote-price` jest na mapie.
 - **Wejście:** context `intent: pricing`, katalog 3 tooli
-- **Wyjście:** instructions identyczne ze złożeniem profilu; klucze `quote-price`, `resolve-template`
+- **Wyjście:** instructions identyczne ze złożeniem profilu; klucz `quote-vehicle`
 
 ### ctx-004 — product_info bez quote-price
 
@@ -79,4 +79,4 @@ instancji `Agent`. Brak klucza = `out_of_scope`.
 - **Krytyczność:** high
 - **Logika:** Preset `pricing` w Studio nie otwiera pełnego katalogu — zostaje filtr profilu.
 - **Wejście:** `intent: pricing`, `mastra__isStudio: true`
-- **Wyjście:** `quote-price`, `resolve-template`
+- **Wyjście:** `quote-vehicle`

@@ -590,3 +590,79 @@ select:focus {
   color: #4d4f49;
   font-size: 0.92rem;
 }
+
+.container-log {
+  margin-top: 28px;
+  padding: 16px 18px 14px;
+  border-radius: 18px;
+  background: #1c1e1b;
+  color: #d7d8d2;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.container-log h2 {
+  margin: 0 0 10px;
+  color: #8b8d86;
+  font-family: Inter, ui-sans-serif, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.container-log-scroll {
+  max-height: 320px;
+  overflow: auto;
+}
+
+.container-log-empty,
+.container-log-error,
+.container-log-tool,
+.container-log-turn {
+  margin: 0 0 12px;
+}
+
+.container-log-turn {
+  white-space: pre-wrap;
+}
+
+.log-label {
+  display: inline-block;
+  width: 14ch;
+  color: #8b8d86;
+}
+
+.log-tag {
+  color: #5fd0d0;
+  font-weight: 650;
+}
+
+.log-dim {
+  color: #8b8d86;
+}
+
+.log-blue {
+  color: #8eb4ff;
+}
+
+.log-yellow {
+  color: #e7c27a;
+}
+
+.log-green {
+  color: #8fdb8a;
+}
+
+.log-red {
+  color: #e07a72;
+}
+
+.log-magenta {
+  color: #d7a0e0;
+}
+
+.container-log-error {
+  color: #e07a72;
+}

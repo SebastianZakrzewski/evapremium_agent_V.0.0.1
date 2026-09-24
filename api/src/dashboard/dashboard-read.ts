@@ -174,6 +174,132 @@ export function contextActivityRange(
   return utcDayRange(now.toISOString().slice(0, 10));
 }
 
+const TRACE_MATCH_MS = 15_000;
+
+export type DecisionTraceLogLine = {
+  kind: 'decision-trace';
+  id: string;
+  occurredAt: string;
+  sessionId: string;
+  acceptedIntent: string;
+  subIntent: string | null;
+  mode: string | null;
+  execution: string;
+  executionTarget?: string;
+  tools: string[];
+  forcedOutOfScope: boolean;
+};
+
+type MemoryLogLine = {
+  seq: number;
+  occurredAt: string;
+  kind: string;
+  sessionId?: string;
+  subIntent?: string | null;
+  mode?: string | null;
+  execution?: string;
+  executionTarget?: string;
+};
+
+function textOrNull(value: unknown): string | null {
+  return typeof value === 'string' && value.length > 0 ? value : null;
+}
+
+function traceTarget(payload: Record<string, unknown>): string | undefined {
+  return textOrNull(payload.tool) ?? textOrNull(payload.workflow) ?? undefined;
+}
+
+export function decisionTraceEvents(
+  events: AgentEvent[],
+  since?: string,
+): AgentEvent[] {
+  const sinceMs = since === undefined ? Number.NaN : Date.parse(since);
+  const hasSince = !Number.isNaN(sinceMs);
+  return timelineEvents(events).filter((event) => {
+    if (event.type !== 'decision_trace') {
+      return false;
+    }
+    if (!hasSince) {
+      return true;
+    }
+    return Date.parse(event.occurredAt) > sinceMs;
+  });
+}
+
+function nearestTrace<T extends MemoryLogLine>(
+  line: T,
+  traces: AgentEvent[],
+  used: Set<string>,
+): AgentEvent | undefined {
+  if (line.kind !== 'intent-turn' || line.sessionId === undefined) {
+    return undefined;
+  }
+  const at = Date.parse(line.occurredAt);
+  let best: AgentEvent | undefined;
+  let bestDelta = TRACE_MATCH_MS;
+  for (const trace of traces) {
+    if (used.has(trace.id) || trace.sessionId !== line.sessionId) {
+      continue;
+    }
+    const delta = Math.abs(Date.parse(trace.occurredAt) - at);
+    if (delta <= bestDelta) {
+      best = trace;
+      bestDelta = delta;
+    }
+  }
+  return best;
+}
+
+export function decisionTraceLogLine(event: AgentEvent): DecisionTraceLogLine {
+  const intent = textOrNull(event.payload.intent) ?? 'out_of_scope';
+  const target = traceTarget(event.payload);
+  return {
+    kind: 'decision-trace',
+    id: event.id,
+    occurredAt: event.occurredAt,
+    sessionId: event.sessionId,
+    acceptedIntent: intent,
+    subIntent: textOrNull(event.payload.sub_intent),
+    mode: textOrNull(event.payload.mode),
+    execution: textOrNull(event.payload.execution) ?? 'profile',
+    executionTarget: target,
+    tools: target === undefined ? [] : [target],
+    forcedOutOfScope: intent === 'out_of_scope',
+  };
+}
+
+export function mergeContainerLog<T extends MemoryLogLine>(
+  memory: T[],
+  traces: AgentEvent[],
+): Array<T | DecisionTraceLogLine> {
+  const used = new Set<string>();
+  const lines = memory.map((line) => {
+    const match = nearestTrace(line, traces, used);
+    if (match === undefined) {
+      return line;
+    }
+    used.add(match.id);
+    if (line.subIntent) {
+      return line;
+    }
+    const filled = decisionTraceLogLine(match);
+    return {
+      ...line,
+      subIntent: filled.subIntent,
+      mode: line.mode ?? filled.mode,
+      execution:
+        line.execution === undefined || line.execution === 'profile'
+          ? filled.execution
+          : line.execution,
+      executionTarget: line.executionTarget ?? filled.executionTarget,
+    };
+  });
+  const extra = traces
+    .filter((trace) => !used.has(trace.id))
+    .map((trace) => decisionTraceLogLine(trace));
+  return [...lines, ...extra];
+}
+
 export function contextActivityEvents(
   events: AgentEvent[],
   since?: string,

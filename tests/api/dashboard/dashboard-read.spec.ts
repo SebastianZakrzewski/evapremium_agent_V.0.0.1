@@ -8,7 +8,9 @@ import type { AgentEvent } from '@api/agent-events/agent-event';
 import {
   contextActivityEvents,
   contextActivityRange,
+  decisionTraceEvents,
   listSessionMarkers,
+  mergeContainerLog,
   sessionView,
   summarizeDay,
   timelineEvents,
@@ -223,5 +225,85 @@ describe('dashboard context activity', () => {
       fromIso: '2026-09-13T00:00:00.000Z',
       toIso: '2026-09-13T23:59:59.999Z',
     });
+  });
+});
+
+describe('decision trace log', () => {
+  const colors = {
+    id: 'trace-colors',
+    sessionId: 'session-tree',
+    occurredAt: '2026-09-24T00:50:00.400Z',
+    type: 'decision_trace' as const,
+    payload: {
+      intent: 'product_info',
+      sub_intent: 'available_colors',
+      mode: 'knowledge',
+      execution: 'knowledge',
+    },
+  };
+
+  it('keeps decision traces after since and drops other event types', () => {
+    expect(
+      decisionTraceEvents(
+        [
+          colors,
+          {
+            id: 'hit',
+            sessionId: 'session-tree',
+            occurredAt: '2026-09-24T00:50:01.000Z',
+            type: 'context_hit',
+            payload: { slug: 'kolory' },
+          },
+        ],
+        '2026-09-24T00:50:00.000Z',
+      ).map((row) => row.id),
+    ).toEqual(['trace-colors']);
+  });
+
+  it('fills an empty intent line from a nearby trace and keeps a trace without a buffer line', () => {
+    const merged = mergeContainerLog(
+      [
+        {
+          seq: 1,
+          occurredAt: '2026-09-24T00:50:00.000Z',
+          kind: 'intent-turn' as const,
+          sessionId: 'session-tree',
+          acceptedIntent: 'product_info',
+          subIntent: null,
+          mode: null,
+          execution: 'profile',
+          tools: ['search-leaves'],
+          forcedOutOfScope: false,
+        },
+      ],
+      [
+        colors,
+        {
+          id: 'trace-later',
+          sessionId: 'session-other',
+          occurredAt: '2026-09-24T00:51:00.000Z',
+          type: 'decision_trace',
+          payload: {
+            intent: 'delivery',
+            sub_intent: 'delivery_info',
+            mode: 'knowledge',
+            execution: 'knowledge',
+          },
+        },
+      ],
+    );
+
+    expect(merged[0]).toMatchObject({
+      kind: 'intent-turn',
+      subIntent: 'available_colors',
+      mode: 'knowledge',
+      execution: 'knowledge',
+    });
+    expect(merged[1]).toMatchObject({
+      kind: 'decision-trace',
+      id: 'trace-later',
+      subIntent: 'delivery_info',
+    });
+    expect(JSON.stringify(merged)).not.toContain('kolory dywanik');
   });
 });

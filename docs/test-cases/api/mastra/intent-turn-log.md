@@ -2,8 +2,8 @@
 
 Kod: `tests/api/mastra/intents/intent-turn-log.spec.ts`
 
-Logika zestawu: jedna linia konsoli na turę — sesja, intencje, tool-e; bez
-treści wiadomości.
+Logika zestawu: jedna linia konsoli na turę — sesja, intencje, sub-intencja,
+tryb, wykonanie, cel, tool-e; bez treści wiadomości.
 
 | id | Krytyczność | Tytuł |
 | --- | --- | --- |
@@ -17,7 +17,7 @@ treści wiadomości.
 - **Krytyczność:** medium
 - **Logika:** Diagnostyka tury bez PII z czatu. Jedna wiadomość `console.info` to blok wierszy, nie ciąg `klucz=wartość`.
 - **Wejście:** session-1, current product_info, candidate/accepted pricing, `color: false`
-- **Wyjście:** `[intent-turn]` z wierszami było / kandydat / przyjęto / narzędzia / zakres `w ofercie`; brak słów z treści klienta
+- **Wyjście:** `[intent-turn]` z wierszami było / kandydat / przyjęto / sub-intencja / tryb / wykonanie / cel / narzędzia / zakres `w ofercie`; brak słów z treści klienta
 
 ### log-003 — Kolor ANSI i odrzucony kandydat; `NO_COLOR` gasi kody
 
@@ -33,4 +33,4 @@ treści wiadomości.
 - **Krytyczność:** medium
 - **Logika:** Jedno wykonanie = jeden wpis z accepted i toolami tury.
 - **Wejście:** stub, sesja session-log, current product_info, pytanie o cenę
-- **Wyjście:** jeden log, accepted pricing, forcedOutOfScope false
+- **Wyjście:** jeden log, accepted pricing, sub-intencja `indicative_quote`, tryb `action`, wykonanie `workflow`, cel `quote_vehicle`, forcedOutOfScope false

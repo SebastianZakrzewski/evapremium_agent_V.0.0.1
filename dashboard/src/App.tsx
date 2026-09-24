@@ -375,6 +375,7 @@ function eventLabel(type: SessionEvent['type']): string {
     context_search: 'Wyszukiwanie liścia',
     lead_attempted: 'Próba utworzenia leada',
     tool_failed: 'Błąd narzędzia',
+    decision_trace: 'Ślad wykonania',
   };
   return labels[type];
 }
@@ -402,7 +403,31 @@ function eventDetail(event: SessionEvent): string | null {
       return typeof event.payload.tool === 'string' ? event.payload.tool : null;
     case 'quote_issued':
       return null;
+    case 'decision_trace':
+      return decisionTraceDetail(event.payload);
   }
+}
+
+function decisionTraceDetail(payload: Record<string, unknown>): string | null {
+  const text = (value: unknown) =>
+    typeof value === 'string' && value.length > 0 ? value : null;
+  const intent = text(payload.intent);
+  const subIntent = text(payload.sub_intent);
+  const mode = text(payload.mode);
+  const execution = text(payload.execution);
+  const target = text(payload.tool) ?? text(payload.workflow);
+  if (intent === null && subIntent === null && mode === null && execution === null) {
+    return null;
+  }
+  return [
+    intent,
+    `sub-intencja ${subIntent ?? '—'}`,
+    mode === null ? null : `tryb ${mode}`,
+    execution === null ? null : `wykonanie ${execution}`,
+    target === null ? null : `cel ${target}`,
+  ]
+    .filter((part): part is string => part !== null)
+    .join(' · ');
 }
 
 function quoteAmount(event: SessionEvent): string | null {

@@ -81,7 +81,12 @@ Lokalny smoke:
    `DASHBOARD_ORIGIN=http://localhost:5174`.
 2. `npm run start:dev --workspace api`
 3. `npm run dev --workspace dashboard` (port 5174, proxy `/v1` → Nest).
-4. Wklej token w bramce. Przegląd doby, lista sesji, widok sesji.
+   Cel proxy: `DASHBOARD_API_PROXY` w `dashboard/.env` (plik jest w
+   `.gitignore`). Puste = `http://127.0.0.1:3000`. Produkcyjny Nest:
+   `http://46.224.75.64:3000`. Przeglądarka zostaje na `localhost:5174`,
+   więc token nie idzie przez publiczny rewrite jak w widgecie.
+4. Wklej token w bramce — `DASHBOARD_TOKEN` tego Nestu, na który wskazuje
+   proxy. Przegląd doby, lista sesji, widok sesji.
 
 Gdy będzie zgoda na Vercel: root `dashboard`, build `npm run build`.
 Env build: `VITE_API_BASE_URL=https://<api-host>` (publiczny URL Nest, nie

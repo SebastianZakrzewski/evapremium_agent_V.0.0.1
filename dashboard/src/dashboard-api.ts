@@ -37,7 +37,8 @@ export interface SessionEvent {
     | 'context_miss'
     | 'context_search'
     | 'lead_attempted'
-    | 'tool_failed';
+    | 'tool_failed'
+    | 'decision_trace';
   payload: Record<string, unknown>;
 }
 
@@ -64,6 +65,47 @@ export interface ContextGraph {
   nodes: ContextGraphNode[];
   edges: ContextGraphEdge[];
 }
+
+export interface ContainerIntentLog {
+  seq: number;
+  occurredAt: string;
+  kind: 'intent-turn';
+  sessionId?: string;
+  currentIntent?: string;
+  candidateIntent?: string;
+  acceptedIntent: string;
+  subIntent: string | null;
+  mode: string | null;
+  execution: string;
+  executionTarget?: string;
+  tools: string[];
+  forcedOutOfScope: boolean;
+}
+
+export interface ContainerToolLog {
+  seq: number;
+  occurredAt: string;
+  kind: 'tool';
+  toolId: string;
+}
+
+export interface DecisionTraceLog {
+  kind: 'decision-trace';
+  id: string;
+  occurredAt: string;
+  sessionId: string;
+  currentIntent?: string;
+  candidateIntent?: string;
+  acceptedIntent: string;
+  subIntent: string | null;
+  mode: string | null;
+  execution: string;
+  executionTarget?: string;
+  tools: string[];
+  forcedOutOfScope: boolean;
+}
+
+export type ContainerLogLine = ContainerIntentLog | ContainerToolLog | DecisionTraceLog;
 
 function apiUrl(path: string): string {
   const baseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
@@ -134,6 +176,37 @@ export async function fetchContextGraph(
   signal?: AbortSignal,
 ): Promise<ContextGraph> {
   return dashboardFetch<ContextGraph>('/v1/dashboard/context-graph', token, signal);
+}
+
+export async function fetchContainerLog(
+  after: number | undefined,
+  since: string | undefined,
+  token: string,
+  signal?: AbortSignal,
+): Promise<ContainerLogLine[]> {
+  const params = new URLSearchParams();
+  if (after !== undefined) {
+    params.set('after', String(after));
+  }
+  if (since !== undefined) {
+    params.set('since', since);
+  }
+  const query = params.size > 0 ? `?${params.toString()}` : '';
+  const response = await fetch(apiUrl(`/v1/dashboard/container-log${query}`), {
+    headers: { Authorization: `Bearer ${token}` },
+    signal,
+  });
+  if (response.status === 404) {
+    return [];
+  }
+  if (!response.ok) {
+    throw new Error(
+      response.status === 401
+        ? 'Token został odrzucony. Sprawdź go i spróbuj ponownie.'
+        : 'Nie udało się pobrać danych dashboardu. Spróbuj ponownie.',
+    );
+  }
+  return (await response.json()) as ContainerLogLine[];
 }
 
 export async function fetchContextActivity(

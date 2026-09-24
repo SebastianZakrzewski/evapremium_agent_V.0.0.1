@@ -4,7 +4,7 @@ import {
   instructionsForRequestContext,
   toolsForRequestContext,
 } from './eva-turn-request-context';
-import { shopIntentSchema } from './intents/schema';
+import { SHOP_TOOL_IDS, shopIntentSchema } from './intents/schema';
 import type { ShopToolCatalog } from './tools';
 
 /** DeepSeek V4.1-Flash — API id `deepseek-flash` (Mastra: `deepseek/…`). */
@@ -23,6 +23,8 @@ export function createEvaMastraAgent(catalog: ShopToolCatalog): Agent {
       toolsForRequestContext(catalog, requestContext),
     requestContextSchema: z.object({
       intent: shopIntentSchema.optional(),
+      toolIds: z.array(z.enum(SHOP_TOOL_IDS)).optional(),
+      executionNote: z.string().optional(),
     }),
   });
 }

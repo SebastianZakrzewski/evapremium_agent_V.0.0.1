@@ -87,6 +87,11 @@ Przy wątpliwości wybierz wyższy poziom.
 | Hybrid ranking (BM25/RRF) | [api/domain/leaf-retrieval-rank.md](api/domain/leaf-retrieval-rank.md) | `tests/api/domain/leaf-retrieval-rank.spec.ts` |
 | Hybrid vs baseline cosine | [api/domain/hybrid-retrieval-baseline.md](api/domain/hybrid-retrieval-baseline.md) | `tests/api/domain/hybrid-retrieval-baseline.spec.ts` |
 | Extended leaf retrieval eval | [api/domain/leaf-retrieval-extended.md](api/domain/leaf-retrieval-extended.md) | `tests/api/domain/leaf-retrieval-extended.spec.ts` |
+| Katalog sub-intencji | [api/domain/sub-intent-catalog.md](api/domain/sub-intent-catalog.md) | `tests/api/domain/sub-intent-catalog.spec.ts` |
+| Wybór wykonania tury | [api/domain/choose-execution.md](api/domain/choose-execution.md) | `tests/api/domain/choose-execution.spec.ts` |
+| Workflow slotów wyceny | [api/domain/quote-vehicle.md](api/domain/quote-vehicle.md) | `tests/api/domain/quote-vehicle.spec.ts` |
+| Retrieval gałęzi | [api/domain/branch-retrieval.md](api/domain/branch-retrieval.md) | `tests/api/domain/branch-retrieval.spec.ts` |
+| Ślad decyzji | [api/domain/decision-trace.md](api/domain/decision-trace.md) | `tests/api/domain/decision-trace.spec.ts` |
 | Lead Bitrix (domena) | [api/domain/lead.md](api/domain/lead.md) | `tests/api/domain/lead.spec.ts` |
 | Resolver kaskady | [api/templates/template-cascade-resolver.md](api/templates/template-cascade-resolver.md) | `tests/api/templates/template-cascade.resolver.spec.ts` |
 | Resolver wyceny | [api/pricing/pricing-resolver.md](api/pricing/pricing-resolver.md) | `tests/api/pricing/pricing.resolver.spec.ts` |

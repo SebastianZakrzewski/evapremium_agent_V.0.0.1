@@ -3,7 +3,7 @@
 Kod: `tests/api/mastra/intents/intent-profile.spec.ts`
 
 Logika zestawu: `intentProfileFor` zwraca wypełniony profil znanej intencji;
-narzędzia ⊆ id Nest (`resolve-template`, `quote-price`, `lookup-leaf`, `search-leaves`);
+narzędzia ⊆ id Nest (`resolve-template`, `quote-price`, `quote-vehicle`, `lookup-leaf`, `search-leaves`);
 nieznany klucz → `undefined`.
 
 | id | Krytyczność | Tytuł |
@@ -34,4 +34,4 @@ nieznany klucz → `undefined`.
 - **Krytyczność:** medium
 - **Logika:** Stuby z `!` są zakazane; każda znana intencja ma kontrakt; tool-e tylko z rejestru Nest.
 - **Wejście:** `product_info`, `pricing`, `delivery`, `after_sales`, `out_of_scope`
-- **Wyjście:** każdy profil z `id`, `context`, `agent_loop`; `out_of_scope.tools=[]`; `pricing` zawiera `resolve-template` i `quote-price`; `delivery`/`after_sales` `maxToolCalls=4` i procedura „najwyżej raz”
+- **Wyjście:** każdy profil z `id`, `context`, `agent_loop`; `out_of_scope.tools=[]`; `pricing` to `quote-vehicle`; `delivery`/`after_sales` `maxToolCalls=4` i procedura „najwyżej raz”

@@ -7,6 +7,7 @@ import {
   type ContextSimilarityGraph,
 } from '../domain/context-similarity-graph';
 import { hybridSearchLeaves } from '../domain/leaf-retrieval-rank';
+import { hierarchicalSearchLeaves } from '../domain/branch-retrieval';
 import type { ContextLeafSearchHit } from '../domain/context-leaf-search';
 import type {
   ContextLeafVectorIndex,
@@ -29,16 +30,25 @@ export class ContextTreeResolver {
     return lookupContextLeaf(slug, this.nodes.list());
   }
 
-  async searchLeaves(query: string): Promise<ContextLeafSearchHit[]> {
+  async searchLeaves(
+    query: string,
+    relatedBranches: readonly string[] = [],
+  ): Promise<ContextLeafSearchHit[]> {
     const queryVector = await this.embedder.embed(query);
     if (queryVector === null) {
       return [];
     }
-    return hybridSearchLeaves(
+    const index = await this.vectors.list();
+    const nodes = this.nodes.list();
+    if (relatedBranches.length === 0) {
+      return hybridSearchLeaves(query, queryVector, index, nodes);
+    }
+    return hierarchicalSearchLeaves(
       query,
       queryVector,
-      await this.vectors.list(),
-      this.nodes.list(),
+      index,
+      nodes,
+      relatedBranches,
     );
   }
 

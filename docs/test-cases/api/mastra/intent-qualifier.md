@@ -23,7 +23,7 @@ Czat / SSE nietknięte (Slice 3).
 - **Krytyczność:** high
 - **Logika:** Stub (verify bez `DEEPSEEK_API_KEY`) mapuje wycenę na `pricing`, wynik przechodzi `qualifyResultSchema`.
 - **Wejście:** `Ile kosztują dywaniki do Golfa 8?`
-- **Wyjście:** `{ intent: 'pricing', confidence: 1 }`
+- **Wyjście:** `{ intent: 'pricing', sub_intent: 'indicative_quote', mode: 'action', entities: { car_model: 'Golf 8' }, confidence: 1 }`
 
 ### qualify-002 — Dopasowanie auta → product_info
 
@@ -47,7 +47,7 @@ Czat / SSE nietknięte (Slice 3).
 - **Krytyczność:** high
 - **Logika:** Adapter Mastry czyta `object` z `generate` + Zod; bez wołania sieci.
 - **Wejście:** fake `generate` → `{ intent: 'delivery', confidence: 0.9 }`
-- **Wyjście:** ten sam `QualifyResult`
+- **Wyjście:** ten sam intent i confidence plus domyślne `sub_intent: null`, `mode: knowledge`, `entities: {}`
 
 ### qualify-005 — general_agent odrzucony przez schemat
 
@@ -71,7 +71,7 @@ Czat / SSE nietknięte (Slice 3).
 - **Krytyczność:** high
 - **Logika:** `executeQualifyStep` to krok qualify; Jest nie bootuje Mastra ESM (`TD-003` analog).
 - **Wejście:** stub + `Ile kosztują dywaniki do Golfa 8?`
-- **Wyjście:** `{ intent: 'pricing', confidence: 1 }`
+- **Wyjście:** `{ intent: 'pricing', sub_intent: 'indicative_quote', mode: 'action', entities: { car_model: 'Golf 8' }, confidence: 1 }`
 
 ### qualify-008 — Powitanie → product_info
 

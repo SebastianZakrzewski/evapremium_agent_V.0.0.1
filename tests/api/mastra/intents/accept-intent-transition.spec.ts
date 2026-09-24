@@ -4,6 +4,7 @@ import type { IntentQualifier } from '@api/mastra/intents/intent-qualifier';
 import { prepareIntentTurn } from '@api/mastra/intents/prepare-intent-turn';
 import { StubIntentQualifier } from '@api/mastra/intents/stub-intent-qualifier';
 import type { QualifyResult } from '@api/mastra/intents/schema';
+import { coarseQualifyResult } from '@api/mastra/intents/schema';
 
 class ScriptedQualifier implements IntentQualifier {
   constructor(private readonly results: QualifyResult[]) {}
@@ -56,19 +57,19 @@ describe('intent session memory', () => {
 
     const second = await prepareIntentTurn(
       qualifier,
-      'Ile kosztują dywaniki do Golfa 8?',
+      'Ile kosztują dywaniki Volkswagen Golf 8?',
       { currentIntent: state.get(sessionId) },
     );
     state.set(sessionId, second.intent);
     expect(second.intent).toBe('pricing');
     expect(second.toolIds).toEqual(
-      expect.arrayContaining(['quote-price', 'resolve-template']),
+      ['quote-vehicle'],
     );
   });
 
   it('keeps product_info tools when qualify proposes out_of_scope', async () => {
     const turn = await prepareIntentTurn(
-      new ScriptedQualifier([{ intent: 'out_of_scope', confidence: 1 }]),
+      new ScriptedQualifier([coarseQualifyResult('out_of_scope', 1)]),
       'jaki jest kurs euro',
       { currentIntent: 'product_info' },
     );
@@ -89,8 +90,8 @@ describe('intent session memory', () => {
   it('still forces out_of_scope after low-confidence fallback', async () => {
     const turn = await prepareIntentTurn(
       new ScriptedQualifier([
-        { intent: 'pricing', confidence: 0.1 },
-        { intent: 'pricing', confidence: 0.2 },
+        coarseQualifyResult('pricing', 0.1),
+        coarseQualifyResult('pricing', 0.2),
       ]),
       'hmm',
       { currentIntent: 'product_info' },

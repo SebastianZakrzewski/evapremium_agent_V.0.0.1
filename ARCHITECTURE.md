@@ -157,17 +157,25 @@ tool-e tury). Stany = intencje; `allowedTransitions` na profilu to legalne
 przejścia (mała maszyna stanów). Brak profilu nie otwiera agenta ze
 wszystkimi toolami. Lead Bitrix nie jest tool-em profilu.
 
-**Zaimplementowane:** rejestr `intentProfileFor`; kwalifikator za portem;
-`prepareIntentTurn` składa turę z toolami profilu. Niska pewność: jedno
-`reclassify`, potem `out_of_scope` (zero shop-tooli). Brak profilu / błąd
-kwalifikatora → `out_of_scope`, nie `general_agent`. `MastraChatAgent` przy
-kluczu DeepSeek: qualify → fallback → `acceptIntentTransition` (stan sesji
-w `InMemoryIntentSessionState`) → **ten sam** `evaShopAgent` z instancji
-Mastry (`createEvaMastra`). Per-intent: `RequestContext.intent`; instructions
-i mapa tooli z profilu. System prompt: opublikowane prompt-blocks Editora
-(`{{intent}}` w display conditions); brak bloków → złożenie z `IntentProfile`.
-SSE bez zmiany
-ramek. `stream(message, sessionId)`. Lead Bitrix zostaje w Neście. Bez klucza
+**Zaimplementowane:** rejestr `intentProfileFor`; kwalifikator za portem
+zwraca `intent`, `sub_intent`, `mode`, `entities` i `confidence` w jednym
+wywołaniu. `chooseExecution` wybiera wiedzę, `directTool` albo workflow
+`quote_vehicle` (Mastra `quote-vehicle`, suspend/resume, stan w pamięci
+procesu). Niska pewność: jedno `reclassify`, potem `out_of_scope` (zero
+shop-tooli). Brak profilu / błąd kwalifikatora → `out_of_scope`, nie
+`general_agent`. `allowedTransitions` zostaje strażnikiem grubej intencji.
+`MastraChatAgent` przy kluczu DeepSeek: qualify → fallback →
+`acceptIntentTransition` (stan sesji w `InMemoryIntentSessionState`) →
+**ten sam** `evaShopAgent` z instancji Mastry (`createEvaMastra`).
+Allowlista tooli tury pochodzi z sub-intencji, gdy jest rozpoznana.
+Wycena na profilu to jeden tool `quote-vehicle`; składanie kaskady i macierzy nie jest podłączone.
+Ślad `decision_trace` nie zawiera treści wiadomości. Retrieval liścia
+z miękkim bonusem gałęzi, gdy tura poda `relatedBranches`; puste bonusy
+zostawiają dotychczasową rurę. Per-intent: `RequestContext.intent`;
+instructions i mapa tooli z profilu albo z tury. System prompt: opublikowane
+prompt-blocks Editora (`{{intent}}` w display conditions); brak bloków →
+złożenie z `IntentProfile` plus notatka wykonania. SSE bez zmiany ramek.
+`stream(message, sessionId)`. Lead Bitrix zostaje w Neście. Bez klucza
 `verify` nadal `StubChatAgent`. Editor + LibSQL (lokalnie `.mastra/editor.db`;
 produkcja `MASTRA_STORAGE_URL=file:/data/mastra.db` na wolumenie hosta).
 Studio Observability: DuckDB (`observability.duckdb` obok LibSQL;
@@ -179,7 +187,8 @@ Studio na VPS: obraz `evabot-studio` (Caddy `:4111`, basic auth, proxy
 Stan intencji nie jest w Supabase.
 
 Szczegół kontraktu: `docs/design-docs/intent-workflow.md`.
-Plan: `docs/exec-plans/completed/intent-workflow.md`.
+Router wykonania: `docs/design-docs/agent-execution-router.md`.
+Plan: `docs/exec-plans/active/agent-execution-router.md`.
 
 ## Hosting
 
@@ -204,7 +213,8 @@ do sesji. Widoki używają nawigacji hash bez dodatkowego routera, w tym
 `#/graf`. Nie Mastra Studio
 (`/mastra`) i nie kolejka Bitrix. Nest emituje zdarzenia domenowe za portem `AGENT_EVENTS`
 (in-memory albo `eva_bot.agent_events`). Odczyt: `GET /v1/dashboard/summary`,
-`/sessions`, `/sessions/:id`, `/context-graph`, `/context-activity` za
+`/sessions`, `/sessions/:id`, `/context-graph`, `/context-activity`,
+`/container-log` za
 `DASHBOARD_TOKEN`; CORS tylko
 `DASHBOARD_ORIGIN`. `/context-graph` liczy w procesie pozycje MDS i krawędzie
 k-NN (k = 3) z indeksu embeddingów już załadowanego do pamięci. Do przeglądarki
@@ -212,6 +222,9 @@ idą slug, tytuł i współrzędne — nie wektor 1536 i nie `body`.
 `/context-activity?since=` zwraca wyłącznie `context_search`, `context_hit` i
 `context_miss` (od `since` albo z bieżącej doby UTC). Widok grafu odtwarza
 klatki sesji albo odpytuje tę trasę; nie jest to podgląd transkryptu na żywo.
+`/container-log` oddaje bufor stdout tego procesu oraz ślady `decision_trace`
+z eventów (sub-intencja, tryb, wykonanie, cel). Kursor `after` dotyczy linii
+bufora, `since` — śladów już oddanych. Bez treści wiadomości.
 Payload eventów bez treści wiadomości. KPI doby z
 eventów, nie z tekstu agenta. Zachowanie:
 `docs/product-specs/evapremium-agents-dashboard.md`.

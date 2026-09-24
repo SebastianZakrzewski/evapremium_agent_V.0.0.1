@@ -46,6 +46,13 @@ Konwersja sklepu (zamówienie, lift widget on/off) jest **poza** tą specyfikacj
    Odtwarzanie sesji zapala klatkę `context_search` / `context_hit` /
    `context_miss`. „Na żywo” odpytuje `GET /v1/dashboard/context-activity`
    co około 2 s i pokazuje najnowszą klatkę drzewa, bez transkryptu.
+   Pod mapą jest log kontenera: te same wpisy co stdout Nest
+   (`[intent-turn]` z wierszami było / kandydat / przyjęto / sub-intencja /
+   tryb / wykonanie / cel / narzędzia / zakres oraz `użyte narzędzie`).
+   Oś sesji pokazuje `decision_trace` tymi samymi polami.
+   `GET /v1/dashboard/container-log` czyta bufor procesu (ostatnie 200 linii)
+   i dokłada ślady `decision_trace` z eventów, żeby sub-intencja była widoczna
+   także po restarcie procesu. Bez treści wiadomości.
 
 ## Poza 0.0.1
 
