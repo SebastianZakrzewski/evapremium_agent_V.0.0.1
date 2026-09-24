@@ -209,20 +209,47 @@ function traceTarget(payload: Record<string, unknown>): string | undefined {
   return textOrNull(payload.tool) ?? textOrNull(payload.workflow) ?? undefined;
 }
 
+const CONTAINER_TURN_TYPES = new Set<AgentEvent['type']>([
+  'decision_trace',
+  'intent_accepted',
+]);
+
+function afterSince(occurredAt: string, since?: string): boolean {
+  const sinceMs = since === undefined ? Number.NaN : Date.parse(since);
+  if (Number.isNaN(sinceMs)) {
+    return true;
+  }
+  return Date.parse(occurredAt) > sinceMs;
+}
+
 export function decisionTraceEvents(
   events: AgentEvent[],
   since?: string,
 ): AgentEvent[] {
-  const sinceMs = since === undefined ? Number.NaN : Date.parse(since);
-  const hasSince = !Number.isNaN(sinceMs);
-  return timelineEvents(events).filter((event) => {
-    if (event.type !== 'decision_trace') {
-      return false;
-    }
-    if (!hasSince) {
+  return timelineEvents(events).filter(
+    (event) => event.type === 'decision_trace' && afterSince(event.occurredAt, since),
+  );
+}
+
+export function containerTurnEvents(
+  events: AgentEvent[],
+  since?: string,
+): AgentEvent[] {
+  const rows = timelineEvents(events).filter(
+    (event) =>
+      CONTAINER_TURN_TYPES.has(event.type) && afterSince(event.occurredAt, since),
+  );
+  const traces = rows.filter((event) => event.type === 'decision_trace');
+  return rows.filter((event) => {
+    if (event.type !== 'intent_accepted') {
       return true;
     }
-    return Date.parse(event.occurredAt) > sinceMs;
+    const at = Date.parse(event.occurredAt);
+    return !traces.some(
+      (trace) =>
+        trace.sessionId === event.sessionId &&
+        Math.abs(Date.parse(trace.occurredAt) - at) <= TRACE_MATCH_MS,
+    );
   });
 }
 

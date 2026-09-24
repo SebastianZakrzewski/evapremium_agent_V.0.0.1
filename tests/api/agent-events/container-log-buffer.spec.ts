@@ -37,6 +37,7 @@ describe('container log buffer', () => {
     expect(buffer.list(1)).toEqual([
       expect.objectContaining({ seq: 2, kind: 'tool', toolId: 'search-leaves' }),
     ]);
+    expect(buffer.list(99)).toEqual(lines);
   });
 
   it('records the console intent block and the used-tool line in the process buffer', async () => {

@@ -101,6 +101,9 @@ export function ContainerLog({ token }: { token: string }) {
         if (fresh.length > 0) {
           const memory = fresh.filter((line) => line.kind !== 'decision-trace');
           const traces = fresh.filter((line) => line.kind === 'decision-trace');
+          const cursor = after.current;
+          const restarted =
+            cursor !== undefined && memory.some((line) => line.seq <= cursor);
           const lastMemory = memory[memory.length - 1];
           if (lastMemory !== undefined) {
             after.current = lastMemory.seq;
@@ -110,15 +113,18 @@ export function ContainerLog({ token }: { token: string }) {
             since.current = lastTrace.occurredAt;
           }
           setLines((current) => {
+            const base = restarted
+              ? current.filter((line) => line.kind === 'decision-trace')
+              : current;
             const seen = new Set(
-              current
+              base
                 .filter((line) => line.kind === 'decision-trace')
                 .map((line) => line.id),
             );
             const novel = fresh.filter(
               (line) => line.kind !== 'decision-trace' || !seen.has(line.id),
             );
-            return [...current, ...novel];
+            return [...base, ...novel];
           });
         }
       } catch (reason: unknown) {

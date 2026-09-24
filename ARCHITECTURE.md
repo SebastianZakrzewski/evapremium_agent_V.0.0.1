@@ -222,9 +222,10 @@ idą slug, tytuł i współrzędne — nie wektor 1536 i nie `body`.
 `/context-activity?since=` zwraca wyłącznie `context_search`, `context_hit` i
 `context_miss` (od `since` albo z bieżącej doby UTC). Widok grafu odtwarza
 klatki sesji albo odpytuje tę trasę; nie jest to podgląd transkryptu na żywo.
-`/container-log` oddaje bufor stdout tego procesu oraz ślady `decision_trace`
-z eventów (sub-intencja, tryb, wykonanie, cel). Kursor `after` dotyczy linii
-bufora, `since` — śladów już oddanych. Bez treści wiadomości.
+`/container-log` oddaje bufor stdout tego procesu oraz tury z eventów: `decision_trace`,
+a gdy go nie ma — `intent_accepted`. Kursor `after` większy niż ostatnia linia
+bufora (restart procesu) zwraca bufor od nowa. `since` dotyczy tur już oddanych.
+Bez treści wiadomości.
 Payload eventów bez treści wiadomości. KPI doby z
 eventów, nie z tekstu agenta. Zachowanie:
 `docs/product-specs/evapremium-agents-dashboard.md`.

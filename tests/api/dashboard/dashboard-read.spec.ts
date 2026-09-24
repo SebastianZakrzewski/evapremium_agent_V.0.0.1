@@ -9,6 +9,7 @@ import {
   contextActivityEvents,
   contextActivityRange,
   decisionTraceEvents,
+  containerTurnEvents,
   listSessionMarkers,
   mergeContainerLog,
   sessionView,
@@ -305,5 +306,36 @@ describe('decision trace log', () => {
       subIntent: 'delivery_info',
     });
     expect(JSON.stringify(merged)).not.toContain('kolory dywanik');
+  });
+
+  it('shows intent_accepted when the process buffer and decision trace are empty', () => {
+    const merged = mergeContainerLog(
+      [],
+      containerTurnEvents([
+        {
+          id: 'accepted-colors',
+          sessionId: 'session-tree',
+          occurredAt: '2026-09-24T21:17:21.570Z',
+          type: 'intent_accepted',
+          payload: { intent: 'product_info' },
+        },
+        {
+          id: 'hit',
+          sessionId: 'session-tree',
+          occurredAt: '2026-09-24T21:17:24.441Z',
+          type: 'context_hit',
+          payload: { slug: 'kolory' },
+        },
+      ]),
+    );
+
+    expect(merged).toEqual([
+      expect.objectContaining({
+        kind: 'decision-trace',
+        id: 'accepted-colors',
+        acceptedIntent: 'product_info',
+        subIntent: null,
+      }),
+    ]);
   });
 });

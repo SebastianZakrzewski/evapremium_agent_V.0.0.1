@@ -20,6 +20,7 @@ dashboardu, KPI i znaczniki z eventów Nest, nie z tekstu agenta.
 | dash-api-010 | medium | Zakres `since` albo doba UTC |
 | dash-api-011 | high | Ślad decyzji do logu, bez innych typów |
 | dash-api-012 | high | Sub-intencja ze śladu uzupełnia pustą linię bufora |
+| dash-api-013 | high | Zapisana intencja wypełnia pusty log procesu |
 
 ### dash-api-001 — Brak Bearer i token Studio → 401
 
@@ -116,3 +117,11 @@ dashboardu, KPI i znaczniki z eventów Nest, nie z tekstu agenta.
 - **Logika:** pusta sub-intencja w buforze procesu bierze `sub_intent`, tryb i wykonanie z bliskiego `decision_trace`. Ślad bez linii bufora zostaje osobnym wpisem. Treść pytania nie wchodzi do JSON.
 - **Wejście:** linia `intent-turn` z `subIntent: null` oraz ślady `available_colors` (ta sama sesja) i `delivery_info` (inna sesja)
 - **Wyjście:** pierwsza linia ma `available_colors` / `knowledge`; druga to `decision-trace` z `delivery_info`
+
+### dash-api-013 — Zapisana intencja wypełnia pusty log procesu
+
+- **Kod:** `tests/api/dashboard/dashboard-read.spec.ts` → `it('shows intent_accepted when the process buffer and decision trace are empty')`
+- **Krytyczność:** high
+- **Logika:** po restarcie procesu bufor jest pusty. Log bierze `intent_accepted` z eventów doby. `context_hit` nie tworzy linii tury.
+- **Wejście:** pusty bufor, `intent_accepted` `product_info` i `context_hit` `kolory`
+- **Wyjście:** jedna linia z przyjętą intencją `product_info` i pustą sub-intencją

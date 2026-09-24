@@ -50,9 +50,9 @@ Konwersja sklepu (zamówienie, lift widget on/off) jest **poza** tą specyfikacj
    (`[intent-turn]` z wierszami było / kandydat / przyjęto / sub-intencja /
    tryb / wykonanie / cel / narzędzia / zakres oraz `użyte narzędzie`).
    Oś sesji pokazuje `decision_trace` tymi samymi polami.
-   `GET /v1/dashboard/container-log` czyta bufor procesu (ostatnie 200 linii)
-   i dokłada ślady `decision_trace` z eventów, żeby sub-intencja była widoczna
-   także po restarcie procesu. Bez treści wiadomości.
+   `GET /v1/dashboard/container-log` czyta bufor procesu (ostatnie 200 linii).
+   Gdy bufor jest pusty albo proces wystartował od nowa, dokłada tury z eventów:
+   `decision_trace`, a przy jego braku `intent_accepted`. Bez treści wiadomości.
 
 ## Poza 0.0.1
 

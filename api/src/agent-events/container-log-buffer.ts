@@ -66,6 +66,10 @@ export class ContainerLogBuffer {
     if (after === undefined || !Number.isInteger(after)) {
       return [...this.lines];
     }
+    const max = this.lines.at(-1)?.seq ?? 0;
+    if (after > max) {
+      return [...this.lines];
+    }
     return this.lines.filter((line) => line.seq > after);
   }
 

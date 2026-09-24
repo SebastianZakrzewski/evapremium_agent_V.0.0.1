@@ -13,7 +13,7 @@ import { ContextTreeService } from '../context-tree/context-tree.service';
 import {
   contextActivityEvents,
   contextActivityRange,
-  decisionTraceEvents,
+  containerTurnEvents,
   listSessionMarkers,
   mergeContainerLog,
   sessionView,
@@ -72,6 +72,6 @@ export class DashboardQueryService {
     const memory = containerLogs.list(Number.isInteger(parsed) ? parsed : undefined);
     const range = contextActivityRange(since, now);
     const events = await this.events.listInRange(range.fromIso, range.toIso);
-    return mergeContainerLog(memory, decisionTraceEvents(events, since));
+    return mergeContainerLog(memory, containerTurnEvents(events, since));
   }
 }

@@ -81,7 +81,7 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 - **Krytyczność:** medium
 - **Logika:** panel pod grafem czyta ten sam ślad co stdout: blok tury (w tym sub-intencja, tryb, wykonanie, cel) i id toola. Treść wiadomości klienta do bufora nie wchodzi.
 - **Wejście:** tura `session-1` product_info → delivery z toolami `search-leaves`, `lookup-leaf`; potem `executeShopTool` `quote-price`
-- **Wyjście:** kolejność `intent-turn`, `tool`; `list(1)` zwraca tylko drugą linię; JSON bez treści pytania
+- **Wyjście:** kolejność `intent-turn`, `tool`; `list(1)` zwraca tylko drugą linię; `list(99)` po restarcie (kursor większy niż ostatni seq) zwraca cały bufor; JSON bez treści pytania
 
 
 
