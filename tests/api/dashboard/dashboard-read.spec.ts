@@ -12,6 +12,7 @@ import {
   containerTurnEvents,
   listSessionMarkers,
   mergeContainerLog,
+  pageContainerLog,
   sessionView,
   summarizeDay,
   timelineEvents,
@@ -335,6 +336,32 @@ describe('decision trace log', () => {
         id: 'accepted-colors',
         acceptedIntent: 'product_info',
         subIntent: null,
+      }),
+    ]);
+  });
+
+  it('does not repeat a trace already paired with a buffer line outside the page', () => {
+    const buffered = [
+      {
+        seq: 1,
+        occurredAt: '2026-09-24T00:50:00.000Z',
+        kind: 'intent-turn' as const,
+        sessionId: 'session-tree',
+        acceptedIntent: 'product_info',
+        subIntent: 'available_colors',
+        mode: 'knowledge',
+        execution: 'knowledge',
+        tools: ['search-leaves'],
+        forcedOutOfScope: false,
+      },
+    ];
+
+    expect(pageContainerLog(buffered, [], [colors])).toEqual([]);
+    expect(pageContainerLog(buffered, buffered, [colors])).toEqual([
+      expect.objectContaining({
+        seq: 1,
+        kind: 'intent-turn',
+        traceAt: '2026-09-24T00:50:00.400Z',
       }),
     ]);
   });

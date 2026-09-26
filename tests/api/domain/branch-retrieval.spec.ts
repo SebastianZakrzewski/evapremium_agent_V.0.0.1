@@ -1,5 +1,6 @@
 import {
   applySoftBoost,
+  explainLeafRetrieval,
   hierarchicalSearchLeaves,
   rankBranches,
 } from '@api/domain/branch-retrieval';
@@ -100,6 +101,20 @@ describe('branch retrieval', () => {
     );
     const leafScores = evaluateRanking(leaves, ['kolory-oferta'], 3);
     expect(leafScores.hitAt1).toBe(true);
+
+    const explained = explainLeafRetrieval(
+      query,
+      queryVector,
+      index,
+      nodes,
+      ['kolory'],
+    );
+    expect(explained.hits.map((row) => row.slug)).toEqual(
+      leaves.map((row) => row.slug),
+    );
+    expect(explained.trace.preferredBranches).toEqual(['kolory']);
+    expect(explained.trace.rankedBranches[0]).toBe('kolory');
+    expect(explained.trace.leaves[0]?.slug).toBe('kolory-oferta');
 
     const plain = hybridSearchLeaves(query, queryVector, index, nodes);
     expect(

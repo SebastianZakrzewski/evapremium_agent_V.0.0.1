@@ -24,4 +24,4 @@ i liść kolorów. Puste `relatedBranches` nie zmienia rury liścia.
 - **Krytyczność:** high
 - **Logika:** Wektor + BM25 + RRF stawia `kolory` na #1, liść `kolory-oferta` też. Pusta lista bonusów zwraca ten sam ranking co `hybridSearchLeaves`.
 - **Wejście:** query `jakie kolory`, wektor `[1, 0]`, gałęzie `kolory` i `material`
-- **Wyjście:** hit@1 gałęzi i liścia; `material` nadal w rankingu gałęzi
+- **Wyjście:** hit@1 gałęzi i liścia; `material` nadal w rankingu gałęzi; ślad `explainLeafRetrieval` ma preferencję `kolory`, ranking gałęzi od `kolory` i liść `kolory-oferta` na #1, a kolejność hitów jest taka sama jak `hierarchicalSearchLeaves`

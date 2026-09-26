@@ -80,6 +80,7 @@ export interface ContainerIntentLog {
   executionTarget?: string;
   tools: string[];
   forcedOutOfScope: boolean;
+  traceAt?: string;
 }
 
 export interface ContainerToolLog {
@@ -87,6 +88,26 @@ export interface ContainerToolLog {
   occurredAt: string;
   kind: 'tool';
   toolId: string;
+}
+
+export interface ContainerTreeSearchLog {
+  seq: number;
+  occurredAt: string;
+  kind: 'tree-search';
+  sessionId?: string;
+  preferredBranches: string[];
+  rankedBranches: string[];
+  leaves: Array<{ slug: string; confidence: string }>;
+}
+
+export interface ContainerTreeLookupLog {
+  seq: number;
+  occurredAt: string;
+  kind: 'tree-lookup';
+  sessionId?: string;
+  slug: string;
+  outcome: 'hit' | 'miss';
+  agreement: 'top' | 'listed' | 'outside' | 'none';
 }
 
 export interface DecisionTraceLog {
@@ -105,7 +126,12 @@ export interface DecisionTraceLog {
   forcedOutOfScope: boolean;
 }
 
-export type ContainerLogLine = ContainerIntentLog | ContainerToolLog | DecisionTraceLog;
+export type ContainerLogLine =
+  | ContainerIntentLog
+  | ContainerToolLog
+  | ContainerTreeSearchLog
+  | ContainerTreeLookupLog
+  | DecisionTraceLog;
 
 function apiUrl(path: string): string {
   const baseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');

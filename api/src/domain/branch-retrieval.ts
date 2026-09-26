@@ -1,6 +1,7 @@
 import type { ContextNode } from './context-tree';
 import { cosineSimilarity, type ContextLeafVector } from './context-leaf-search';
 import { retrievalTextForSearch } from './context-leaf-ingest';
+import type { LeafSearchConfidence } from './context-leaf-search';
 import {
   RRF_K,
   fuseRrf,
@@ -83,24 +84,53 @@ export function branchRecords(
   return records;
 }
 
-export function hierarchicalSearchLeaves(
+export type LeafRetrievalTrace = {
+  preferredBranches: string[];
+  rankedBranches: string[];
+  leaves: Array<{ slug: string; confidence: LeafSearchConfidence }>;
+};
+
+const BRANCH_RANK_LIMIT = 3;
+
+export function explainLeafRetrieval(
   query: string,
   queryVector: number[],
   index: ContextLeafVector[],
   nodes: ContextNode[],
   relatedBranches: readonly string[],
-): HybridLeafSearchHit[] {
+): { hits: HybridLeafSearchHit[]; trace: LeafRetrievalTrace } {
   const hits = hybridSearchLeaves(query, queryVector, index, nodes);
-  if (relatedBranches.length === 0 || hits.length === 0) {
-    return hits;
+  const preferredBranches = [...relatedBranches];
+  if (relatedBranches.length === 0) {
+    return {
+      hits,
+      trace: {
+        preferredBranches,
+        rankedBranches: [],
+        leaves: hits.map((hit) => ({
+          slug: hit.slug,
+          confidence: hit.confidence,
+        })),
+      },
+    };
   }
+
   const rankedBranches = rankBranches(
     query,
     queryVector,
     branchRecords(nodes, index),
     relatedBranches,
-  );
-  const topBranches = new Set(rankedBranches.slice(0, 3).map((row) => row.slug));
+  )
+    .slice(0, BRANCH_RANK_LIMIT)
+    .map((row) => row.slug);
+  if (hits.length === 0) {
+    return {
+      hits,
+      trace: { preferredBranches, rankedBranches, leaves: [] },
+    };
+  }
+
+  const topBranches = new Set(rankedBranches);
   const idToSlug = new Map(nodes.map((node) => [node.id, node.slug]));
   const boosted = hits.map((hit) => {
     const node = nodes.find((candidate) => candidate.slug === hit.slug);
@@ -115,5 +145,31 @@ export function hierarchicalSearchLeaves(
     return { ...hit, score: hit.score + bonus };
   });
   boosted.sort((a, b) => b.score - a.score);
-  return boosted;
+  return {
+    hits: boosted,
+    trace: {
+      preferredBranches,
+      rankedBranches,
+      leaves: boosted.map((hit) => ({
+        slug: hit.slug,
+        confidence: hit.confidence,
+      })),
+    },
+  };
+}
+
+export function hierarchicalSearchLeaves(
+  query: string,
+  queryVector: number[],
+  index: ContextLeafVector[],
+  nodes: ContextNode[],
+  relatedBranches: readonly string[],
+): HybridLeafSearchHit[] {
+  return explainLeafRetrieval(
+    query,
+    queryVector,
+    index,
+    nodes,
+    relatedBranches,
+  ).hits;
 }

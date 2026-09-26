@@ -1,4 +1,10 @@
 import type { IntentTurnLog } from '../mastra/intents/intent-turn-log';
+import type {
+  TreeLookupAgreement,
+  TreeLookupLog,
+  TreeLookupOutcome,
+  TreeSearchLog,
+} from './tree-turn-log';
 
 const MAX_LINES = 200;
 
@@ -25,7 +31,31 @@ export type ContainerToolLog = {
   toolId: string;
 };
 
-export type ContainerLogLine = ContainerIntentLog | ContainerToolLog;
+export type ContainerTreeSearchLog = {
+  seq: number;
+  occurredAt: string;
+  kind: 'tree-search';
+  sessionId?: string;
+  preferredBranches: string[];
+  rankedBranches: string[];
+  leaves: Array<{ slug: string; confidence: string }>;
+};
+
+export type ContainerTreeLookupLog = {
+  seq: number;
+  occurredAt: string;
+  kind: 'tree-lookup';
+  sessionId?: string;
+  slug: string;
+  outcome: TreeLookupOutcome;
+  agreement: TreeLookupAgreement;
+};
+
+export type ContainerLogLine =
+  | ContainerIntentLog
+  | ContainerToolLog
+  | ContainerTreeSearchLog
+  | ContainerTreeLookupLog;
 
 export class ContainerLogBuffer {
   private seq = 0;
@@ -46,6 +76,43 @@ export class ContainerLogBuffer {
       executionTarget: entry.executionTarget,
       tools: [...entry.tools],
       forcedOutOfScope: entry.forcedOutOfScope,
+    };
+    this.push(line);
+    return line;
+  }
+
+  appendTreeSearch(
+    entry: TreeSearchLog,
+    now: Date = new Date(),
+  ): ContainerTreeSearchLog {
+    const line: ContainerTreeSearchLog = {
+      seq: this.nextSeq(),
+      occurredAt: now.toISOString(),
+      kind: 'tree-search',
+      sessionId: entry.sessionId,
+      preferredBranches: [...entry.preferredBranches],
+      rankedBranches: [...entry.rankedBranches],
+      leaves: entry.leaves.map((leaf) => ({
+        slug: leaf.slug,
+        confidence: leaf.confidence,
+      })),
+    };
+    this.push(line);
+    return line;
+  }
+
+  appendTreeLookup(
+    entry: TreeLookupLog,
+    now: Date = new Date(),
+  ): ContainerTreeLookupLog {
+    const line: ContainerTreeLookupLog = {
+      seq: this.nextSeq(),
+      occurredAt: now.toISOString(),
+      kind: 'tree-lookup',
+      sessionId: entry.sessionId,
+      slug: entry.slug,
+      outcome: entry.outcome,
+      agreement: entry.agreement,
     };
     this.push(line);
     return line;

@@ -48,11 +48,17 @@ Konwersja sklepu (zamówienie, lift widget on/off) jest **poza** tą specyfikacj
    co około 2 s i pokazuje najnowszą klatkę drzewa, bez transkryptu.
    Pod mapą jest log kontenera: te same wpisy co stdout Nest
    (`[intent-turn]` z wierszami było / kandydat / przyjęto / sub-intencja /
-   tryb / wykonanie / cel / narzędzia / zakres oraz `użyte narzędzie`).
+   tryb / wykonanie / cel / narzędzia / zakres, `[drzewo]` z doboru gałęzi
+   i liści oraz `użyte narzędzie`).
+   `[drzewo]` po `search-leaves`: gałęzie preferowane z sub-intencji, ranking
+   gałęzi (top 3), kolejność liści i pewność (`wysoka` / `niejednoznaczna`).
+   `[drzewo]` po `lookup-leaf`: slug, trafienie albo pudło, zgodność z tym
+   rankingiem (`#1`, `w rankingu`, `poza rankingiem`). Bez pytania i bez `body`.
    Oś sesji pokazuje `decision_trace` tymi samymi polami.
    `GET /v1/dashboard/container-log` czyta bufor procesu (ostatnie 200 linii).
    Gdy bufor jest pusty albo proces wystartował od nowa, dokłada tury z eventów:
-   `decision_trace`, a przy jego braku `intent_accepted`. Bez treści wiadomości.
+   `decision_trace`, a przy jego braku `intent_accepted`. Ślad już wpięty w linię
+   bufora nie pojawia się drugi raz przy kolejnym odpytaniu. Bez treści wiadomości.
 
 ## Poza 0.0.1
 

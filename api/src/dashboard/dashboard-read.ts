@@ -298,7 +298,7 @@ export function decisionTraceLogLine(event: AgentEvent): DecisionTraceLogLine {
 export function mergeContainerLog<T extends MemoryLogLine>(
   memory: T[],
   traces: AgentEvent[],
-): Array<T | DecisionTraceLogLine> {
+): Array<(T & { traceAt?: string }) | DecisionTraceLogLine> {
   const used = new Set<string>();
   const lines = memory.map((line) => {
     const match = nearestTrace(line, traces, used);
@@ -306,12 +306,14 @@ export function mergeContainerLog<T extends MemoryLogLine>(
       return line;
     }
     used.add(match.id);
+    const traceAt = match.occurredAt;
     if (line.subIntent) {
-      return line;
+      return { ...line, traceAt };
     }
     const filled = decisionTraceLogLine(match);
     return {
       ...line,
+      traceAt,
       subIntent: filled.subIntent,
       mode: line.mode ?? filled.mode,
       execution:
@@ -325,6 +327,16 @@ export function mergeContainerLog<T extends MemoryLogLine>(
     .filter((trace) => !used.has(trace.id))
     .map((trace) => decisionTraceLogLine(trace));
   return [...lines, ...extra];
+}
+
+export function pageContainerLog<T extends MemoryLogLine>(
+  buffered: T[],
+  page: T[],
+  traces: AgentEvent[],
+): Array<(T & { traceAt?: string }) | DecisionTraceLogLine> {
+  const merged = mergeContainerLog(buffered, traces);
+  const pageSeqs = new Set(page.map((line) => line.seq));
+  return merged.filter((line) => !('seq' in line) || pageSeqs.has(line.seq));
 }
 
 export function contextActivityEvents(

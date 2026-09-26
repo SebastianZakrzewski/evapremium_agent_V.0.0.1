@@ -52,8 +52,9 @@ później env projektu Vercel dashboardu) — nie snippet sklepu i nie
 `GET /v1/dashboard/context-graph` zwraca slug, tytuł i pozycję 2D, nie wektor
 embeddingu i nie `body` liścia. `context-activity` zwraca tylko zdarzenia
 drzewa (`context_search`, `context_hit`, `context_miss`), bez transkryptu.
-`container-log` zwraca blok `[intent-turn]` i id użytego narzędzia, bez treści
-wiadomości.
+`container-log` zwraca blok `[intent-turn]`, blok `[drzewo]` (slugi gałęzi
+i liści, pewność, trafienie lookupu) i id użytego narzędzia, bez treści
+wiadomości i bez `body` liścia.
 
 ## Dane
 

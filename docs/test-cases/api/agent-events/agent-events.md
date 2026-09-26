@@ -17,6 +17,7 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 | events-006 | medium | tool_failed bez kopii czatu |
 | events-009 | medium | Konsola: użyte narzędzie z id toola |
 | events-010 | medium | Bufor logu kontenera: tura i narzędzie, bez treści czatu |
+| events-012 | high | Lustro drzewa: ranking i zgodność lookupu, bez pytania |
 | events-007 | high | Stub czatu emituje wycenę w sesji |
 | events-008 | high | context_search bez body FAQ |
 
@@ -91,6 +92,14 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 - **Logika:** panel pod grafem czyta ten sam ślad co stdout: blok tury (w tym sub-intencja, tryb, wykonanie, cel) i id toola. Treść wiadomości klienta do bufora nie wchodzi.
 - **Wejście:** tura `session-1` product_info → delivery z toolami `search-leaves`, `lookup-leaf`; potem `executeShopTool` `quote-price`
 - **Wyjście:** kolejność `intent-turn`, `tool`; `list(1)` zwraca tylko drugą linię; `list(99)` po restarcie (kursor większy niż ostatni seq) zwraca cały bufor; JSON bez treści pytania
+
+### events-012 — Lustro drzewa: ranking i zgodność lookupu, bez pytania
+
+- **Kod:** `tests/api/agent-events/tree-turn-log.spec.ts` → `it('prints branch rank and leaf lookup without the question or leaf body')`, `it('mirrors search and lookup in the process buffer')`
+- **Krytyczność:** high
+- **Logika:** operator widzi w buforze kontenera, które gałęzie i liście wybrała rura oraz czy `lookup-leaf` trafił w ten ranking. Pytanie i `body` do logu nie wchodzą.
+- **Wejście:** format bez koloru (`kolory` / `material-eva`, pudło, `w rankingu`); `searchLeaves` „kiedy wyślecie dywaniki” z preferencją `info`, potem lookup `dostawa` i `pielegnacja`
+- **Wyjście:** blok `[drzewo]` z gałęziami, rankingiem, liśćmi i pewnością `wysoka`; w buforze `tree-search` (`info`, liść `dostawa`) oraz lookup `hit`/`#1` i `miss`/`poza rankingiem`; JSON bez pytania i bez „Wysyłka w 5–7 dni”
 
 
 

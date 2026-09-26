@@ -21,6 +21,7 @@ dashboardu, KPI i znaczniki z eventów Nest, nie z tekstu agenta.
 | dash-api-011 | high | Ślad decyzji do logu, bez innych typów |
 | dash-api-012 | high | Sub-intencja ze śladu uzupełnia pustą linię bufora |
 | dash-api-013 | high | Zapisana intencja wypełnia pusty log procesu |
+| dash-api-014 | high | Ślad wpięty w linię bufora nie wraca na kolejnej stronie |
 
 ### dash-api-001 — Brak Bearer i token Studio → 401
 
@@ -125,3 +126,11 @@ dashboardu, KPI i znaczniki z eventów Nest, nie z tekstu agenta.
 - **Logika:** po restarcie procesu bufor jest pusty. Log bierze `intent_accepted` z eventów doby. `context_hit` nie tworzy linii tury.
 - **Wejście:** pusty bufor, `intent_accepted` `product_info` i `context_hit` `kolory`
 - **Wyjście:** jedna linia z przyjętą intencją `product_info` i pustą sub-intencją
+
+### dash-api-014 — Ślad wpięty w linię bufora nie wraca na kolejnej stronie
+
+- **Kod:** `tests/api/dashboard/dashboard-read.spec.ts` → `it('does not repeat a trace already paired with a buffer line outside the page')`
+- **Krytyczność:** high
+- **Logika:** odpytanie z `after` nie zawiera już linii bufora, ale ślad tej tury nadal jest w eventach. Składanie patrzy na cały bufor i nie dokleja tego śladu drugi raz. Pełna strona zostawia jedną linię z `traceAt`.
+- **Wejście:** linia `seq: 1` z `available_colors` oraz ślad `trace-colors` o 400 ms później; raz pusta strona, raz ta sama linia jako strona
+- **Wyjście:** pusta strona zwraca `[]`; pełna strona zwraca jedną linię `intent-turn` z `traceAt` równym czasowi śladu

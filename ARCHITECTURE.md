@@ -223,8 +223,11 @@ idą slug, tytuł i współrzędne — nie wektor 1536 i nie `body`.
 `/context-activity?since=` zwraca wyłącznie `context_search`, `context_hit` i
 `context_miss` (od `since` albo z bieżącej doby UTC). Widok grafu odtwarza
 klatki sesji albo odpytuje tę trasę; nie jest to podgląd transkryptu na żywo.
-`/container-log` oddaje bufor stdout tego procesu oraz tury z eventów: `decision_trace`,
-a gdy go nie ma — `intent_accepted`. Kursor `after` większy niż ostatnia linia
+`/container-log` oddaje bufor stdout tego procesu (w tym `[drzewo]`: ranking
+gałęzi i liści oraz zgodność `lookup-leaf` z tym rankingiem, bez pytania
+i bez `body`) oraz tury z eventów: `decision_trace`,
+a gdy go nie ma — `intent_accepted`. Ślad dopasowany do linii już trzymanej w buforze
+nie wraca przy kolejnym `after`. Kursor `after` większy niż ostatnia linia
 bufora (restart procesu) zwraca bufor od nowa. `since` dotyczy tur już oddanych.
 Bez treści wiadomości.
 Payload eventów bez treści wiadomości. KPI doby z

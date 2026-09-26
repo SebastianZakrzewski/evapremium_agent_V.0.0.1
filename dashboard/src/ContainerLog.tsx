@@ -3,13 +3,124 @@ import {
   fetchContainerLog,
   type ContainerIntentLog,
   type ContainerLogLine,
+  type ContainerTreeLookupLog,
+  type ContainerTreeSearchLog,
   type DecisionTraceLog,
 } from './dashboard-api';
 
 const LOG_POLL_MS = 2000;
+const TRACE_MATCH_MS = 15_000;
+
+function later(current: string | undefined, next: string | undefined): string | undefined {
+  if (next === undefined) {
+    return current;
+  }
+  if (current === undefined || next > current) {
+    return next;
+  }
+  return current;
+}
+
+function duplicatesShownIntent(
+  trace: DecisionTraceLog,
+  shown: ContainerLogLine[],
+): boolean {
+  const at = Date.parse(trace.occurredAt);
+  return shown.some((line) => {
+    if (line.kind !== 'intent-turn' || line.sessionId !== trace.sessionId) {
+      return false;
+    }
+    return Math.abs(Date.parse(line.occurredAt) - at) <= TRACE_MATCH_MS;
+  });
+}
 
 function dash(value: string | undefined): string {
   return value && value.length > 0 ? value : '—';
+}
+
+function slugList(slugs: readonly string[]): string {
+  return slugs.length > 0 ? slugs.join(', ') : '—';
+}
+
+function confidenceLabel(value: string | undefined): string {
+  if (value === 'high') {
+    return 'wysoka';
+  }
+  if (value === 'ambiguous') {
+    return 'niejednoznaczna';
+  }
+  return '—';
+}
+
+function agreementLabel(value: ContainerTreeLookupLog['agreement']): string {
+  if (value === 'top') {
+    return '#1';
+  }
+  if (value === 'listed') {
+    return 'w rankingu';
+  }
+  if (value === 'outside') {
+    return 'poza rankingiem';
+  }
+  return '—';
+}
+
+function TreeSearchBlock({ line }: { line: ContainerTreeSearchLog }) {
+  const confidence = line.leaves[0]?.confidence;
+  const confidenceClass =
+    confidence === 'high'
+      ? 'log-green'
+      : confidence === 'ambiguous'
+        ? 'log-yellow'
+        : 'log-dim';
+  return (
+    <pre className="container-log-turn">
+      <span className="log-tag">[drzewo]</span>{' '}
+      <span className="log-dim">sesja</span> {dash(line.sessionId)}
+      {'\n'}
+      <span className="log-label">gałęzie</span>
+      <span className="log-magenta">{slugList(line.preferredBranches)}</span>
+      {'\n'}
+      <span className="log-label">ranking</span>
+      <span className="log-magenta">{slugList(line.rankedBranches)}</span>
+      {'\n'}
+      <span className="log-label">liście</span>
+      <span className="log-blue">
+        {slugList(line.leaves.map((leaf) => leaf.slug))}
+      </span>
+      {'\n'}
+      <span className="log-label">pewność</span>
+      <span className={confidenceClass}>{confidenceLabel(confidence)}</span>
+    </pre>
+  );
+}
+
+function TreeLookupBlock({ line }: { line: ContainerTreeLookupLog }) {
+  const agreementClass =
+    line.agreement === 'top'
+      ? 'log-green'
+      : line.agreement === 'listed'
+        ? 'log-yellow'
+        : line.agreement === 'outside'
+          ? 'log-red'
+          : 'log-dim';
+  return (
+    <pre className="container-log-turn">
+      <span className="log-tag">[drzewo]</span>{' '}
+      <span className="log-dim">sesja</span> {dash(line.sessionId)}
+      {'\n'}
+      <span className="log-label">liść</span>
+      <span className="log-blue">{line.slug}</span>
+      {'\n'}
+      <span className="log-label">wynik</span>
+      <span className={line.outcome === 'hit' ? 'log-green' : 'log-red'}>
+        {line.outcome === 'hit' ? 'trafienie' : 'pudło'}
+      </span>
+      {'\n'}
+      <span className="log-label">zgodność</span>
+      <span className={agreementClass}>{agreementLabel(line.agreement)}</span>
+    </pre>
+  );
 }
 
 function IntentTurnBlock({
@@ -100,17 +211,12 @@ export function ContainerLog({ token }: { token: string }) {
         setError(null);
         if (fresh.length > 0) {
           const memory = fresh.filter((line) => line.kind !== 'decision-trace');
-          const traces = fresh.filter((line) => line.kind === 'decision-trace');
           const cursor = after.current;
           const restarted =
             cursor !== undefined && memory.some((line) => line.seq <= cursor);
           const lastMemory = memory[memory.length - 1];
           if (lastMemory !== undefined) {
             after.current = lastMemory.seq;
-          }
-          const lastTrace = traces[traces.length - 1];
-          if (lastTrace !== undefined) {
-            since.current = lastTrace.occurredAt;
           }
           setLines((current) => {
             const base = restarted
@@ -121,9 +227,23 @@ export function ContainerLog({ token }: { token: string }) {
                 .filter((line) => line.kind === 'decision-trace')
                 .map((line) => line.id),
             );
-            const novel = fresh.filter(
-              (line) => line.kind !== 'decision-trace' || !seen.has(line.id),
-            );
+            const novel: ContainerLogLine[] = [];
+            let until = since.current;
+            for (const line of fresh) {
+              if (line.kind === 'decision-trace') {
+                until = later(until, line.occurredAt);
+                if (seen.has(line.id) || duplicatesShownIntent(line, base)) {
+                  continue;
+                }
+                novel.push(line);
+                continue;
+              }
+              if (line.kind === 'intent-turn') {
+                until = later(until, line.traceAt);
+              }
+              novel.push(line);
+            }
+            since.current = until;
             return [...base, ...novel];
           });
         }
@@ -157,18 +277,27 @@ export function ContainerLog({ token }: { token: string }) {
         {lines.length === 0 && error === null && (
           <p className="container-log-empty">Brak linii w tym procesie.</p>
         )}
-        {lines.map((line) =>
-          line.kind === 'tool' ? (
-            <p className="container-log-tool" key={line.seq}>
-              użyte narzędzie: &quot;{line.toolId}&quot;
-            </p>
-          ) : (
+        {lines.map((line) => {
+          if (line.kind === 'tool') {
+            return (
+              <p className="container-log-tool" key={line.seq}>
+                użyte narzędzie: &quot;{line.toolId}&quot;
+              </p>
+            );
+          }
+          if (line.kind === 'tree-search') {
+            return <TreeSearchBlock key={line.seq} line={line} />;
+          }
+          if (line.kind === 'tree-lookup') {
+            return <TreeLookupBlock key={line.seq} line={line} />;
+          }
+          return (
             <IntentTurnBlock
               key={line.kind === 'decision-trace' ? line.id : line.seq}
               line={line}
             />
-          ),
-        )}
+          );
+        })}
       </div>
       {error && <p className="container-log-error">{error}</p>}
     </section>

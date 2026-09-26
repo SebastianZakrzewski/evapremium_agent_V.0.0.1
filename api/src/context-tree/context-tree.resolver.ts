@@ -6,8 +6,10 @@ import {
   buildContextSimilarityGraph,
   type ContextSimilarityGraph,
 } from '../domain/context-similarity-graph';
-import { hybridSearchLeaves } from '../domain/leaf-retrieval-rank';
-import { hierarchicalSearchLeaves } from '../domain/branch-retrieval';
+import {
+  explainLeafRetrieval,
+  type LeafRetrievalTrace,
+} from '../domain/branch-retrieval';
 import type { ContextLeafSearchHit } from '../domain/context-leaf-search';
 import type {
   ContextLeafVectorIndex,
@@ -34,16 +36,26 @@ export class ContextTreeResolver {
     query: string,
     relatedBranches: readonly string[] = [],
   ): Promise<ContextLeafSearchHit[]> {
+    return (await this.explainSearch(query, relatedBranches)).hits;
+  }
+
+  async explainSearch(
+    query: string,
+    relatedBranches: readonly string[] = [],
+  ): Promise<{ hits: ContextLeafSearchHit[]; trace: LeafRetrievalTrace }> {
+    const preferredBranches = [...relatedBranches];
+    const empty: LeafRetrievalTrace = {
+      preferredBranches,
+      rankedBranches: [],
+      leaves: [],
+    };
     const queryVector = await this.embedder.embed(query);
     if (queryVector === null) {
-      return [];
+      return { hits: [], trace: empty };
     }
     const index = await this.vectors.list();
     const nodes = this.nodes.list();
-    if (relatedBranches.length === 0) {
-      return hybridSearchLeaves(query, queryVector, index, nodes);
-    }
-    return hierarchicalSearchLeaves(
+    return explainLeafRetrieval(
       query,
       queryVector,
       index,

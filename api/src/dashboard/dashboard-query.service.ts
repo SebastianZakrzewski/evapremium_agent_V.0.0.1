@@ -15,7 +15,7 @@ import {
   contextActivityRange,
   containerTurnEvents,
   listSessionMarkers,
-  mergeContainerLog,
+  pageContainerLog,
   sessionView,
   summarizeDay,
   utcDayRange,
@@ -69,9 +69,11 @@ export class DashboardQueryService {
 
   async containerLog(after?: string, since?: string, now: Date = new Date()) {
     const parsed = after === undefined ? Number.NaN : Number(after);
-    const memory = containerLogs.list(Number.isInteger(parsed) ? parsed : undefined);
+    const afterSeq = Number.isInteger(parsed) ? parsed : undefined;
+    const page = containerLogs.list(afterSeq);
+    const buffered = afterSeq === undefined ? page : containerLogs.list();
     const range = contextActivityRange(since, now);
     const events = await this.events.listInRange(range.fromIso, range.toIso);
-    return mergeContainerLog(memory, containerTurnEvents(events, since));
+    return pageContainerLog(buffered, page, containerTurnEvents(events, since));
   }
 }

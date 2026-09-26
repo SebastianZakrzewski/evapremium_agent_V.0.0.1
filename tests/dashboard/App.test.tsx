@@ -296,6 +296,27 @@ describe('dashboard context graph', () => {
             kind: 'tool',
             toolId: 'search-leaves',
           },
+          {
+            seq: 3,
+            occurredAt: '2026-09-24T00:50:01.100Z',
+            kind: 'tree-search',
+            sessionId: 'session-tree',
+            preferredBranches: ['kolory'],
+            rankedBranches: ['kolory', 'material'],
+            leaves: [
+              { slug: 'kolory', confidence: 'high' },
+              { slug: 'material-eva', confidence: 'high' },
+            ],
+          },
+          {
+            seq: 4,
+            occurredAt: '2026-09-24T00:50:01.200Z',
+            kind: 'tree-lookup',
+            sessionId: 'session-tree',
+            slug: 'material-eva',
+            outcome: 'hit',
+            agreement: 'listed',
+          },
         ]);
       }
       if (url.includes('/v1/dashboard/sessions?')) {
@@ -347,6 +368,14 @@ describe('dashboard context graph', () => {
       /sub-intencja\s*available_colors/,
     );
     expect(screen.getByText(/użyte narzędzie: "search-leaves"/)).toBeInTheDocument();
+    const log = screen.getByRole('region', { name: 'Log kontenera' });
+    expect(log).toHaveTextContent(/gałęzie\s*kolory/);
+    expect(log).toHaveTextContent(/ranking\s*kolory, material/);
+    expect(log).toHaveTextContent(/liście\s*kolory, material-eva/);
+    expect(log).toHaveTextContent(/pewność\s*wysoka/);
+    expect(log).toHaveTextContent(/liść\s*material-eva/);
+    expect(log).toHaveTextContent(/wynik\s*trafienie/);
+    expect(log).toHaveTextContent(/zgodność\s*w rankingu/);
     expect(screen.getAllByText('w ofercie').length).toBeGreaterThan(0);
     expect(fetchMock).toHaveBeenCalledWith(
       '/v1/dashboard/context-graph',
@@ -450,6 +479,85 @@ describe('dashboard context graph', () => {
       });
       expect(screen.queryByRole('alert')).not.toBeInTheDocument();
       expect(screen.getByText('Kolory')).toBeInTheDocument();
+    } finally {
+      fetchMock.mockRestore();
+      vi.useRealTimers();
+    }
+  });
+
+  it('does not append a decision trace already shown as an intent line', async () => {
+    sessionStorage.setItem('eva-dashboard-token', 'dashboard-secret');
+    window.location.hash = '#/graf';
+    let logCalls = 0;
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
+      const url = String(input);
+      const json = (body: unknown, status = 200) =>
+        Promise.resolve(
+          new Response(JSON.stringify(body), {
+            status,
+            headers: { 'Content-Type': 'application/json' },
+          }),
+        );
+      if (url.includes('/v1/dashboard/container-log')) {
+        logCalls += 1;
+        if (logCalls === 1) {
+          return json([
+            {
+              seq: 1,
+              occurredAt: '2026-09-24T00:50:00.000Z',
+              kind: 'intent-turn',
+              sessionId: 'session-tree',
+              acceptedIntent: 'product_info',
+              subIntent: 'available_colors',
+              mode: 'knowledge',
+              execution: 'knowledge',
+              tools: ['lookup-leaf'],
+              forcedOutOfScope: false,
+            },
+          ]);
+        }
+        return json([
+          {
+            kind: 'decision-trace',
+            id: 'trace-colors',
+            occurredAt: '2026-09-24T00:50:00.400Z',
+            sessionId: 'session-tree',
+            acceptedIntent: 'product_info',
+            subIntent: 'available_colors',
+            mode: 'knowledge',
+            execution: 'knowledge',
+            tools: ['lookup-leaf'],
+            forcedOutOfScope: false,
+          },
+        ]);
+      }
+      if (url.includes('/v1/dashboard/context-graph')) {
+        return json({
+          nodes: [{ slug: 'kolory', title: 'Kolory', x: 0.2, y: 0.4 }],
+          edges: [],
+        });
+      }
+      if (url.includes('/v1/dashboard/sessions?')) {
+        return json([]);
+      }
+      return json([]);
+    });
+
+    vi.useFakeTimers();
+    try {
+      render(<App initialDate="2026-09-13" />);
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1);
+      });
+      expect(screen.getByText('Kolory')).toBeInTheDocument();
+      expect(screen.getAllByText('[intent-turn]')).toHaveLength(1);
+      expect(logCalls).toBe(1);
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(2000);
+      });
+      expect(logCalls).toBe(2);
+      expect(screen.getAllByText('[intent-turn]')).toHaveLength(1);
     } finally {
       fetchMock.mockRestore();
       vi.useRealTimers();

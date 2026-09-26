@@ -1,5 +1,6 @@
 import type { AgentEventSink } from '../agent-events/agent-event';
 import { recordAgentEvent } from '../agent-events/record-agent-event';
+import { logTreeLookup, logTreeSearch } from '../agent-events/tree-turn-log';
 import { currentRelatedBranches } from '../agent-events/turn-session-context';
 import { ContextTreeResolver } from '../context-tree/context-tree.resolver';
 import type { ContextLeafSearchHit } from '../domain/context-leaf-search';
@@ -63,22 +64,25 @@ export class ShopTools {
     const result = this.contextTree.lookupLeaf(slug);
     if (result.status === 'hit') {
       recordAgentEvent(this.events, 'context_hit', { slug: result.slug });
+      logTreeLookup(result.slug, 'hit');
     } else {
       recordAgentEvent(this.events, 'context_miss', { slug });
+      logTreeLookup(slug, 'miss');
     }
     return result;
   }
 
   async searchLeaves(query: string): Promise<ContextLeafSearchHit[]> {
-    const matches = await this.contextTree.searchLeaves(
+    const explained = await this.contextTree.explainSearch(
       query,
       currentRelatedBranches(),
     );
     recordAgentEvent(this.events, 'context_search', {
-      slugs: matches.map((row) => row.slug),
-      matched: matches.length > 0,
-      confidence: matches[0]?.confidence,
+      slugs: explained.hits.map((row) => row.slug),
+      matched: explained.hits.length > 0,
+      confidence: explained.hits[0]?.confidence,
     });
-    return matches;
+    logTreeSearch(explained.trace);
+    return explained.hits;
   }
 }
