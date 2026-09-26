@@ -73,14 +73,14 @@ describe('agent domain events', () => {
     const tools = shopTools(events);
 
     await runWithTurnSession('session-cascade', async () => {
-      tools.resolveTemplate({ brand: 'brak' });
-      tools.resolveTemplate({
+      await tools.resolveTemplate({ brand: 'brak' });
+      await tools.resolveTemplate({
         brand: 'vw',
         model: 'golf 8',
         bodyType: 'kombi',
         year: 2021,
       });
-      tools.resolveTemplate({ brand: 'vw' });
+      await tools.resolveTemplate({ brand: 'vw' });
     });
 
     expect(events.list().map((row) => row.type)).toEqual([
@@ -125,13 +125,13 @@ describe('agent domain events', () => {
     const tools = shopTools(events);
 
     await runWithTurnSession('session-quote-vehicle', async () => {
-      tools.quoteVehicle({
+      await tools.quoteVehicle({
         brand: 'vw',
         model: 'golf 8',
         bodyType: 'hatchback',
         variantKey: 'komplet-5szt',
       });
-      tools.quoteVehicle({ brand: 'vw', model: 'golf 8' });
+      await tools.quoteVehicle({ brand: 'vw', model: 'golf 8' });
     });
 
     expect(events.list()).toEqual([

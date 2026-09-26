@@ -55,9 +55,9 @@ function compose(
 }
 
 describe('quote vehicle price', () => {
-  it('quotes one amount when cascade is one and the variant is on the category', () => {
+  it('quotes one amount when cascade is one and the variant is on the category', async () => {
     expect(
-      compose({
+      await compose({
         brand: 'vw',
         model: 'golf 8',
         bodyType: 'hatchback',
@@ -66,8 +66,8 @@ describe('quote vehicle price', () => {
     ).toEqual({ status: 'quoted', amount: 599, currency: 'PLN' });
   });
 
-  it('asks for a category variant and does not quote when variantKey is missing', () => {
-    const result = compose({
+  it('asks for a category variant and does not quote when variantKey is missing', async () => {
+    const result = await compose({
       brand: 'audi',
       model: 'a4',
       year: 2020,
@@ -80,9 +80,9 @@ describe('quote vehicle price', () => {
     expect(result).not.toHaveProperty('amount');
   });
 
-  it('treats a blank variantKey as missing', () => {
+  it('treats a blank variantKey as missing', async () => {
     expect(
-      compose({
+      await compose({
         brand: 'audi',
         model: 'a4',
         variantKey: '  ',
@@ -93,22 +93,22 @@ describe('quote vehicle price', () => {
     });
   });
 
-  it('returns many without a price when brand and model match several templates', () => {
-    const result = compose({ brand: 'vw', model: 'golf 8' });
+  it('returns many without a price when brand and model match several templates', async () => {
+    const result = await compose({ brand: 'vw', model: 'golf 8' });
 
     expect(result).toEqual({ status: 'many' });
     expect(result).not.toHaveProperty('amount');
   });
 
-  it('returns none without a price when the slots do not map to a template', () => {
-    const result = compose({ brand: 'fiat', model: 'panda' });
+  it('returns none without a price when the slots do not map to a template', async () => {
+    const result = await compose({ brand: 'fiat', model: 'panda' });
 
     expect(result).toEqual({ status: 'none' });
     expect(result).not.toHaveProperty('amount');
   });
 
-  it('returns need_variant without a price when the variant is off the category', () => {
-    const result = compose({
+  it('returns need_variant without a price when the variant is off the category', async () => {
+    const result = await compose({
       brand: 'audi',
       model: 'a4',
       variantKey: 'nie-na-kategorii',
@@ -121,8 +121,8 @@ describe('quote vehicle price', () => {
     expect(result).not.toHaveProperty('amount');
   });
 
-  it('asks for mat type when the matrix has more than one row', () => {
-    const result = compose(
+  it('asks for mat type when the matrix has more than one row', async () => {
+    const result = await compose(
       {
         brand: 'audi',
         model: 'a4',
@@ -138,9 +138,9 @@ describe('quote vehicle price', () => {
     expect(result).not.toHaveProperty('amount');
   });
 
-  it('quotes the chosen mat type after mat_type_required', () => {
+  it('quotes the chosen mat type after mat_type_required', async () => {
     expect(
-      compose(
+      await compose(
         {
           brand: 'audi',
           model: 'a4',
@@ -152,8 +152,8 @@ describe('quote vehicle price', () => {
     ).toEqual({ status: 'quoted', amount: 1099, currency: 'PLN' });
   });
 
-  it('returns missing_matrix_row without a price when the category has no matrix row', () => {
-    const result = compose(
+  it('returns missing_matrix_row without a price when the category has no matrix row', async () => {
+    const result = await compose(
       {
         brand: 'audi',
         model: 'a4',

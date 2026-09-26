@@ -68,9 +68,12 @@ serwerowo (nie anon z widgetu).
 
 1. **Szablony:** `evapremium_shop.mat_templates` (~2756, aktywne szablony).
    Kaskada po `brand_key` / `model_key` / `body_type_*_key` / lata / `record_key`.
-   Kategoria cennika: `dealer_pricing_category_key`. Nest mapuje surowe sloty
-   tabelą `eva_bot.vehicle_slot_aliases` (`slot_kind`, `alias_normalized`,
-   `canonical_key`, opcjonalny `brand_key` dla modeli). Tabela jest na PROD
+   Kategoria cennika: `dealer_pricing_category_key`. Gdy jest `DEEPSEEK_API_KEY`,
+   markę i model wybierają dwa kroki klasyfikacji: pełna lista `brand_key`,
+   potem krótka lista `model_key` tej marki. Istnienie szablonu zostaje w
+   filtrze Nestu. Aliasy `eva_bot.vehicle_slot_aliases` (`slot_kind`,
+   `alias_normalized`, `canonical_key`, opcjonalny `brand_key` dla modeli)
+   zostają dla nadwozia i dla ścieżki bez klasyfikatora. Tabela jest na PROD
    (migracja `20260911220000_vehicle_slot_aliases.sql`). W teście: fixture,
    jeden strzał ze znanymi kluczami → 0 / 1 / N.
 2. **Cennik:** `pricing_vehicle_categories`, `pricing_variants`,

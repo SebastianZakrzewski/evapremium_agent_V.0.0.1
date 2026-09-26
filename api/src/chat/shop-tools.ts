@@ -34,8 +34,10 @@ export class ShopTools {
     private readonly events?: AgentEventSink,
   ) {}
 
-  resolveTemplate(input: TemplateCascadeInput): TemplateCascadeResult {
-    const result = this.templates.resolve(input);
+  async resolveTemplate(
+    input: TemplateCascadeInput,
+  ): Promise<TemplateCascadeResult> {
+    const result = await this.templates.resolve(input);
     recordAgentEvent(this.events, 'cascade_resolved', { match: result.status });
     return result;
   }
@@ -51,8 +53,10 @@ export class ShopTools {
     return result;
   }
 
-  quoteVehicle(input: QuoteVehiclePriceInput): QuoteVehiclePriceResult {
-    const result = composeQuoteVehicle(input, {
+  async quoteVehicle(
+    input: QuoteVehiclePriceInput,
+  ): Promise<QuoteVehiclePriceResult> {
+    const result = await composeQuoteVehicle(input, {
       resolveTemplate: (slots) => this.templates.resolve(slots),
       listCategoryVariants: (key) => this.pricing.listCategoryVariants(key),
       quotePrice: (quote) => this.pricing.quote(quote),

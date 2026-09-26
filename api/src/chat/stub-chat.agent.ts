@@ -10,15 +10,15 @@ export class StubChatAgent implements ChatAgent {
     return sessionId ? runWithTurnSession(sessionId, run) : run();
   }
 
-  private execute(trimmed: string): Promise<ChatAgentTurn> {
+  private async execute(trimmed: string): Promise<ChatAgentTurn> {
     if (trimmed === 'resolve vw golf 8 kombi 2021') {
-      const data = this.tools.resolveTemplate({
+      const data = await this.tools.resolveTemplate({
         brand: 'vw',
         model: 'golf 8',
         bodyType: 'kombi',
         year: 2021,
       });
-      return Promise.resolve({ text: data.status, data });
+      return { text: data.status, data };
     }
 
     if (trimmed === 'quote passenger_car komplet-5szt') {

@@ -19,17 +19,19 @@ export type QuoteVehiclePriceResult =
   | { status: 'quoted'; amount: number; currency: 'PLN' };
 
 export type QuoteVehiclePorts = {
-  resolveTemplate(input: TemplateCascadeInput): TemplateCascadeResult;
+  resolveTemplate(
+    input: TemplateCascadeInput,
+  ): Promise<TemplateCascadeResult> | TemplateCascadeResult;
   listCategoryVariants(dealerPricingCategoryKey: string): CategoryVariantOption[];
   quotePrice(input: QuotePriceInput): QuotePriceResult;
   matTypes(dealerPricingCategoryKey: string, variantKey: string): MatType[];
 };
 
-export function composeQuoteVehicle(
+export async function composeQuoteVehicle(
   input: QuoteVehiclePriceInput,
   ports: QuoteVehiclePorts,
-): QuoteVehiclePriceResult {
-  const cascade = ports.resolveTemplate({
+): Promise<QuoteVehiclePriceResult> {
+  const cascade = await ports.resolveTemplate({
     brand: input.brand,
     model: input.model,
     bodyType: input.bodyType,

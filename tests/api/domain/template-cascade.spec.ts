@@ -5,7 +5,11 @@ import {
 import {
   mapAliases,
   normalizeSlots,
+  resolveClassifiedTemplate,
   resolveTemplate,
+  shortlistModelKeys,
+  type MatTemplate,
+  type VehicleKeyClassifier,
 } from '@api/domain/template-cascade';
 
 describe('template cascade', () => {
@@ -140,3 +144,165 @@ describe('template cascade', () => {
     expect(withNoise.status).toBe('many');
   });
 });
+
+function classifying(brandKey: string | null, modelKeys: string[]): VehicleKeyClassifier {
+  return {
+    classifyBrand: async () => brandKey,
+    classifyModel: async () => modelKeys,
+  };
+}
+
+describe('classified template cascade', () => {
+  it('resolves a misspelled brand and model to the matching templates', async () => {
+    const result = await resolveClassifiedTemplate(
+      { brand: 'Volwagen', model: 'golf 8' },
+      CASCADE_TEMPLATES,
+      CASCADE_ALIASES,
+      classifying('Volkswagen', ['Golf(MK8) 8 gen']),
+    );
+
+    expect(result).toMatchObject({
+      status: 'many',
+      templates: [{ id: 'tmpl-golf-mk8-hatch' }, { id: 'tmpl-golf-mk8-wagon' }],
+    });
+  });
+
+  it('narrows classified keys with the body alias', async () => {
+    const result = await resolveClassifiedTemplate(
+      { brand: 'Volwagen', model: 'golf 8', bodyType: 'kombi' },
+      CASCADE_TEMPLATES,
+      CASCADE_ALIASES,
+      classifying('Volkswagen', ['Golf(MK8) 8 gen']),
+    );
+
+    expect(result).toMatchObject({
+      status: 'one',
+      template: { id: 'tmpl-golf-mk8-wagon' },
+    });
+  });
+
+  it('drops a model key that was not on the candidate list', async () => {
+    const result = await resolveClassifiedTemplate(
+      { brand: 'vw', model: 'golf 8' },
+      CASCADE_TEMPLATES,
+      CASCADE_ALIASES,
+      classifying('Volkswagen', ['Golf(MK8) 8 gen', 'Nope']),
+    );
+
+    expect(result).toMatchObject({
+      status: 'many',
+      templates: [{ id: 'tmpl-golf-mk8-hatch' }, { id: 'tmpl-golf-mk8-wagon' }],
+    });
+  });
+
+  it('returns none when brand is missing and does not ask the classifier', async () => {
+    const classifier: VehicleKeyClassifier = {
+      classifyBrand: async () => {
+        throw new Error('brand classifier should not run');
+      },
+      classifyModel: async () => {
+        throw new Error('model classifier should not run');
+      },
+    };
+
+    await expect(
+      resolveClassifiedTemplate(
+        { model: 'golf 8' },
+        CASCADE_TEMPLATES,
+        CASCADE_ALIASES,
+        classifier,
+      ),
+    ).resolves.toEqual({ status: 'none' });
+  });
+
+  it('keeps every generation the classifier returns', async () => {
+    const result = await resolveClassifiedTemplate(
+      { brand: 'vw', model: 'golf' },
+      CASCADE_TEMPLATES,
+      CASCADE_ALIASES,
+      classifying('Volkswagen', ['Golf(MK7) 7 gen', 'Golf(MK8) 8 gen']),
+    );
+
+    expect(result.status).toBe('many');
+    if (result.status !== 'many') {
+      return;
+    }
+    expect(result.templates.map((template) => template.id)).toEqual([
+      'tmpl-golf-mk8-hatch',
+      'tmpl-golf-mk8-wagon',
+      'tmpl-golf-mk7-hatch',
+      'tmpl-golf-mk7-wagon',
+    ]);
+  });
+
+  it('shortlists the closest model keys for one brand', () => {
+    const extras: MatTemplate[] = Array.from({ length: 12 }, (_, index) => ({
+      id: `tmpl-zz-${index}`,
+      recordKey: `zz-${index}`,
+      brandKey: 'Volkswagen',
+      modelKey: `zz-${index}`,
+      dealerPricingCategoryKey: 'passenger_car',
+      isActive: true,
+      yearFrom: 2019,
+      yearTo: null,
+      isOpenEnded: true,
+      bodyTypeKey: 'hatchback',
+      bodyType1Key: 'hatchback',
+      bodyType2Key: null,
+      bodyType3Key: null,
+    }));
+
+    const listed = shortlistModelKeys(
+      [...CASCADE_TEMPLATES, ...extras],
+      'Volkswagen',
+      'golf 8',
+    );
+
+    expect(listed).toHaveLength(12);
+    expect(listed).toContain('Golf(MK8) 8 gen');
+    expect(listed).not.toContain('A4');
+  });
+
+  it('accepts a trimmed brand when the catalog key has one trailing space', async () => {
+    const result = await resolveClassifiedTemplate(
+      { brand: 'toyot', model: 'rav4' },
+      [spacedTemplate('Toyota ', 'RAV4')],
+      CASCADE_ALIASES,
+      classifying('Toyota', ['RAV4']),
+    );
+
+    expect(result).toMatchObject({
+      status: 'one',
+      template: { id: 'tmpl-spaced' },
+    });
+  });
+
+  it('returns none when trim matches two brand keys', async () => {
+    const result = await resolveClassifiedTemplate(
+      { brand: 'citroen', model: 'c4' },
+      [spacedTemplate('Citroen', 'C4'), spacedTemplate('Citroen ', 'C4')],
+      CASCADE_ALIASES,
+      classifying(' Citroen', ['C4']),
+    );
+
+    expect(result).toEqual({ status: 'none' });
+  });
+});
+
+function spacedTemplate(brandKey: string, modelKey: string): MatTemplate {
+  return {
+    id: 'tmpl-spaced',
+    recordKey: `${brandKey}|${modelKey}`,
+    brandKey,
+    modelKey,
+    dealerPricingCategoryKey: 'passenger_car',
+    isActive: true,
+    yearFrom: 2019,
+    yearTo: null,
+    isOpenEnded: true,
+    bodyTypeKey: 'suv',
+    bodyType1Key: 'suv',
+    bodyType2Key: null,
+    bodyType3Key: null,
+  };
+}

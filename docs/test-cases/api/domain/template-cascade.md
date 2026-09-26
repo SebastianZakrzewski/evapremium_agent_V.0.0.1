@@ -4,8 +4,9 @@ Kod: `tests/api/domain/template-cascade.spec.ts`
 Fixture: `tests/api/templates/in-memory/cascade-fixture.ts`  
 Standard: [docs/test-cases/README.md](../../README.md)
 
-Logika zestawu: surowe sloty → normalizacja → alias → jeden filtr
-`mat_templates` → `none` / `one` / `many`. LLM nie uczestniczy.
+Logika zestawu: surowe sloty → normalizacja → alias albo klasyfikacja kluczy
+→ jeden filtr `mat_templates` → `none` / `one` / `many`. Klasyfikacja dostaje
+listę kluczy z katalogu i stub w teście; filtr nadal nie ufa kluczowi spoza listy.
 
 | id | Krytyczność | Tytuł |
 | --- | --- | --- |
@@ -18,6 +19,14 @@ Logika zestawu: surowe sloty → normalizacja → alias → jeden filtr
 | cascade-007 | high | Rok schodzi z N do 1 |
 | cascade-008 | high | `record_key` bez reszty slotów |
 | cascade-009 | critical | Niezmapowany slot nie wymyśla klucza |
+| cascade-010 | high | Literówka marki i modelu → szablony tej generacji |
+| cascade-011 | high | Alias nadwozia schodzi z N do 1 po klasyfikacji |
+| cascade-012 | critical | Klucz spoza listy kandydatów odpada |
+| cascade-013 | high | Brak marki → none, bez wywołania klasyfikatora |
+| cascade-014 | high | Kilka generacji z klasyfikatora → many |
+| cascade-015 | medium | Shortlista modeli jednej marki |
+| cascade-016 | high | Marka ze spacją na końcu klucza |
+| cascade-017 | high | Dwa klucze po trim → none |
 
 ### cascade-001 — Normalizacja slotów
 
@@ -90,3 +99,67 @@ Logika zestawu: surowe sloty → normalizacja → alias → jeden filtr
 - **Logika:** brak aliasu = slot poza filtrem; system nie dopasowuje „na podobieństwo”.
 - **Wejście:** `{ brand: 'vw', model: 'golf-xyz' }` vs `{ brand: 'vw' }`
 - **Wyjście:** oba wyniki identyczne, `status: 'many'`
+
+### cascade-010 — Literówka marki i modelu → szablony tej generacji
+
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('resolves a misspelled brand and model to the matching templates')`
+- **Krytyczność:** high
+- **Logika:** klasyfikator oddaje klucze katalogu; filtr zostawia aktywne szablony tej pary, bez zgadywania rekordu.
+- **Wejście:** `{ brand: 'Volwagen', model: 'golf 8' }`, stub `Volkswagen` + `Golf(MK8) 8 gen`
+- **Wyjście:** `status: 'many'`, id `tmpl-golf-mk8-hatch` i `tmpl-golf-mk8-wagon`
+
+### cascade-011 — Alias nadwozia schodzi z N do 1 po klasyfikacji
+
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('narrows classified keys with the body alias')`
+- **Krytyczność:** high
+- **Logika:** nadwozie zostaje przy aliasie; po kluczach klasyfikatora `kombi` zostawia wagon.
+- **Wejście:** `{ brand: 'Volwagen', model: 'golf 8', bodyType: 'kombi' }`, te same klucze co cascade-010
+- **Wyjście:** `status: 'one'`, `template.id: 'tmpl-golf-mk8-wagon'`
+
+### cascade-012 — Klucz spoza listy kandydatów odpada
+
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('drops a model key that was not on the candidate list')`
+- **Krytyczność:** critical
+- **Logika:** klucz, którego nie ma wśród kandydatów marki, nie wchodzi do filtra.
+- **Wejście:** stub modeli `Golf(MK8) 8 gen` i `Nope`
+- **Wyjście:** te same dwa szablony MK8 co cascade-010, bez obcego klucza
+
+### cascade-013 — Brak marki → none, bez wywołania klasyfikatora
+
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('returns none when brand is missing and does not ask the classifier')`
+- **Krytyczność:** high
+- **Logika:** pusta marka kończy kaskadę zanim poleci zapytanie do modelu.
+- **Wejście:** `{ model: 'golf 8' }`, klasyfikator rzuca, gdy zostanie wywołany
+- **Wyjście:** `{ status: 'none' }`
+
+### cascade-014 — Kilka generacji z klasyfikatora → many
+
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('keeps every generation the classifier returns')`
+- **Krytyczność:** high
+- **Logika:** brak jednej generacji w słowach klienta zostawia wszystkie klucze oddane przez klasyfikator.
+- **Wejście:** `{ brand: 'vw', model: 'golf' }`, stub `Golf(MK7) 7 gen` i `Golf(MK8) 8 gen`
+- **Wyjście:** `status: 'many'`, cztery aktywne szablony Golf MK7 i MK8
+
+### cascade-015 — Shortlista modeli jednej marki
+
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('shortlists the closest model keys for one brand')`
+- **Krytyczność:** medium
+- **Logika:** do klasyfikatora modelu idzie co najwyżej 12 kluczy wybranej marki, najbliższych słowom klienta.
+- **Wejście:** szablony Volkswagena plus 12 kluczy `zz-*`, zapytanie `golf 8`
+- **Wyjście:** 12 kluczy, w tym `Golf(MK8) 8 gen`, bez `A4`
+
+### cascade-016 — Marka ze spacją na końcu klucza
+
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('accepts a trimmed brand when the catalog key has one trailing space')`
+- **Krytyczność:** high
+- **Logika:** gdy po `trim` zostaje dokładnie jeden `brand_key`, filtr używa napisu z katalogu, nie napisu z modelu.
+- **Wejście:** szablon `brandKey: 'Toyota '`, stub marki `Toyota` i modelu `RAV4`
+- **Wyjście:** `status: 'one'`, `template.id: 'tmpl-spaced'`
+
+### cascade-017 — Dwa klucze po trim → none
+
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('returns none when trim matches two brand keys')`
+- **Krytyczność:** high
+- **Logika:** dwa klucze, które po obcięciu spacji są tym samym napisem, nie są wybierane.
+- **Wejście:** `Citroen` i `Citroen `, stub marki ` Citroen`
+- **Wyjście:** `{ status: 'none' }`

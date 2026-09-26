@@ -46,6 +46,7 @@ import {
   loadVehicleSlotAliases,
 } from '../../templates/supabase/load-catalog';
 import { TemplateCascadeResolver } from '../../templates/template-cascade.resolver';
+import { vehicleKeyClassifierFromEnv } from '../vehicle-keys/mastra-vehicle-key-classifier';
 
 const here = __dirname;
 
@@ -105,8 +106,10 @@ export function loadEffectivenessEnv(): void {
 class RecordingShopTools extends ShopTools {
   calls: ToolCallTrace[] = [];
 
-  override resolveTemplate(input: TemplateCascadeInput): TemplateCascadeResult {
-    const output = super.resolveTemplate(input);
+  override async resolveTemplate(
+    input: TemplateCascadeInput,
+  ): Promise<TemplateCascadeResult> {
+    const output = await super.resolveTemplate(input);
     this.calls.push({
       id: 'resolve-template',
       input: input as unknown as Record<string, unknown>,
@@ -172,6 +175,7 @@ export async function runEffectivenessSuite(label: string) {
     new TemplateCascadeResolver(
       new InMemoryTemplateCatalog(templates),
       new InMemoryAliasCatalog(aliases),
+      vehicleKeyClassifierFromEnv(),
     ),
     new PricingResolver(
       new InMemoryPricingVariantCatalog(pricing.variants),

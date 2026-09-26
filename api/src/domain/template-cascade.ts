@@ -26,7 +26,25 @@ export type VehicleSlotAlias = {
 export type MappedKeys = {
   brandKey?: string;
   modelKey?: string;
+  modelKeys?: string[];
   bodyTypeKey?: string;
+};
+
+export const MODEL_KEY_SHORTLIST_LIMIT = 12;
+
+export type BrandClassificationInput = {
+  customerBrand: string;
+  brandKeys: string[];
+};
+
+export type ModelClassificationInput = {
+  customerModel: string;
+  modelKeys: string[];
+};
+
+export type VehicleKeyClassifier = {
+  classifyBrand(input: BrandClassificationInput): Promise<string | null>;
+  classifyModel(input: ModelClassificationInput): Promise<string[]>;
 };
 
 export type MatTemplate = {
@@ -149,7 +167,11 @@ function filterTemplates(
     if (keys.brandKey && template.brandKey !== keys.brandKey) {
       return false;
     }
-    if (keys.modelKey && template.modelKey !== keys.modelKey) {
+    if (keys.modelKeys) {
+      if (!keys.modelKeys.includes(template.modelKey)) {
+        return false;
+      }
+    } else if (keys.modelKey && template.modelKey !== keys.modelKey) {
       return false;
     }
     if (keys.bodyTypeKey && !matchesBodyType(template, keys.bodyTypeKey)) {
@@ -190,5 +212,179 @@ export function resolveTemplate(
 
   return toResult(
     filterTemplates(templates, keys, slots.recordKey, slots.year),
+  );
+}
+
+export function activeBrandKeys(templates: MatTemplate[]): string[] {
+  return [
+    ...new Set(
+      templates
+        .filter((template) => template.isActive)
+        .map((template) => template.brandKey),
+    ),
+  ].sort((left, right) => left.localeCompare(right));
+}
+
+export function shortlistModelKeys(
+  templates: MatTemplate[],
+  brandKey: string,
+  customerModel: string,
+  limit = MODEL_KEY_SHORTLIST_LIMIT,
+): string[] {
+  const models = [
+    ...new Set(
+      templates
+        .filter((template) => template.isActive && template.brandKey === brandKey)
+        .map((template) => template.modelKey),
+    ),
+  ];
+  return models
+    .sort((left, right) => {
+      const score = modelSimilarity(right, customerModel) - modelSimilarity(left, customerModel);
+      if (score !== 0) {
+        return score;
+      }
+      return left.localeCompare(right);
+    })
+    .slice(0, limit);
+}
+
+function compactKey(value: string): string {
+  return collapseWhitespace(value).replace(/[^a-z0-9]+/g, '');
+}
+
+function modelSimilarity(candidate: string, query: string): number {
+  const left = collapseWhitespace(candidate);
+  const right = collapseWhitespace(query);
+  if (left === right) {
+    return 1_000_000;
+  }
+  const leftCompact = compactKey(candidate);
+  const rightCompact = compactKey(query);
+  let score = 0;
+  if (left.includes(right) || right.includes(left)) {
+    score += 5_000;
+  }
+  if (
+    rightCompact.length > 0 &&
+    (leftCompact.includes(rightCompact) || rightCompact.includes(leftCompact))
+  ) {
+    score += 4_000;
+  }
+  for (const token of right.split(' ')) {
+    if (token.length > 0 && (left.includes(token) || leftCompact.includes(token))) {
+      score += 1_000;
+    }
+  }
+  const distance = levenshtein(leftCompact, rightCompact);
+  const span = Math.max(leftCompact.length, rightCompact.length, 1);
+  score += Math.round((1 - distance / span) * 500);
+  return score;
+}
+
+function levenshtein(left: string, right: string): number {
+  if (left === right) {
+    return 0;
+  }
+  if (left.length === 0) {
+    return right.length;
+  }
+  if (right.length === 0) {
+    return left.length;
+  }
+  let previous = Array.from({ length: right.length + 1 }, (_, index) => index);
+  for (let i = 1; i <= left.length; i += 1) {
+    const current = [i];
+    for (let j = 1; j <= right.length; j += 1) {
+      const cost = left[i - 1] === right[j - 1] ? 0 : 1;
+      current[j] = Math.min(
+        current[j - 1] + 1,
+        previous[j] + 1,
+        previous[j - 1] + cost,
+      );
+    }
+    previous = current;
+  }
+  return previous[right.length];
+}
+
+function catalogKeyForChoice(chosen: string, allowed: string[]): string | undefined {
+  if (allowed.includes(chosen)) {
+    return chosen;
+  }
+  const trimmed = chosen.trim();
+  if (trimmed.length === 0) {
+    return undefined;
+  }
+  const matches = allowed.filter((key) => key.trim() === trimmed);
+  return matches.length === 1 ? matches[0] : undefined;
+}
+
+function keysOnList(chosen: string[], allowed: string[]): string[] {
+  const resolved: string[] = [];
+  for (const key of chosen) {
+    const catalogKey = catalogKeyForChoice(key, allowed);
+    if (catalogKey && !resolved.includes(catalogKey)) {
+      resolved.push(catalogKey);
+    }
+  }
+  return resolved;
+}
+
+export async function resolveClassifiedTemplate(
+  input: TemplateCascadeInput,
+  templates: MatTemplate[],
+  aliases: VehicleSlotAlias[],
+  classifier: VehicleKeyClassifier,
+): Promise<TemplateCascadeResult> {
+  const slots = normalizeSlots(input);
+  const bodyTypeKey = mapAliases({ bodyType: slots.bodyType }, aliases).bodyTypeKey;
+
+  if (!slots.brand || !slots.model) {
+    if (!slots.recordKey) {
+      return { status: 'none' };
+    }
+    return toResult(
+      filterTemplates(templates, { bodyTypeKey }, slots.recordKey, slots.year),
+    );
+  }
+
+  const brandKeys = activeBrandKeys(templates);
+  if (brandKeys.length === 0) {
+    return { status: 'none' };
+  }
+  const chosenBrand = await classifier.classifyBrand({
+    customerBrand: slots.brand,
+    brandKeys,
+  });
+  const brandKey = chosenBrand
+    ? catalogKeyForChoice(chosenBrand, brandKeys)
+    : undefined;
+  if (!brandKey) {
+    return { status: 'none' };
+  }
+
+  const modelCandidates = shortlistModelKeys(templates, brandKey, slots.model);
+  if (modelCandidates.length === 0) {
+    return { status: 'none' };
+  }
+  const chosenModels = keysOnList(
+    await classifier.classifyModel({
+      customerModel: slots.model,
+      modelKeys: modelCandidates,
+    }),
+    modelCandidates,
+  );
+  if (chosenModels.length === 0) {
+    return { status: 'none' };
+  }
+
+  return toResult(
+    filterTemplates(
+      templates,
+      { brandKey, modelKeys: chosenModels, bodyTypeKey },
+      slots.recordKey,
+      slots.year,
+    ),
   );
 }

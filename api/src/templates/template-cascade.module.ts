@@ -7,11 +7,12 @@ import {
   InMemoryAliasCatalog,
   InMemoryTemplateCatalog,
 } from './in-memory/in-memory-catalogs';
-import { ALIAS_CATALOG, TEMPLATE_CATALOG } from './ports';
+import { ALIAS_CATALOG, TEMPLATE_CATALOG, VEHICLE_KEY_CLASSIFIER } from './ports';
 import type { DataStore } from '../supabase/data-store';
 import { DATA_STORE, SupabaseModule } from '../supabase/supabase.module';
 import { loadMatTemplates, loadVehicleSlotAliases } from './supabase/load-catalog';
 import { TemplateCascadeService } from './template-cascade.service';
+import { vehicleKeyClassifierFromEnv } from '../mastra/vehicle-keys/mastra-vehicle-key-classifier';
 
 @Module({
   imports: [SupabaseModule],
@@ -31,6 +32,10 @@ import { TemplateCascadeService } from './template-cascade.service';
           store ? await loadVehicleSlotAliases(store) : CASCADE_ALIASES,
         ),
       inject: [DATA_STORE],
+    },
+    {
+      provide: VEHICLE_KEY_CLASSIFIER,
+      useFactory: () => vehicleKeyClassifierFromEnv(),
     },
     TemplateCascadeService,
   ],

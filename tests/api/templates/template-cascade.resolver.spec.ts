@@ -14,22 +14,26 @@ describe('TemplateCascadeResolver', () => {
     new InMemoryAliasCatalog(CASCADE_ALIASES),
   );
 
-  it('resolves a known vehicle to one template', () => {
-    expect(
+  it('resolves a known vehicle to one template', async () => {
+    await expect(
       resolver.resolve({
         brand: 'vw',
         model: 'golf 8',
         bodyType: 'kombi',
         year: 2021,
       }),
-    ).toMatchObject({
+    ).resolves.toMatchObject({
       status: 'one',
       template: { id: 'tmpl-golf-mk8-wagon' },
     });
   });
 
-  it('returns none and many from the same catalogs', () => {
-    expect(resolver.resolve({ brand: 'brak' })).toEqual({ status: 'none' });
-    expect(resolver.resolve({ brand: 'vw' }).status).toBe('many');
+  it('returns none and many from the same catalogs', async () => {
+    await expect(resolver.resolve({ brand: 'brak' })).resolves.toEqual({
+      status: 'none',
+    });
+    await expect(resolver.resolve({ brand: 'vw' })).resolves.toMatchObject({
+      status: 'many',
+    });
   });
 });
