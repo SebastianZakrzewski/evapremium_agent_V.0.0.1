@@ -14,6 +14,7 @@ import {
   mergeContainerLog,
   pageContainerLog,
   sessionView,
+  summarizeAnalytics,
   summarizeDay,
   timelineEvents,
 } from '@api/dashboard/dashboard-read';
@@ -363,6 +364,77 @@ describe('decision trace log', () => {
         kind: 'intent-turn',
         traceAt: '2026-09-24T00:50:00.400Z',
       }),
+    ]);
+  });
+});
+
+describe('dashboard analytics from turn judgments', () => {
+  it('counts pass rate, axes, reasons and failures without other event types', () => {
+    const summary = summarizeAnalytics('2026-09-26', [
+      {
+        id: 'quote',
+        sessionId: 's-quote',
+        occurredAt: '2026-09-26T09:00:00.000Z',
+        type: 'quote_issued',
+        payload: { amount: 599, currency: 'PLN' },
+      },
+      {
+        id: 'ok',
+        sessionId: 's-ok',
+        occurredAt: '2026-09-26T10:00:00.000Z',
+        type: 'turn_judged',
+        payload: {
+          intent: 'product_info',
+          retrieval: 'pass',
+          action: 'pass',
+          verdict: 'pass',
+          codes: [],
+        },
+      },
+      {
+        id: 'bad',
+        sessionId: 's-bad',
+        occurredAt: '2026-09-26T11:00:00.000Z',
+        type: 'turn_judged',
+        payload: {
+          intent: 'product_info',
+          retrieval: 'fail',
+          action: 'pass',
+          verdict: 'fail',
+          codes: ['lookup_outside'],
+        },
+      },
+      {
+        id: 'price',
+        sessionId: 's-price',
+        occurredAt: '2026-09-26T08:00:00.000Z',
+        type: 'turn_judged',
+        payload: {
+          intent: 'pricing',
+          retrieval: 'skipped',
+          action: 'fail',
+          verdict: 'fail',
+          codes: ['missing_tool'],
+        },
+      },
+    ]);
+
+    expect(summary.turns).toBe(3);
+    expect(summary.pass).toBe(1);
+    expect(summary.fail).toBe(2);
+    expect(summary.retrieval).toEqual({ pass: 1, fail: 1, skipped: 1 });
+    expect(summary.action).toEqual({ pass: 2, fail: 1, skipped: 0 });
+    expect(summary.byIntent).toEqual([
+      { intent: 'pricing', turns: 1, pass: 0 },
+      { intent: 'product_info', turns: 2, pass: 1 },
+    ]);
+    expect(summary.reasons).toEqual([
+      { code: 'lookup_outside', count: 1 },
+      { code: 'missing_tool', count: 1 },
+    ]);
+    expect(summary.failures.map((row) => row.sessionId)).toEqual([
+      's-price',
+      's-bad',
     ]);
   });
 });

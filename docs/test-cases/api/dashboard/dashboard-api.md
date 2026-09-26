@@ -22,6 +22,7 @@ dashboardu, KPI i znaczniki z eventów Nest, nie z tekstu agenta.
 | dash-api-012 | high | Sub-intencja ze śladu uzupełnia pustą linię bufora |
 | dash-api-013 | high | Zapisana intencja wypełnia pusty log procesu |
 | dash-api-014 | high | Ślad wpięty w linię bufora nie wraca na kolejnej stronie |
+| dash-api-015 | high | Analityka doby tylko z turn_judged |
 
 ### dash-api-001 — Brak Bearer i token Studio → 401
 
@@ -134,3 +135,11 @@ dashboardu, KPI i znaczniki z eventów Nest, nie z tekstu agenta.
 - **Logika:** odpytanie z `after` nie zawiera już linii bufora, ale ślad tej tury nadal jest w eventach. Składanie patrzy na cały bufor i nie dokleja tego śladu drugi raz. Pełna strona zostawia jedną linię z `traceAt`.
 - **Wejście:** linia `seq: 1` z `available_colors` oraz ślad `trace-colors` o 400 ms później; raz pusta strona, raz ta sama linia jako strona
 - **Wyjście:** pusta strona zwraca `[]`; pełna strona zwraca jedną linię `intent-turn` z `traceAt` równym czasowi śladu
+
+### dash-api-015 — Analityka doby tylko z turn_judged
+
+- **Kod:** `tests/api/dashboard/dashboard-read.spec.ts` → `it('counts pass rate, axes, reasons and failures without other event types')`
+- **Krytyczność:** high
+- **Logika:** wykres doby liczy werdykty `turn_judged`. `quote_issued` nie wchodzi do liczby tur.
+- **Wejście:** jeden pass product_info, fail `lookup_outside`, fail `missing_tool` na pricing, plus `quote_issued`
+- **Wyjście:** 3 tury, 1 pass; retrieval 1/1/1; akcja 2 pass i 1 fail; porażki `s-price` potem `s-bad`

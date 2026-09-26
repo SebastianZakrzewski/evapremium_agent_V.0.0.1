@@ -1,6 +1,8 @@
 import type { Agent } from '@mastra/core/agent';
 import type { AgentEventSink } from '../agent-events/agent-event';
 import { recordAgentEvent } from '../agent-events/record-agent-event';
+import { recordTurnJudgment } from '../agent-events/record-turn-judgment';
+import { beginTurnTrace } from '../agent-events/turn-trace';
 import { withTurnSession } from '../agent-events/turn-session-context';
 import { createEvaTurnRequestContext } from '../mastra/eva-turn-request-context';
 import type { IntentQualifier } from '../mastra/intents/intent-qualifier';
@@ -37,11 +39,24 @@ export class MastraChatAgent implements ChatAgent {
     sessionId?: string,
   ): AsyncIterable<string> {
     const prepared = await this.prepareTurn(message, sessionId);
-    yield* withTurnSession(
-      sessionId,
-      this.streamPrepared(message, prepared),
-      prepared.relatedBranches,
-    );
+    if (sessionId !== undefined) {
+      beginTurnTrace(sessionId);
+    }
+    try {
+      yield* withTurnSession(
+        sessionId,
+        this.streamPrepared(message, prepared),
+        prepared.relatedBranches,
+      );
+    } finally {
+      if (sessionId !== undefined) {
+        recordTurnJudgment(this.events, sessionId, {
+          intent: prepared.intent,
+          execution: prepared.execution,
+          allowedTools: prepared.toolIds,
+        });
+      }
+    }
   }
 
   private async prepareTurn(

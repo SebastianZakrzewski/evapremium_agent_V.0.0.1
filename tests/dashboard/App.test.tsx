@@ -564,3 +564,57 @@ describe('dashboard context graph', () => {
     }
   });
 });
+
+describe('dashboard analytics', () => {
+  it('shows pass counts, failure reasons and a session link', async () => {
+    sessionStorage.setItem('eva-dashboard-token', 'dashboard-secret');
+    window.location.hash = '#/analityka';
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          date: '2026-09-26',
+          turns: 4,
+          pass: 3,
+          fail: 1,
+          retrieval: { pass: 2, fail: 1, skipped: 1 },
+          action: { pass: 4, fail: 0, skipped: 0 },
+          byIntent: [{ intent: 'product_info', turns: 4, pass: 3 }],
+          reasons: [{ code: 'lookup_outside', count: 1 }],
+          failures: [
+            {
+              sessionId: 'session-miss',
+              occurredAt: '2026-09-26T10:00:00.000Z',
+              intent: 'product_info',
+              codes: ['lookup_outside'],
+            },
+          ],
+        }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      ),
+    );
+
+    try {
+      render(<App initialDate="2026-09-26" />);
+      expect(
+        await screen.findByRole('heading', { name: 'Analityka' }),
+      ).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: '3 z 4' })).toBeInTheDocument();
+      expect(screen.getByText('Slug spoza rankingu')).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'session-miss' })).toHaveAttribute(
+        'href',
+        '#/sessions/session-miss',
+      );
+      await waitFor(() =>
+        expect(fetchMock).toHaveBeenCalledWith(
+          '/v1/dashboard/analytics?date=2026-09-26',
+          expect.objectContaining({
+            headers: { Authorization: 'Bearer dashboard-secret' },
+          }),
+        ),
+      );
+    } finally {
+      window.location.hash = '#/';
+      fetchMock.mockRestore();
+    }
+  });
+});

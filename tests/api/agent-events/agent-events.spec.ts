@@ -41,6 +41,8 @@ import {
   formatUsedToolLog,
 } from '@api/agent-events/execute-shop-tool';
 import { InMemoryAgentEvents } from '@api/agent-events/in-memory-agent-events';
+import { recordTurnJudgment } from '@api/agent-events/record-turn-judgment';
+import { beginTurnTrace } from '@api/agent-events/turn-trace';
 import { runWithTurnSession } from '@api/agent-events/turn-session-context';
 
 const USER_MESSAGE = 'quote passenger_car komplet-5szt please call me at +48';
@@ -268,8 +270,57 @@ describe('agent domain events', () => {
           workflow: 'quote_vehicle',
         },
       }),
+      expect.objectContaining({
+        sessionId: 'session-intent',
+        type: 'turn_judged',
+        payload: expect.objectContaining({
+          intent: 'pricing',
+          retrieval: 'skipped',
+          action: 'pass',
+          verdict: 'pass',
+          codes: [],
+          tools: [],
+        }),
+      }),
     ]);
     expect(JSON.stringify(events.list())).not.toContain('Ile kosztują');
+  });
+
+  it('records turn_judged from search and lookup without the question text', async () => {
+    const events = new InMemoryAgentEvents();
+    const tools = shopTools(events);
+    const question = 'kiedy wyślecie dywaniki';
+    beginTurnTrace('session-judge');
+
+    await runWithTurnSession('session-judge', async () => {
+      const hits = await executeShopTool(events, 'search-leaves', () =>
+        tools.searchLeaves(question),
+      );
+      await executeShopTool(events, 'lookup-leaf', () =>
+        tools.lookupLeaf(hits[0]?.slug ?? 'dostawa'),
+      );
+    });
+    recordTurnJudgment(events, 'session-judge', {
+      intent: 'delivery',
+      execution: { kind: 'knowledge', tools: ['search-leaves', 'lookup-leaf'] },
+      allowedTools: ['search-leaves', 'lookup-leaf'],
+    });
+
+    const judged = events.list().find((row) => row.type === 'turn_judged');
+    expect(judged?.payload).toEqual(
+      expect.objectContaining({
+        intent: 'delivery',
+        retrieval: 'pass',
+        action: 'pass',
+        verdict: 'pass',
+        slugs: ['dostawa'],
+        lookups: [
+          expect.objectContaining({ slug: 'dostawa', agreement: 'top' }),
+        ],
+        tools: ['search-leaves', 'lookup-leaf'],
+      }),
+    );
+    expect(JSON.stringify(events.list())).not.toContain(question);
   });
 
   it('logs the shop tool id when a tool runs', async () => {

@@ -1,7 +1,15 @@
 import type { AgentEventSink } from '../agent-events/agent-event';
 import { recordAgentEvent } from '../agent-events/record-agent-event';
-import { logTreeLookup, logTreeSearch } from '../agent-events/tree-turn-log';
-import { currentRelatedBranches } from '../agent-events/turn-session-context';
+import {
+  agreementForLookup,
+  logTreeLookup,
+  logTreeSearch,
+} from '../agent-events/tree-turn-log';
+import { noteTurnLookup, noteTurnSearch } from '../agent-events/turn-trace';
+import {
+  currentRelatedBranches,
+  currentTurnSessionId,
+} from '../agent-events/turn-session-context';
 import { ContextTreeResolver } from '../context-tree/context-tree.resolver';
 import type { ContextLeafSearchHit } from '../domain/context-leaf-search';
 import type { ContextLeafLookupResult } from '../domain/context-tree';
@@ -62,13 +70,19 @@ export class ShopTools {
 
   lookupLeaf(slug: string): ContextLeafLookupResult {
     const result = this.contextTree.lookupLeaf(slug);
+    const resolved = result.status === 'hit' ? result.slug : slug;
+    const outcome = result.status === 'hit' ? 'hit' : 'miss';
     if (result.status === 'hit') {
       recordAgentEvent(this.events, 'context_hit', { slug: result.slug });
-      logTreeLookup(result.slug, 'hit');
     } else {
       recordAgentEvent(this.events, 'context_miss', { slug });
-      logTreeLookup(slug, 'miss');
     }
+    logTreeLookup(resolved, outcome);
+    noteTurnLookup(currentTurnSessionId(), {
+      slug: resolved,
+      outcome,
+      agreement: agreementForLookup(currentTurnSessionId(), resolved),
+    });
     return result;
   }
 
@@ -77,12 +91,15 @@ export class ShopTools {
       query,
       currentRelatedBranches(),
     );
+    const slugs = explained.hits.map((row) => row.slug);
+    const confidence = explained.hits[0]?.confidence;
     recordAgentEvent(this.events, 'context_search', {
-      slugs: explained.hits.map((row) => row.slug),
+      slugs,
       matched: explained.hits.length > 0,
-      confidence: explained.hits[0]?.confidence,
+      confidence,
     });
     logTreeSearch(explained.trace);
+    noteTurnSearch(currentTurnSessionId(), { slugs, confidence });
     return explained.hits;
   }
 }

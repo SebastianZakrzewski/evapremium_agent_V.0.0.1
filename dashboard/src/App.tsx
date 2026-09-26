@@ -1,9 +1,12 @@
 import { FormEvent, useEffect, useState } from 'react';
+import { AnalyticsView } from './Analytics';
 import { ContextGraphView } from './ContextGraph';
 import {
+  fetchAnalytics,
   fetchDaySummary,
   fetchSession,
   fetchSessions,
+  type AnalyticsDay,
   type DaySummary,
   type SessionDetails,
   type SessionEvent,
@@ -22,7 +25,8 @@ type DashboardView =
   | { kind: 'overview' }
   | { kind: 'sessions' }
   | { kind: 'session'; sessionId: string }
-  | { kind: 'graph' };
+  | { kind: 'graph' }
+  | { kind: 'analytics' };
 
 const markerLabels: Record<SessionMarker, string> = {
   intent: 'Intencja',
@@ -41,6 +45,9 @@ function readView(): DashboardView {
   const path = window.location.hash.replace(/^#/, '');
   if (path === '/graf') {
     return { kind: 'graph' };
+  }
+  if (path === '/analityka') {
+    return { kind: 'analytics' };
   }
   if (path.startsWith('/sessions/')) {
     try {
@@ -119,7 +126,7 @@ function TokenGate({ onSubmit }: { onSubmit: (token: string) => void }) {
 function PageNavigation({
   current,
 }: {
-  current: 'overview' | 'sessions' | 'graph';
+  current: 'overview' | 'sessions' | 'graph' | 'analytics';
 }) {
   return (
     <nav className="page-navigation" aria-label="Widoki dashboardu">
@@ -131,6 +138,9 @@ function PageNavigation({
       </a>
       <a className={current === 'graph' ? 'active' : ''} href="#/graf">
         Graf
+      </a>
+      <a className={current === 'analytics' ? 'active' : ''} href="#/analityka">
+        Analityka
       </a>
     </nav>
   );
@@ -376,6 +386,7 @@ function eventLabel(type: SessionEvent['type']): string {
     lead_attempted: 'Próba utworzenia leada',
     tool_failed: 'Błąd narzędzia',
     decision_trace: 'Ślad wykonania',
+    turn_judged: 'Werdykt tury',
   };
   return labels[type];
 }
@@ -405,7 +416,22 @@ function eventDetail(event: SessionEvent): string | null {
       return null;
     case 'decision_trace':
       return decisionTraceDetail(event.payload);
+    case 'turn_judged':
+      return turnJudgmentDetail(event.payload);
   }
+}
+
+function turnJudgmentDetail(payload: Record<string, unknown>): string | null {
+  const verdict = typeof payload.verdict === 'string' ? payload.verdict : null;
+  const codes = Array.isArray(payload.codes)
+    ? payload.codes.filter((code): code is string => typeof code === 'string')
+    : [];
+  if (verdict === null && codes.length === 0) {
+    return null;
+  }
+  return [verdict, codes.length > 0 ? codes.join(', ') : null]
+    .filter((part): part is string => part !== null)
+    .join(' · ');
 }
 
 function decisionTraceDetail(payload: Record<string, unknown>): string | null {
@@ -555,6 +581,7 @@ export function App({ initialDate = today() }: AppProps) {
   const [date, setDate] = useState(initialDate);
   const [view, setView] = useState<DashboardView>(readView);
   const [summary, setSummary] = useState<DaySummary | null>(null);
+  const [analytics, setAnalytics] = useState<AnalyticsDay | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -583,6 +610,35 @@ export function App({ initialDate = today() }: AppProps) {
             reason instanceof Error
               ? reason.message
               : 'Nie udało się pobrać podsumowania.',
+          );
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, [date, token, view.kind]);
+
+  useEffect(() => {
+    if (!token || view.kind !== 'analytics') {
+      return;
+    }
+
+    const controller = new AbortController();
+    setLoading(true);
+    setError(null);
+    setAnalytics(null);
+    fetchAnalytics(date, token, controller.signal)
+      .then(setAnalytics)
+      .catch((reason: unknown) => {
+        if (!controller.signal.aborted) {
+          setError(
+            reason instanceof Error
+              ? reason.message
+              : 'Nie udało się pobrać analityki.',
           );
         }
       })
@@ -634,6 +690,20 @@ export function App({ initialDate = today() }: AppProps) {
         token={token}
         onSignOut={signOut}
         navigation={<PageNavigation current="graph" />}
+      />
+    );
+  }
+
+  if (view.kind === 'analytics') {
+    return (
+      <AnalyticsView
+        date={date}
+        onDateChange={setDate}
+        analytics={analytics}
+        loading={loading}
+        error={error}
+        onSignOut={signOut}
+        navigation={<PageNavigation current="analytics" />}
       />
     );
   }

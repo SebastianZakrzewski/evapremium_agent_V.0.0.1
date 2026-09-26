@@ -1,3 +1,26 @@
+export interface AnalyticsAxisCounts {
+  pass: number;
+  fail: number;
+  skipped: number;
+}
+
+export interface AnalyticsDay {
+  date: string;
+  turns: number;
+  pass: number;
+  fail: number;
+  retrieval: AnalyticsAxisCounts;
+  action: AnalyticsAxisCounts;
+  byIntent: Array<{ intent: string; turns: number; pass: number }>;
+  reasons: Array<{ code: string; count: number }>;
+  failures: Array<{
+    sessionId: string;
+    occurredAt: string;
+    intent: string;
+    codes: string[];
+  }>;
+}
+
 export interface DaySummary {
   date: string;
   relief: { sessions: number };
@@ -38,7 +61,8 @@ export interface SessionEvent {
     | 'context_search'
     | 'lead_attempted'
     | 'tool_failed'
-    | 'decision_trace';
+    | 'decision_trace'
+    | 'turn_judged';
   payload: Record<string, unknown>;
 }
 
@@ -166,6 +190,18 @@ export async function fetchDaySummary(
 ): Promise<DaySummary> {
   return dashboardFetch<DaySummary>(
     `/v1/dashboard/summary?date=${encodeURIComponent(date)}`,
+    token,
+    signal,
+  );
+}
+
+export async function fetchAnalytics(
+  date: string,
+  token: string,
+  signal?: AbortSignal,
+): Promise<AnalyticsDay> {
+  return dashboardFetch<AnalyticsDay>(
+    `/v1/dashboard/analytics?date=${encodeURIComponent(date)}`,
     token,
     signal,
   );

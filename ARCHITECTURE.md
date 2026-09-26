@@ -211,10 +211,12 @@ przegląd doby z czterema hipotezami, lista sesji filtrowana po dacie i jednym
 znaczniku oraz szczegół z transkryptem i chronologiczną osią eventów. Kwota
 jest renderowana wyłącznie z `quote_issued`; naruszenie w przeglądzie prowadzi
 do sesji. Widoki używają nawigacji hash bez dodatkowego routera, w tym
-`#/graf`. Nie Mastra Studio
+`#/graf` i `#/analityka`. Analityka czyta `turn_judged`: dobór retrievalu
+(zgodność lookupu z rankingiem searcha) albo akcji (narzędzie z allowlisty
+tury). To nie jest ocena językowa odpowiedzi. Nie Mastra Studio
 (`/mastra`) i nie kolejka Bitrix. Nest emituje zdarzenia domenowe za portem `AGENT_EVENTS`
 (in-memory albo `eva_bot.agent_events`). Odczyt: `GET /v1/dashboard/summary`,
-`/sessions`, `/sessions/:id`, `/context-graph`, `/context-activity`,
+`/analytics`, `/sessions`, `/sessions/:id`, `/context-graph`, `/context-activity`,
 `/container-log` za
 `DASHBOARD_TOKEN`; CORS tylko
 `DASHBOARD_ORIGIN`. `/context-graph` liczy w procesie pozycje MDS i krawędzie

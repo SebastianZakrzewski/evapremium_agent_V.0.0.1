@@ -8,6 +8,7 @@ export const AGENT_EVENT_TYPES = [
   'lead_attempted',
   'tool_failed',
   'decision_trace',
+  'turn_judged',
 ] as const;
 
 export type AgentEventType = (typeof AGENT_EVENT_TYPES)[number];

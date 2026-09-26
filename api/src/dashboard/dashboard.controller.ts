@@ -19,6 +19,11 @@ export class DashboardController {
     return this.queries.summary(date);
   }
 
+  @Get('analytics')
+  analytics(@Query('date') date: string) {
+    return this.queries.analytics(date);
+  }
+
   @Get('context-graph')
   contextGraph() {
     return this.queries.contextGraph();

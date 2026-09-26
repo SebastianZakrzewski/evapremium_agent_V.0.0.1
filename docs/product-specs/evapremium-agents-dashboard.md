@@ -60,6 +60,21 @@ Konwersja sklepu (zamówienie, lift widget on/off) jest **poza** tą specyfikacj
    `decision_trace`, a przy jego braku `intent_accepted`. Ślad już wpięty w linię
    bufora nie pojawia się drugi raz przy kolejnym odpytaniu. Bez treści wiadomości.
 
+## Analityka doboru (poza KPI 0.0.1)
+
+Osobny widok `#/analityka`. Nie zastępuje czterech hipotez przeglądu doby.
+Po turze Nest zapisuje `turn_judged`: werdykt `pass`/`fail`, wymiary retrieval
+i akcja (`pass`/`fail`/`skipped`), kody powodu, intencja, uporządkowane slugi,
+pewność, lookupy ze zgodnością rankingu i lista narzędzi. Bez treści wiadomości.
+Retrieval dotyczy tury wiedzy (albo profilu, który wołał search/lookup): jeden
+search, lookup ze zwróconej listy, przy `high` tylko pozycja 1, przy
+`ambiguous` pozycja 1 albo dalsza z listy. Akcja: narzędzia z allowlisty tury;
+przy wykonaniu `tool` oczekiwane narzędzie musi paść. Brak `quote_issued` nie
+jest porażką akcji — to zostaje w hipotezie Wycena. Odczyt:
+`GET /v1/dashboard/analytics?date=` za tym samym tokenem. Wykresy: udział pass,
+retrieval vs akcja, powody, rozbicie po intencji, lista porażek do sesji.
+Ocena językowa „odpowiedź na temat” zostaje poza tym widokiem.
+
 ## Poza 0.0.1
 
 Kolejka Bitrix, UI Studio / traces Mastry, Sentry w panelu, alerty, CSV,

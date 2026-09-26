@@ -20,6 +20,7 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 | events-012 | high | Lustro drzewa: ranking i zgodność lookupu, bez pytania |
 | events-007 | high | Stub czatu emituje wycenę w sesji |
 | events-008 | high | context_search bez body FAQ |
+| events-013 | high | turn_judged ze śladu search/lookup, bez pytania |
 
 ### events-001 — Kaskada 0/1/N → cascade_resolved
 
@@ -67,7 +68,7 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 - **Krytyczność:** high
 - **Logika:** zaakceptowana intencja tury i ślad decyzji, nie kopia wiadomości.
 - **Wejście:** `MastraChatAgent.stream` z pytaniem o cenę bez marki
-- **Wyjście:** `intent_accepted` `{ intent: 'pricing' }` oraz `decision_trace` z `execution: workflow` i `workflow: quote_vehicle`; JSON bez pytania
+- **Wyjście:** `intent_accepted` `{ intent: 'pricing' }`, `decision_trace` z `execution: workflow` i `workflow: quote_vehicle`, oraz `turn_judged` z retrieval skipped i action pass; JSON bez pytania
 
 ### events-006 — tool_failed bez kopii czatu
 
@@ -101,13 +102,21 @@ intencja, awaria toola) bez treści wiadomości. Slice 1: adapter in-memory.
 - **Wejście:** format bez koloru (`kolory` / `material-eva`, pudło, `w rankingu`); `searchLeaves` „kiedy wyślecie dywaniki” z preferencją `info`, potem lookup `dostawa` i `pielegnacja`
 - **Wyjście:** blok `[drzewo]` z gałęziami, rankingiem, liśćmi i pewnością `wysoka`; w buforze `tree-search` (`info`, liść `dostawa`) oraz lookup `hit`/`#1` i `miss`/`poza rankingiem`; JSON bez pytania i bez „Wysyłka w 5–7 dni”
 
-
+### events-007 — Stub czatu emituje wycenę w sesji
 
 - **Kod:** `tests/api/agent-events/agent-events.spec.ts` → `it('emits quote_issued when the stub chat agent quotes in a session')`
 - **Krytyczność:** high
 - **Logika:** `sessionId` z `handle` trafia do ALS i do eventu.
 - **Wejście:** `postChatMessage` stub `quote passenger_car komplet-5szt`
 - **Wyjście:** `quote_issued` na `session-stub`
+
+### events-013 — turn_judged ze śladu search/lookup, bez pytania
+
+- **Kod:** `tests/api/agent-events/agent-events.spec.ts` → `it('records turn_judged from search and lookup without the question text')`
+- **Krytyczność:** high
+- **Logika:** po turze wiedzy event niesie uporządkowane slugi, zgodność lookupu i listę narzędzi, bez treści pytania.
+- **Wejście:** `beginTurnTrace`, search `kiedy wyślecie dywaniki`, lookup pierwszego hitu, `recordTurnJudgment` delivery/knowledge
+- **Wyjście:** `turn_judged` retrieval pass, slug `dostawa`, agreement `top`, narzędzia search i lookup; JSON bez pytania
 
 ### events-008 — context_search bez body FAQ
 

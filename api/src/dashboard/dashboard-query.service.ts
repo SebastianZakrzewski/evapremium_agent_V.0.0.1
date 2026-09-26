@@ -17,6 +17,7 @@ import {
   listSessionMarkers,
   pageContainerLog,
   sessionView,
+  summarizeAnalytics,
   summarizeDay,
   utcDayRange,
   type SessionMarker,
@@ -34,6 +35,12 @@ export class DashboardQueryService {
     const range = utcDayRange(date);
     const events = await this.events.listInRange(range.fromIso, range.toIso);
     return summarizeDay(date, events);
+  }
+
+  async analytics(date: string) {
+    const range = utcDayRange(date);
+    const events = await this.events.listInRange(range.fromIso, range.toIso);
+    return summarizeAnalytics(date, events);
   }
 
   async listSessions(date: string, marker?: SessionMarker) {

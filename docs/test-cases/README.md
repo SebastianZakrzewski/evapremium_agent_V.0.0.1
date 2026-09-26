@@ -93,6 +93,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Składanie wyceny auta | [api/domain/quote-vehicle-price.md](api/domain/quote-vehicle-price.md) | `tests/api/domain/quote-vehicle-price.spec.ts` |
 | Retrieval gałęzi | [api/domain/branch-retrieval.md](api/domain/branch-retrieval.md) | `tests/api/domain/branch-retrieval.spec.ts` |
 | Ślad decyzji | [api/domain/decision-trace.md](api/domain/decision-trace.md) | `tests/api/domain/decision-trace.spec.ts` |
+| Sędzia tury | [api/domain/judge-turn.md](api/domain/judge-turn.md) | `tests/api/domain/judge-turn.spec.ts` |
 | Lead Bitrix (domena) | [api/domain/lead.md](api/domain/lead.md) | `tests/api/domain/lead.spec.ts` |
 | Resolver kaskady | [api/templates/template-cascade-resolver.md](api/templates/template-cascade-resolver.md) | `tests/api/templates/template-cascade.resolver.spec.ts` |
 | Resolver wyceny | [api/pricing/pricing-resolver.md](api/pricing/pricing-resolver.md) | `tests/api/pricing/pricing.resolver.spec.ts` |
@@ -129,6 +130,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Dashboard — przegląd doby | [dashboard/overview.md](dashboard/overview.md) | `tests/dashboard/App.test.tsx` |
 | Dashboard — sesje | [dashboard/sessions.md](dashboard/sessions.md) | `tests/dashboard/App.test.tsx` |
 | Dashboard — graf kontekstu | [dashboard/context-graph.md](dashboard/context-graph.md) | `tests/dashboard/App.test.tsx` |
+| Dashboard — analityka | [dashboard/analytics.md](dashboard/analytics.md) | `tests/dashboard/App.test.tsx` |
 | Aktualizacja kontenera API | [deploy/update-container.md](deploy/update-container.md) | `tests/deploy/update-container.test.mjs` |
 | Vercel dashboard (bez proxy czatu) | [deploy/dashboard-vercel.md](deploy/dashboard-vercel.md) | `tests/deploy/dashboard-vercel.test.mjs` |
 | Obraz Docker Studio | [deploy/studio-image.md](deploy/studio-image.md) | `tests/deploy/studio.test.mjs` |

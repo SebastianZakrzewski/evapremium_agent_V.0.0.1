@@ -666,3 +666,58 @@ select:focus {
 .container-log-error {
   color: #e07a72;
 }
+
+.analytics-panel {
+  margin: 0 0 28px;
+}
+
+.analytics-panel h2 {
+  margin-bottom: 16px;
+  font-size: 1.35rem;
+  font-weight: 620;
+  letter-spacing: -0.03em;
+}
+
+.share-row + .share-row {
+  margin-top: 14px;
+}
+
+.share-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+  color: #4d4f49;
+  font-size: 0.92rem;
+}
+
+.share-track {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e6e6e1;
+}
+
+.share-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: #20211f;
+}
+
+.intent-breakdown {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.intent-breakdown li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-top: 1px solid #e4e4de;
+}
+
+.intent-breakdown li:last-child {
+  border-bottom: 1px solid #e4e4de;
+}
