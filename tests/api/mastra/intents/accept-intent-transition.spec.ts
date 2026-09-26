@@ -57,7 +57,7 @@ describe('intent session memory', () => {
 
     const second = await prepareIntentTurn(
       qualifier,
-      'Ile kosztują dywaniki Volkswagen Golf 8?',
+      'Ile kosztują dywaniki Volkswagen Golf 8 kombi 2019?',
       { currentIntent: state.get(sessionId) },
     );
     state.set(sessionId, second.intent);

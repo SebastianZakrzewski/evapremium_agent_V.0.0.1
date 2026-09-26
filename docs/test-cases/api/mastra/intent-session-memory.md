@@ -54,8 +54,8 @@ wymuszone `out_of_scope` (niska pewność) omija filtr.
 - **Kod:** `tests/api/mastra/intents/accept-intent-transition.spec.ts` → `it('loads pricing tools on a legal switch from product_info')`
 - **Krytyczność:** critical
 - **Logika:** Pamięć sesji + legalna krawędź otwiera macierz.
-- **Wejście:** ta sama sesja, fit potem „ile kosztują”
-- **Wyjście:** druga tura `pricing` z `quote-price`
+- **Wejście:** ta sama sesja, fit potem wycena z marką, modelem, rokiem i nadwoziem
+- **Wyjście:** druga tura `pricing` z `quote-vehicle`
 
 ### memory-006 — Pewny out_of_scope przy FAQ nie otwiera ceny
 
