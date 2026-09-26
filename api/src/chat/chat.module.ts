@@ -29,6 +29,7 @@ import {
   InMemoryIntentSessionState,
   type IntentSessionState,
 } from '../mastra/intents/intent-session-state';
+import type { FitmentCascadePort } from '../domain/fitment-session';
 
 @Module({
   imports: [
@@ -83,18 +84,30 @@ import {
         tools: ShopTools,
         intentState: IntentSessionState,
         events: AgentEventSink,
+        templates: TemplateCascadeService,
       ) => {
         if (!mastra) {
           return new StubChatAgent(tools);
         }
+        const cascade: FitmentCascadePort = {
+          resolve: (input) => templates.resolve(input),
+          listAliases: () => templates.listAliases(),
+        };
         return new MastraChatAgent(
           mastra.getAgent(EVA_SHOP_AGENT_KEY),
           new MastraIntentQualifier(createEvaQualifierAgent()),
           intentState,
           events,
+          cascade,
         );
       },
-      inject: [EVA_MASTRA, ShopTools, INTENT_SESSION_STATE, AGENT_EVENTS],
+      inject: [
+        EVA_MASTRA,
+        ShopTools,
+        INTENT_SESSION_STATE,
+        AGENT_EVENTS,
+        TemplateCascadeService,
+      ],
     },
   ],
   exports: [EVA_MASTRA, CHAT_SESSIONS],

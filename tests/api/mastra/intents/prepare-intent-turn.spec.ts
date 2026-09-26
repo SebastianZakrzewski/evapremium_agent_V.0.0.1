@@ -1,3 +1,9 @@
+import type { FitmentSnapshot } from '@api/domain/fitment-session';
+import { resolveTemplate } from '@api/domain/template-cascade';
+import {
+  CASCADE_ALIASES,
+  CASCADE_TEMPLATES,
+} from '@api/templates/in-memory/cascade-fixture';
 import {
   assembleTurnInstructions,
   prepareIntentTurn,
@@ -23,7 +29,7 @@ describe('prepareIntentTurn', () => {
   it('gives a complete pricing turn the quote-vehicle tool', async () => {
     const turn = await prepareIntentTurn(
       qualifier,
-      'Ile kosztują dywaniki Volkswagen Golf 8?',
+      'Ile kosztują dywaniki Volkswagen Golf 8 kombi 2019?',
     );
     const tools = selectTurnTools(shopCatalog, turn.toolIds);
 
@@ -35,7 +41,9 @@ describe('prepareIntentTurn', () => {
     });
     expect(Object.keys(tools)).toEqual(['quote-vehicle']);
     expect(profileAllowsTool(turn.toolIds, 'quote-vehicle')).toBe(true);
-    expect(turn.instructions).toContain('Wykonanie: wywołaj quote-vehicle.');
+    expect(turn.instructions).toContain('Wykonanie: wywołaj quote-vehicle');
+    expect(turn.instructions).toContain('year=2019');
+    expect(turn.instructions).toContain('bodyType="kombi"');
   });
 
   it('holds quote tools until the vehicle workflow has both slots', async () => {
@@ -102,5 +110,76 @@ describe('prepareIntentTurn', () => {
     expect(afterText).toContain('gwarancja');
     expect(deliveryText).toContain('confidence=high');
     expect(deliveryText).not.toContain('od najwyższego score');
+  });
+
+  it('runs the cascade workflow for a fitment action and suspends on body', async () => {
+    const turn = await prepareIntentTurn(
+      qualifier,
+      'Chcę dopasować dywaniki do VW Golf 8',
+      {
+        cascade: {
+          resolve: (input) =>
+            Promise.resolve(
+              resolveTemplate(input, CASCADE_TEMPLATES, CASCADE_ALIASES),
+            ),
+          listAliases: () => CASCADE_ALIASES,
+        },
+      },
+    );
+
+    expect(turn.execution).toEqual({
+      kind: 'workflow',
+      workflow: 'fitment_cascade',
+    });
+    expect(turn.toolIds).toEqual([]);
+    expect(turn.executionNote).toContain('Brakuje rocznika');
+    expect(turn.fitment?.missing).toBe('year');
+  });
+
+  it('resumes a saved fitment with the body reply and does not requalify', async () => {
+    const fitment: FitmentSnapshot = {
+      workflow: 'fitment_cascade',
+      step: 'waiting_for_vehicle',
+      missing: 'body_type',
+      slots: { car_brand: 'vw', car_model: 'golf 8', year: 2021 },
+    };
+    const qualifier = {
+      qualify: async () => {
+        throw new Error('should not qualify');
+      },
+    };
+    const turn = await prepareIntentTurn(qualifier, 'hatcback', {
+      fitment,
+      cascade: {
+        resolve: (input) =>
+          Promise.resolve(
+            resolveTemplate(input, CASCADE_TEMPLATES, CASCADE_ALIASES),
+          ),
+        listAliases: () => CASCADE_ALIASES,
+      },
+    });
+
+    expect(turn.clearFitment).toBe(true);
+    expect(turn.execution.kind).toBe('knowledge');
+    expect(turn.executionNote).toContain('Kaskada: one');
+    expect(turn.executionNote).toContain('body=hatchback');
+    expect(turn.toolIds).not.toContain('resolve-template');
+  });
+
+  it('drops a saved fitment when the next message is a new question', async () => {
+    const fitment: FitmentSnapshot = {
+      workflow: 'fitment_cascade',
+      step: 'waiting_for_vehicle',
+      missing: 'body_type',
+      slots: { car_brand: 'vw', car_model: 'golf 8', year: 2021 },
+    };
+    const turn = await prepareIntentTurn(
+      qualifier,
+      'Jakie macie kolory?',
+      { fitment },
+    );
+
+    expect(turn.clearFitment).toBe(true);
+    expect(turn.intent).toBe('product_info');
   });
 });

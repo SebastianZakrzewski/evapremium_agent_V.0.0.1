@@ -1,3 +1,4 @@
+import type { FitmentSnapshot } from '../../domain/fitment-session';
 import type { QuoteWorkflowSnapshot } from '../../domain/quote-vehicle';
 import type { ShopIntent } from './schema';
 
@@ -11,11 +12,14 @@ export interface IntentSessionState {
     sessionId: string,
     snapshot: QuoteWorkflowSnapshot | undefined,
   ): void;
+  getFitment(sessionId: string): FitmentSnapshot | undefined;
+  setFitment(sessionId: string, snapshot: FitmentSnapshot | undefined): void;
 }
 
 export class InMemoryIntentSessionState implements IntentSessionState {
   private readonly intents = new Map<string, ShopIntent>();
   private readonly quoteWorkflows = new Map<string, QuoteWorkflowSnapshot>();
+  private readonly fitments = new Map<string, FitmentSnapshot>();
 
   get(sessionId: string): ShopIntent | undefined {
     return this.intents.get(sessionId);
@@ -38,5 +42,17 @@ export class InMemoryIntentSessionState implements IntentSessionState {
       return;
     }
     this.quoteWorkflows.set(sessionId, snapshot);
+  }
+
+  getFitment(sessionId: string): FitmentSnapshot | undefined {
+    return this.fitments.get(sessionId);
+  }
+
+  setFitment(sessionId: string, snapshot: FitmentSnapshot | undefined): void {
+    if (snapshot === undefined) {
+      this.fitments.delete(sessionId);
+      return;
+    }
+    this.fitments.set(sessionId, snapshot);
   }
 }

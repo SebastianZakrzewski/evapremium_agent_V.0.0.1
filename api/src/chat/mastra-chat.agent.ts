@@ -1,6 +1,7 @@
 import type { Agent } from '@mastra/core/agent';
-import type { AgentEventSink } from '../agent-events/agent-event';
 import { recordAgentEvent } from '../agent-events/record-agent-event';
+import type { FitmentCascadePort } from '../domain/fitment-session';
+import type { AgentEventSink } from '../agent-events/agent-event';
 import { recordTurnJudgment } from '../agent-events/record-turn-judgment';
 import { beginTurnTrace } from '../agent-events/turn-trace';
 import { withTurnSession } from '../agent-events/turn-session-context';
@@ -21,6 +22,7 @@ export class MastraChatAgent implements ChatAgent {
     private readonly qualifier: IntentQualifier,
     private readonly intentState: IntentSessionState,
     private readonly events?: AgentEventSink,
+    private readonly cascade?: FitmentCascadePort,
   ) {}
 
   async handle(
@@ -69,15 +71,34 @@ export class MastraChatAgent implements ChatAgent {
       sessionId === undefined
         ? undefined
         : this.intentState.getQuoteWorkflow(sessionId);
+    const fitment =
+      sessionId === undefined
+        ? undefined
+        : this.intentState.getFitment(sessionId);
     const prepared = await prepareIntentTurn(this.qualifier, message, {
       currentIntent,
       quoteWorkflow,
+      fitment,
+      cascade: this.cascade,
       sessionId,
       log: logIntentTurnToConsole,
     });
     if (sessionId !== undefined) {
       this.intentState.set(sessionId, prepared.intent);
       this.intentState.setQuoteWorkflow(sessionId, prepared.quoteWorkflow);
+      if (prepared.fitment) {
+        this.intentState.setFitment(sessionId, prepared.fitment);
+      } else if (prepared.clearFitment) {
+        this.intentState.setFitment(sessionId, undefined);
+      }
+    }
+    if (prepared.cascadeMatch) {
+      recordAgentEvent(
+        this.events,
+        'cascade_resolved',
+        { match: prepared.cascadeMatch },
+        sessionId,
+      );
     }
     recordAgentEvent(
       this.events,

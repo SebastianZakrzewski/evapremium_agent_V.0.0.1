@@ -1,10 +1,19 @@
 import { chooseExecution, type ExecutionChoice } from '../../domain/choose-execution';
+import {
+  advanceFitmentCascade,
+  FITMENT_CASCADE_WORKFLOW,
+  type FitmentCascadeAdvance,
+  type FitmentCascadePort,
+  type FitmentSnapshot,
+} from '../../domain/fitment-session';
 import { decisionTracePayload } from '../../domain/decision-trace';
 import { fewShotLinesForIntent } from '../../domain/leaf-retrieval-few-shot';
 import {
   advanceQuoteVehicle,
+  advanceVehicleSlots,
   isSlotReply,
   type QuoteWorkflowSnapshot,
+  type VehicleSlotKey,
 } from '../../domain/quote-vehicle';
 import {
   subIntentBySlug,
@@ -38,13 +47,18 @@ export type PreparedTurn = {
   entities: RouterEntities;
   execution: ExecutionChoice;
   quoteWorkflow?: QuoteWorkflowSnapshot;
+  fitment?: FitmentSnapshot;
+  clearFitment?: boolean;
+  cascadeMatch?: 'none' | 'one' | 'many';
   relatedBranches: string[];
   executionNote?: string;
 };
 
-const MISSING_LABEL: Record<'car_brand' | 'car_model', string> = {
+const MISSING_LABEL: Record<VehicleSlotKey, string> = {
   car_brand: 'marki auta',
   car_model: 'modelu auta',
+  year: 'rocznika',
+  body_type: 'typu nadwozia',
 };
 
 export function assembleTurnInstructions(profile: IntentProfile): string {
@@ -98,6 +112,7 @@ function alignedConfig(
 function executionFor(
   profile: IntentProfile,
   result: QualifyResult | undefined,
+  entities: RouterEntities,
 ): ExecutionChoice {
   const config = alignedConfig(profile, result);
   if (config === undefined || result?.mode === undefined) {
@@ -105,7 +120,7 @@ function executionFor(
   }
   return chooseExecution({
     mode: result.mode,
-    entities: result.entities ?? {},
+    entities,
     config,
   });
 }
@@ -114,8 +129,18 @@ function executionNoteFor(
   execution: ExecutionChoice,
   entities: RouterEntities,
 ): string | undefined {
+  if (execution.kind === 'tool' && execution.tool === 'quote-vehicle') {
+    return `Wykonanie: wywołaj quote-vehicle z brand="${entities.car_brand ?? ''}", model="${entities.car_model ?? ''}", year=${entities.year ?? ''}, bodyType="${entities.body_type ?? ''}".`;
+  }
   if (execution.kind === 'tool') {
     return `Wykonanie: wywołaj ${execution.tool}.`;
+  }
+  if (execution.kind === 'workflow' && execution.workflow === FITMENT_CASCADE_WORKFLOW) {
+    const missing = advanceVehicleSlots({ slots: entities }).missing;
+    if (missing === undefined) {
+      return undefined;
+    }
+    return `Brakuje ${MISSING_LABEL[missing]}. Zapytaj o to. Nie wołaj resolve-template.`;
   }
   if (execution.kind === 'workflow') {
     const advanced = advanceQuoteVehicle({ entities });
@@ -135,7 +160,7 @@ function snapshotFor(
   execution: ExecutionChoice,
   entities: RouterEntities,
 ): QuoteWorkflowSnapshot | undefined {
-  if (execution.kind !== 'workflow') {
+  if (execution.kind !== 'workflow' || execution.workflow !== 'quote_vehicle') {
     return undefined;
   }
   const advanced = advanceQuoteVehicle({ entities });
@@ -145,9 +170,13 @@ function snapshotFor(
 function assembledTurn(
   profile: IntentProfile,
   result?: QualifyResult,
+  message?: string,
 ): PreparedTurn {
-  const execution = executionFor(profile, result);
-  const entities = result?.entities ?? {};
+  const entities = advanceVehicleSlots({
+    slots: result?.entities ?? {},
+    message,
+  }).slots;
+  const execution = executionFor(profile, result, entities);
   const config = alignedConfig(profile, result);
   const executionNote = executionNoteFor(execution, entities);
   const base = assembleTurnInstructions(profile);
@@ -200,6 +229,8 @@ async function qualifyOrOutOfScope(
 export type PrepareIntentTurnOptions = {
   currentIntent?: ShopIntent;
   quoteWorkflow?: QuoteWorkflowSnapshot;
+  fitment?: FitmentSnapshot;
+  cascade?: FitmentCascadePort;
   sessionId?: string;
   log?: (entry: IntentTurnLog) => void;
 };
@@ -208,8 +239,12 @@ function emitTurnLog(
   options: PrepareIntentTurnOptions | undefined,
   turn: PreparedTurn,
   extra: Pick<IntentTurnLog, 'candidateIntent' | 'forcedOutOfScope'>,
+  keepFitment = false,
 ): PreparedTurn {
   const execution = turn.execution;
+  if (options?.fitment && !keepFitment) {
+    turn = { ...turn, clearFitment: true };
+  }
   options?.log?.({
     sessionId: options.sessionId,
     currentIntent: options.currentIntent,
@@ -242,11 +277,90 @@ export function traceForTurn(turn: PreparedTurn): Record<string, string | null> 
   });
 }
 
+function cascadeFact(advance: FitmentCascadeAdvance): string {
+  if (advance.status === 'suspended') {
+    return `Brakuje ${MISSING_LABEL[advance.snapshot.missing]}. Zapytaj o to. Nie wołaj resolve-template.`;
+  }
+  const result = advance.result;
+  if (result.status === 'none') {
+    return 'Kaskada: none. Nie ma szablonu dla tego auta. Nie wołaj resolve-template.';
+  }
+  if (result.status === 'one') {
+    const template = result.template;
+    return `Kaskada: one. recordKey=${template.recordKey}, brand=${template.brandKey}, model=${template.modelKey}, body=${template.bodyTypeKey ?? ''}. Nie wołaj resolve-template.`;
+  }
+  return `Kaskada: many (${result.templates.length}). Nie wołaj resolve-template.`;
+}
+
+function turnFromCascade(advance: FitmentCascadeAdvance): PreparedTurn {
+  const profile = profileOrOutOfScope('product_info');
+  const executionNote = cascadeFact(advance);
+  const base = assembleTurnInstructions(profile);
+  const suspended = advance.status === 'suspended';
+  const knowledgeTools = ['lookup-leaf', 'search-leaves'] as const;
+  const entities = suspended ? advance.snapshot.slots : {};
+  return {
+    intent: 'product_info',
+    profile,
+    toolIds: suspended ? [] : [...knowledgeTools],
+    instructions: `${base}\n\n${executionNote}`,
+    subIntent: 'fitment',
+    mode: 'action',
+    entities,
+    execution: suspended
+      ? { kind: 'workflow', workflow: FITMENT_CASCADE_WORKFLOW }
+      : { kind: 'knowledge', tools: [...knowledgeTools] },
+    fitment: suspended ? advance.snapshot : undefined,
+    clearFitment: suspended ? undefined : true,
+    cascadeMatch: suspended ? 'many' : advance.result.status,
+    relatedBranches: ['dopasowanie'],
+    executionNote,
+  };
+}
+
+async function resumeFitmentTurn(
+  snapshot: FitmentSnapshot,
+  message: string,
+  cascade?: FitmentCascadePort,
+): Promise<PreparedTurn> {
+  const collected = advanceVehicleSlots({ slots: snapshot.slots, message });
+  if (collected.missing !== undefined || cascade === undefined) {
+    return turnFromCascade({
+      status: 'suspended',
+      snapshot: {
+        workflow: FITMENT_CASCADE_WORKFLOW,
+        step: 'waiting_for_vehicle',
+        missing: collected.missing ?? snapshot.missing,
+        slots: collected.slots,
+      },
+    });
+  }
+  return turnFromCascade(
+    await advanceFitmentCascade({
+      slots: collected.slots,
+      resolve: (input) => cascade.resolve(input),
+    }),
+  );
+}
+
 export async function prepareIntentTurn(
   qualifier: IntentQualifier,
   message: string,
   options?: PrepareIntentTurnOptions,
 ): Promise<PreparedTurn> {
+  if (
+    options?.fitment !== undefined &&
+    options.quoteWorkflow === undefined &&
+    isSlotReply(message)
+  ) {
+    return emitTurnLog(
+      options,
+      await resumeFitmentTurn(options.fitment, message, options.cascade),
+      { candidateIntent: 'product_info', forcedOutOfScope: false },
+      true,
+    );
+  }
+
   if (
     options?.quoteWorkflow !== undefined &&
     isSlotReply(message)
@@ -288,12 +402,37 @@ export async function prepareIntentTurn(
           mode: 'knowledge' as const,
           entities: {},
         };
-  return emitTurnLog(
-    options,
-    assembledTurn(profileOrOutOfScope(accepted), acceptedResult),
-    {
-      candidateIntent: result.intent,
-      forcedOutOfScope: false,
-    },
+  let turn = assembledTurn(
+    profileOrOutOfScope(accepted),
+    acceptedResult,
+    message,
   );
+  if (
+    turn.execution.kind === 'workflow' &&
+    turn.execution.workflow === FITMENT_CASCADE_WORKFLOW
+  ) {
+    const missing = advanceVehicleSlots({ slots: turn.entities }).missing;
+    if (missing !== undefined) {
+      turn = {
+        ...turn,
+        fitment: {
+          workflow: FITMENT_CASCADE_WORKFLOW,
+          step: 'waiting_for_vehicle',
+          missing,
+          slots: turn.entities,
+        },
+      };
+    } else if (options?.cascade) {
+      turn = turnFromCascade(
+        await advanceFitmentCascade({
+          slots: turn.entities,
+          resolve: (input) => options.cascade!.resolve(input),
+        }),
+      );
+    }
+  }
+  return emitTurnLog(options, turn, {
+    candidateIntent: result.intent,
+    forcedOutOfScope: false,
+  });
 }

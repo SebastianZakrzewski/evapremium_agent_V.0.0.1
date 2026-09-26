@@ -21,7 +21,12 @@ describe('chooseExecution', () => {
     expect(
       chooseExecution({
         mode: 'action',
-        entities: { car_brand: 'Volkswagen', car_model: 'Golf 8' },
+        entities: {
+          car_brand: 'Volkswagen',
+          car_model: 'Golf 8',
+          year: 2019,
+          body_type: 'kombi',
+        },
         config: quote,
       }),
     ).toEqual({
@@ -39,6 +44,25 @@ describe('chooseExecution', () => {
         config: quote,
       }),
     ).toEqual({ kind: 'workflow', workflow: 'quote_vehicle' });
+  });
+
+  it('runs a complete fitment action through the cascade workflow', () => {
+    const fitment = subIntentBySlug('fitment');
+    if (fitment === undefined) {
+      throw new Error('fitment is required');
+    }
+    expect(
+      chooseExecution({
+        mode: 'action',
+        entities: {
+          car_brand: 'Volkswagen',
+          car_model: 'Golf 8',
+          year: 2019,
+          body_type: 'kombi',
+        },
+        config: fitment,
+      }),
+    ).toEqual({ kind: 'workflow', workflow: 'fitment_cascade' });
   });
 
   it('clarifies an ambiguous mode without tools', () => {

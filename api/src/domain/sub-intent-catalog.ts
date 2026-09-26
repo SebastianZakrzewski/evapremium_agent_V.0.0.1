@@ -35,6 +35,8 @@ export type CatalogToolId = (typeof CATALOG_TOOL_IDS)[number];
 export type RouterEntities = {
   car_brand?: string;
   car_model?: string;
+  year?: number;
+  body_type?: string;
 };
 
 export type EntityKey = keyof RouterEntities;
@@ -108,9 +110,10 @@ export const SUB_INTENT_CATALOG: readonly SubIntentConfig[] = [
     relatedBranches: ['dopasowanie'],
     allowedModes: ['knowledge', 'action'],
     allowedTools: ['resolve-template', ...knowledgeFaq],
-    relatedWorkflows: [],
+    relatedWorkflows: ['fitment_cascade'],
     directTool: 'resolve-template',
-    requiredInputs: ['car_brand', 'car_model'],
+    requiredInputs: ['car_brand', 'car_model', 'year', 'body_type'],
+    fallbackWorkflow: 'fitment_cascade',
   },
   {
     slug: 'delivery_info',
@@ -144,7 +147,7 @@ export const SUB_INTENT_CATALOG: readonly SubIntentConfig[] = [
     allowedTools: ['quote-vehicle'],
     relatedWorkflows: ['quote_vehicle'],
     directTool: 'quote-vehicle',
-    requiredInputs: ['car_brand', 'car_model'],
+    requiredInputs: ['car_brand', 'car_model', 'year', 'body_type'],
     fallbackWorkflow: 'quote_vehicle',
   },
   {

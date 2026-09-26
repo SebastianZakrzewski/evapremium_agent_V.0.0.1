@@ -2,8 +2,8 @@
 
 Kod: `tests/api/domain/quote-vehicle.spec.ts`
 
-Logika zestawu: brak marki lub modelu wstrzymuje proces; krótka odpowiedź
-wznawia go bez nowej kwalifikacji; pytanie klienta zamyka workflow.
+Logika zestawu: brak marki, modelu, roku albo typu nadwozia wstrzymuje proces;
+krótka odpowiedź wznawia go bez nowej kwalifikacji; pytanie klienta zamyka workflow.
 Krok Mastry `quote-vehicle` woła `collectVehicleStep` i `suspend` — Jest
 nie ładuje modułu workflow Mastry (ten sam powód co `createIntentWorkflow`).
 

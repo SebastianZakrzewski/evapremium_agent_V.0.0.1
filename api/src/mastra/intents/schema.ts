@@ -33,6 +33,8 @@ export const qualifyResultSchema = z.object({
     .object({
       car_brand: z.string().optional(),
       car_model: z.string().optional(),
+      year: z.number().optional(),
+      body_type: z.string().optional(),
     })
     .default({}),
 });

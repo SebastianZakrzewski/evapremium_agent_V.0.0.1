@@ -25,7 +25,12 @@ describe('sub-intent catalog', () => {
     const quote = subIntentBySlug('indicative_quote');
     expect(quote?.directTool).toBe('quote-vehicle');
     expect(quote?.allowedTools).toEqual(['quote-vehicle']);
-    expect(quote?.requiredInputs).toEqual(['car_brand', 'car_model']);
+    expect(quote?.requiredInputs).toEqual([
+      'car_brand',
+      'car_model',
+      'year',
+      'body_type',
+    ]);
     expect(quote?.fallbackWorkflow).toBe('quote_vehicle');
     expect(quote?.allowedModes).toEqual(['knowledge', 'action']);
   });

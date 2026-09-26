@@ -42,6 +42,10 @@ export class ShopTools {
     return result;
   }
 
+  listVehicleAliases() {
+    return this.templates.listAliases();
+  }
+
   quotePrice(input: QuotePriceInput): QuotePriceResult {
     const result = this.pricing.quote(input);
     if (result.status === 'quoted') {

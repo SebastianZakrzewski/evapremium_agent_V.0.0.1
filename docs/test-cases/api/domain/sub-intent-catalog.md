@@ -22,6 +22,6 @@ bez slotów ma workflow, nie tool zamówienia.
 
 - **Kod:** `tests/api/domain/sub-intent-catalog.spec.ts` → `it('sends an incomplete indicative quote to the vehicle workflow')`
 - **Krytyczność:** high
-- **Logika:** Bez `car_brand` i `car_model` bezpośredni tool nie rusza; fallback to `quote_vehicle`.
+- **Logika:** Bez marki, modelu, roku i typu nadwozia bezpośredni tool nie rusza; fallback to `quote_vehicle`.
 - **Wejście:** slug `indicative_quote`
 - **Wyjście:** `directTool` `quote-vehicle`, `requiredInputs` marka i model, `fallbackWorkflow` `quote_vehicle`

@@ -8,10 +8,12 @@ export type QuoteWorkflowSnapshot = {
   entities: RouterEntities;
 };
 
+export type VehicleSlotKey = 'car_brand' | 'car_model' | 'year' | 'body_type';
+
 export type QuoteVehicleAdvance =
   | {
       status: 'suspended';
-      missing: 'car_brand' | 'car_model';
+      missing: VehicleSlotKey;
       snapshot: QuoteWorkflowSnapshot;
     }
   | {
@@ -20,7 +22,14 @@ export type QuoteVehicleAdvance =
       tool: 'quote-vehicle';
     };
 
-const SLOT_ORDER = ['car_brand', 'car_model'] as const;
+const SLOT_ORDER: readonly VehicleSlotKey[] = [
+  'car_brand',
+  'car_model',
+  'year',
+  'body_type',
+];
+
+const BODY_ALIASES = ['hatchback', 'hatch', 'kombi', 'wagon', 'sedan', 'limuzyna', 'liftback', 'suv', 'coupe', 'cabrio', 'van'] as const;
 
 function filled(entities: RouterEntities): RouterEntities {
   const next: RouterEntities = {};
@@ -30,13 +39,133 @@ function filled(entities: RouterEntities): RouterEntities {
   if (entities.car_model?.trim()) {
     next.car_model = entities.car_model.trim();
   }
+  if (typeof entities.year === 'number') {
+    next.year = entities.year;
+  }
+  if (entities.body_type?.trim()) {
+    next.body_type = entities.body_type.trim();
+  }
   return next;
 }
 
-function firstMissing(
-  entities: RouterEntities,
-): 'car_brand' | 'car_model' | undefined {
-  return SLOT_ORDER.find((key) => entities[key] === undefined);
+export function readYear(text: string): number | undefined {
+  const match = text.match(/\b(19[89]\d|20[0-3]\d)\b/);
+  if (!match?.[1]) {
+    return undefined;
+  }
+  return Number(match[1]);
+}
+
+export function readBodyType(text: string): string | undefined {
+  const normalized = text.trim().toLowerCase().replace(/\s+/g, ' ');
+  if (normalized.length === 0) {
+    return undefined;
+  }
+  const exact = BODY_ALIASES.find((alias) => alias === normalized);
+  if (exact) {
+    return exact;
+  }
+  const inside = BODY_ALIASES.find((alias) =>
+    new RegExp(`\\b${alias}\\b`, 'iu').test(normalized),
+  );
+  if (inside) {
+    return inside;
+  }
+  const closest = BODY_ALIASES.map((alias) => ({
+    alias,
+    distance: levenshtein(normalized, alias),
+  })).sort(
+    (left, right) =>
+      left.distance - right.distance || left.alias.localeCompare(right.alias),
+  );
+  const best = closest[0];
+  const next = closest[1];
+  if (!best || best.distance > 2) {
+    return undefined;
+  }
+  if (next && next.distance === best.distance) {
+    return undefined;
+  }
+  return best.alias;
+}
+
+function applyReply(entities: RouterEntities, missing: VehicleSlotKey, message: string): void {
+  if (missing === 'year') {
+    const year = readYear(message);
+    if (year !== undefined) {
+      entities.year = year;
+    }
+    return;
+  }
+  if (missing === 'body_type') {
+    const body = readBodyType(message);
+    if (body !== undefined) {
+      entities.body_type = body;
+    }
+    return;
+  }
+  entities[missing] = message.trim();
+}
+
+function harvest(entities: RouterEntities, message: string): void {
+  if (entities.year === undefined) {
+    const year = readYear(message);
+    if (year !== undefined) {
+      entities.year = year;
+    }
+  }
+  if (entities.body_type === undefined) {
+    const body = readBodyType(message);
+    if (body !== undefined) {
+      entities.body_type = body;
+    }
+  }
+}
+
+export function advanceVehicleSlots(input: {
+  slots: RouterEntities;
+  message?: string;
+}): { slots: RouterEntities; missing?: VehicleSlotKey } {
+  const slots = filled(input.slots);
+  if (input.message !== undefined) {
+    if (isSlotReply(input.message)) {
+      const missing = firstMissing(slots);
+      if (missing !== undefined) {
+        applyReply(slots, missing, input.message);
+      }
+    } else {
+      harvest(slots, input.message);
+    }
+  }
+  return { slots, missing: firstMissing(slots) };
+}
+
+function firstMissing(entities: RouterEntities): VehicleSlotKey | undefined {
+  return SLOT_ORDER.find((key) => !slotPresent(entities, key));
+}
+
+function slotPresent(entities: RouterEntities, key: VehicleSlotKey): boolean {
+  if (key === 'year') {
+    return typeof entities.year === 'number';
+  }
+  const value = entities[key];
+  return typeof value === 'string' && value.trim() !== '';
+}
+
+function levenshtein(left: string, right: string): number {
+  if (left === right) {
+    return 0;
+  }
+  let row = Array.from({ length: right.length + 1 }, (_, index) => index);
+  for (let i = 1; i <= left.length; i += 1) {
+    const current = [i];
+    for (let j = 1; j <= right.length; j += 1) {
+      const cost = left[i - 1] === right[j - 1] ? 0 : 1;
+      current[j] = Math.min(current[j - 1] + 1, row[j] + 1, row[j - 1] + cost);
+    }
+    row = current;
+  }
+  return row[right.length] ?? left.length;
 }
 
 export function isSlotReply(message: string): boolean {
@@ -57,14 +186,12 @@ export function advanceQuoteVehicle(input: {
   entities: RouterEntities;
   message?: string;
 }): QuoteVehicleAdvance {
-  const entities = filled(input.entities);
-  if (input.message !== undefined && isSlotReply(input.message)) {
-    const missing = firstMissing(entities);
-    if (missing !== undefined) {
-      entities[missing] = input.message.trim();
-    }
-  }
-  const missing = firstMissing(entities);
+  const collected = advanceVehicleSlots({
+    slots: input.entities,
+    message: input.message,
+  });
+  const entities = collected.slots;
+  const missing = collected.missing;
   if (missing !== undefined) {
     return {
       status: 'suspended',
@@ -91,7 +218,7 @@ export function collectVehicleStep(input: {
       action: 'suspend';
       payload: {
         step: 'waiting_for_vehicle';
-        missing: 'car_brand' | 'car_model';
+        missing: VehicleSlotKey;
         entities: RouterEntities;
       };
     }

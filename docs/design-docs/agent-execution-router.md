@@ -56,8 +56,13 @@ Czysta funkcja `chooseExecution` po kwalifikacji:
 
 „Czy pola są kompletne?” nie idzie do modelu. Cena i fakt nadal z Nest.
 
-`indicative_quote`: `directTool = quote-vehicle`, wymagane `car_brand`
-i `car_model`, brak → workflow `quote_vehicle`. Agent widzi jedną operację.
+`fitment` i `indicative_quote` w `action` wymagają marki, modelu, roku i typu
+nadwozia. Brak któregokolwiek pola uruchamia workflow (`fitment_cascade` albo
+`quote_vehicle`). Agent pyta o następny brakujący slot. Krótka odpowiedź
+uzupełnia go bez nowej kwalifikacji. Kaskada i wycena ruszają dopiero przy
+komplecie czterech pól.
+
+`indicative_quote`: po komplecie `directTool = quote-vehicle`. Agent widzi jedną operację.
 `resolve-template` i `quote-price` zostają w Neście. `composeQuoteVehicle`
 składa je w `quote-vehicle`: kaskada `none` / `many`, jeden szablon bez
 wariantu → `need_variant`, potem jedna kwota z macierzy. Przy `knowledge`
@@ -68,8 +73,9 @@ wycena nie woła `quote-vehicle`.
 Mastra (`id` `quote-vehicle`) suspend/resume. Krok woła tę samą funkcję
 domeny `advanceQuoteVehicle`.
 
-Brak marki albo modelu → `waiting_for_vehicle` i pytanie. Krótka odpowiedź
-uzupełnia brakujące pole i wznawia ten sam proces, bez nowej kwalifikacji.
+Brak marki, modelu, roku albo typu nadwozia → `waiting_for_vehicle` i pytanie.
+Krótka odpowiedź uzupełnia brakujące pole i wznawia ten sam proces, bez nowej
+kwalifikacji.
 Pytanie (znak zapytania, „jak/czy/ile…”) zamyka workflow i idzie zwykłą
 kwalifikacją. Po komplecie slotów tura dostaje `quote-vehicle`.
 Id toola i id workflow Mastry to ten sam napis `quote-vehicle`; to dwa

@@ -5,6 +5,8 @@ import { collectVehicleStep } from '../../domain/quote-vehicle';
 const entitiesSchema = z.object({
   car_brand: z.string().optional(),
   car_model: z.string().optional(),
+  year: z.number().optional(),
+  body_type: z.string().optional(),
 });
 
 const vehicleInputSchema = z.object({
@@ -13,7 +15,7 @@ const vehicleInputSchema = z.object({
 
 const suspendSchema = z.object({
   step: z.literal('waiting_for_vehicle'),
-  missing: z.enum(['car_brand', 'car_model']),
+  missing: z.enum(['car_brand', 'car_model', 'year', 'body_type']),
   entities: entitiesSchema,
 });
 
@@ -31,7 +33,7 @@ export function createCollectVehicleStep() {
   return createStep({
     id: 'collect-vehicle',
     description:
-      'Zbiera markę i model. Brak pola wstrzymuje workflow do następnej wiadomości.',
+      'Zbiera markę, model, rok i typ nadwozia. Brak pola wstrzymuje workflow.',
     inputSchema: vehicleInputSchema,
     outputSchema: readySchema,
     resumeSchema,

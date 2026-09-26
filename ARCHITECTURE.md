@@ -75,7 +75,11 @@ serwerowo (nie anon z widgetu).
    `alias_normalized`, `canonical_key`, opcjonalny `brand_key` dla modeli)
    zostają dla nadwozia i dla ścieżki bez klasyfikatora. Tabela jest na PROD
    (migracja `20260911220000_vehicle_slot_aliases.sql`). W teście: fixture,
-   jeden strzał ze znanymi kluczami → 0 / 1 / N.
+   jeden strzał ze znanymi kluczami → 0 / 1 / N. Dopasowanie i wycena wymagają
+   marki, modelu, roku i typu nadwozia. Brakujące pole wstrzymuje workflow
+   (`fitment_cascade` albo `quote_vehicle`) i agent dopytuje. Krótka odpowiedź
+   uzupełnia następny slot bez nowej kwalifikacji. Filtr rusza dopiero przy
+   komplecie. Stan jest w pamięci procesu.
 2. **Cennik:** `pricing_vehicle_categories`, `pricing_variants`,
    `pricing_category_variants`, `pricing_matrix` (cena = kategoria + wariant +
    `mat_type`). Zakres: wszystkie szablony z tabeli, nie podzbiór „hitów”.

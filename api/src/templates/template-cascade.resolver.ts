@@ -4,6 +4,7 @@ import {
   type TemplateCascadeInput,
   type TemplateCascadeResult,
   type VehicleKeyClassifier,
+  type VehicleSlotAlias,
 } from '../domain/template-cascade';
 import type { AliasCatalog, TemplateCatalog } from './ports';
 
@@ -21,5 +22,9 @@ export class TemplateCascadeResolver {
       return Promise.resolve(resolveTemplate(input, templates, aliases));
     }
     return resolveClassifiedTemplate(input, templates, aliases, this.classifier);
+  }
+
+  listAliases(): VehicleSlotAlias[] {
+    return this.aliases.list();
   }
 }

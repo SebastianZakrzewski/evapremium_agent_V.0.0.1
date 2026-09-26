@@ -17,6 +17,7 @@ import { createShopToolCatalog, mastraInstanceToolRegistry } from './tools';
 import { resolveMastraObservabilityPath } from './mastra-observability-path';
 import { createEvaQualifierAgent } from './intents/create-eva-qualifier-agent';
 import { createIntentWorkflow } from './intents/create-intent-workflow';
+import { createFitmentCascadeWorkflow } from './intents/create-fitment-cascade-workflow';
 import { createQuoteVehicleWorkflow } from './intents/create-quote-vehicle-workflow';
 import type { IntentQualifier } from './intents/intent-qualifier';
 import { MastraIntentQualifier } from './intents/mastra-intent-qualifier';
@@ -111,6 +112,10 @@ export function createEvaMastra(
     workflows: {
       evaIntentWorkflow: createIntentWorkflow(studioQualifier()),
       quoteVehicleWorkflow: createQuoteVehicleWorkflow(),
+      fitmentCascadeWorkflow: createFitmentCascadeWorkflow({
+        resolve: (input) => tools.resolveTemplate(input),
+        listAliases: () => tools.listVehicleAliases(),
+      }),
     },
   });
 }

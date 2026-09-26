@@ -1,3 +1,4 @@
+import { FITMENT_CASCADE_WORKFLOW } from './fitment-session';
 import type {
   CatalogToolId,
   RouterEntities,
@@ -13,8 +14,11 @@ export type ExecutionChoice =
   | { kind: 'clarify' };
 
 function inputPresent(entities: RouterEntities, key: keyof RouterEntities): boolean {
+  if (key === 'year') {
+    return typeof entities.year === 'number';
+  }
   const value = entities[key];
-  return value !== undefined && value.trim() !== '';
+  return typeof value === 'string' && value.trim() !== '';
 }
 
 export function chooseExecution(input: {
@@ -44,9 +48,18 @@ export function chooseExecution(input: {
     };
   }
 
-  const ready =
-    input.config.directTool !== undefined &&
-    input.config.requiredInputs.every((key) => inputPresent(input.entities, key));
+  const slotsReady = input.config.requiredInputs.every((key) =>
+    inputPresent(input.entities, key),
+  );
+  if (
+    input.config.slug === 'fitment' &&
+    input.mode === 'action' &&
+    slotsReady
+  ) {
+    return { kind: 'workflow', workflow: FITMENT_CASCADE_WORKFLOW };
+  }
+
+  const ready = input.config.directTool !== undefined && slotsReady;
   if (ready && input.config.directTool !== undefined) {
     return {
       kind: 'tool',
