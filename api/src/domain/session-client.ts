@@ -178,20 +178,80 @@ export class SessionClient {
   }
 }
 
+const FAQ_SUB_INTENTS = new Set([
+  'available_colors',
+  'material',
+  'delivery_info',
+  'complaint_info',
+]);
+
 export function contextNeedForTurn(turn: {
+  intent?: string;
   subIntent: string | null;
   execution: { kind: string; workflow?: string };
 }): ClientContextNeed {
   const workflow =
     turn.execution.kind === 'workflow' ? turn.execution.workflow : undefined;
-  const vehicle =
+  const explicit =
     turn.subIntent === 'fitment' ||
     turn.subIntent === 'indicative_quote' ||
     workflow === 'fitment_cascade' ||
     workflow === 'quote_vehicle';
+  const continuation =
+    turn.intent === 'product_info' &&
+    turn.subIntent === null &&
+    !FAQ_SUB_INTENTS.has(turn.subIntent ?? '');
+  const vehicle = explicit || continuation;
   const quote =
     turn.subIntent === 'indicative_quote' || workflow === 'quote_vehicle';
   return { vehicle, quote, person: false };
+}
+
+export function shouldRememberQualifierEntities(turn: {
+  subIntent: string | null;
+  execution: { kind: string };
+  fitment?: unknown;
+  collectedSlots?: unknown;
+  verifiedProduct?: unknown;
+}): boolean {
+  return (
+    turn.subIntent === 'fitment' ||
+    turn.subIntent === 'indicative_quote' ||
+    turn.execution.kind === 'workflow' ||
+    turn.fitment !== undefined ||
+    turn.collectedSlots !== undefined ||
+    turn.verifiedProduct !== undefined
+  );
+}
+
+export function conflictsWithStoredVehicle(
+  message: string,
+  entities: RouterEntities,
+  known: { carBrand?: string; carModel?: string },
+): boolean {
+  return (
+    namesDifferentSlot(message, entities.car_brand, known.carBrand) ||
+    namesDifferentSlot(message, entities.car_model, known.carModel)
+  );
+}
+
+function namesDifferentSlot(
+  message: string,
+  incoming: string | undefined,
+  stored: string | undefined,
+): boolean {
+  const next = incoming?.trim();
+  const current = stored?.trim();
+  if (!next || !current) {
+    return false;
+  }
+  if (next.toLowerCase() === current.toLowerCase()) {
+    return false;
+  }
+  if (next.toLowerCase() === message.trim().toLowerCase()) {
+    return false;
+  }
+  return true;
 }
 
 function personLine(data: SessionClientData): string | undefined {

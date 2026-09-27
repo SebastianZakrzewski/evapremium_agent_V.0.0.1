@@ -14,6 +14,7 @@ odpowiedzi.
 | client-002 | critical | Auto zostaje, szablon dochodzi przy one |
 | client-003 | critical | Dobór i wycena dostają auto, kolor nie |
 | client-004 | high | Inne auto czyści klucz szablonu |
+| client-006 | high | Całe zdanie nie jest nową marką |
 | client-005 | high | Jeden wiersz w store na sesję |
 | chat-mastra-002 | high | Agent dokleja auto tylko gdy tura go potrzebuje |
 
@@ -48,6 +49,23 @@ odpowiedzi.
 - **Logika:** nowa marka unieważnia poprzedni `recordKey`, dopóki kaskada nie policzy nowego auta.
 - **Wejście:** zapis Toyota z `templateRecordKey=old`, potem slot `car_brand=Audi`
 - **Wyjście:** `carBrand=Audi`, brak `templateRecordKey`, `cascadeStatus=suspended`
+
+### client-006 — Całe zdanie nie jest nową marką
+
+- **Kod:** `tests/api/domain/session-client.spec.ts` → `it('does not treat the whole follow-up sentence as a new brand')`
+- **Krytyczność:** high
+- **Logika:** „już podałem” nie jest inną marką i nie jest turą, z której wolno zapisać encje kwalifikatora.
+- **Wejście:** wiadomość `juz podalem`, encja `car_brand=juz podalem`, zapisana marka Toyota; tura `knowledge` bez sub-intencji
+- **Wyjście:** brak konfliktu z zapisanym autem; encje kwalifikatora nie są zapamiętywane
+
+### client-003 uzupełnienie — dalszy ciąg product_info
+
+- **Kod:** `tests/api/domain/session-client.spec.ts` → `it('puts the car into a fitment turn and leaves a color question without it')`
+- **Krytyczność:** critical
+- **Logika:** `product_info` bez sub-intencji (na przykład „i jak?”) dostaje auto. Kolor nadal nie.
+- **Wejście:** profil Toyoty, tura `intent=product_info`, `subIntent=null`
+- **Wyjście:** notatka zawiera `marka=Toyota` i nie zawiera imienia
+
 
 ### client-005 — Jeden wiersz w store na sesję
 

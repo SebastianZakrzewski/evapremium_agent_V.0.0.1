@@ -1,5 +1,9 @@
 import { chooseExecution, type ExecutionChoice } from '../../domain/choose-execution';
 import {
+  conflictsWithStoredVehicle,
+  type SessionClientData,
+} from '../../domain/session-client';
+import {
   advanceFitmentCascade,
   FITMENT_CASCADE_WORKFLOW,
   type FitmentCascadeAdvance,
@@ -230,14 +234,103 @@ async function qualifyOrOutOfScope(
   }
 }
 
+export type KnownSessionVehicle = Pick<
+  SessionClientData,
+  | 'carBrand'
+  | 'carModel'
+  | 'year'
+  | 'bodyType'
+  | 'cascadeStatus'
+  | 'brandKey'
+  | 'modelKey'
+  | 'bodyTypeKey'
+  | 'templateRecordKey'
+>;
+
 export type PrepareIntentTurnOptions = {
   currentIntent?: ShopIntent;
   quoteWorkflow?: QuoteWorkflowSnapshot;
   fitment?: FitmentSnapshot;
+  knownVehicle?: KnownSessionVehicle;
   cascade?: FitmentCascadePort;
   sessionId?: string;
   log?: (entry: IntentTurnLog) => void;
 };
+
+const FAQ_SUB_INTENTS = new Set([
+  'available_colors',
+  'material',
+  'delivery_info',
+  'complaint_info',
+]);
+
+function isFaqSubIntent(subIntent: string | null): boolean {
+  return subIntent !== null && FAQ_SUB_INTENTS.has(subIntent);
+}
+
+function mergeKnownVehicle(
+  message: string,
+  entities: RouterEntities,
+  known: KnownSessionVehicle,
+): RouterEntities {
+  const spoken = message.trim().toLowerCase();
+  const brand =
+    entities.car_brand?.trim().toLowerCase() === spoken
+      ? undefined
+      : entities.car_brand;
+  const model =
+    entities.car_model?.trim().toLowerCase() === spoken
+      ? undefined
+      : entities.car_model;
+  return {
+    car_brand: brand ?? known.carBrand,
+    car_model: model ?? known.carModel,
+    year: entities.year ?? known.year,
+    body_type: entities.body_type ?? known.bodyType,
+  };
+}
+
+function isResolvedVehicle(
+  known: KnownSessionVehicle,
+  entities: RouterEntities,
+): boolean {
+  return (
+    known.cascadeStatus === 'one' &&
+    Boolean(known.templateRecordKey) &&
+    advanceVehicleSlots({ slots: entities }).missing === undefined
+  );
+}
+
+function turnFromKnownVehicle(
+  turn: PreparedTurn,
+  known: KnownSessionVehicle,
+): PreparedTurn {
+  const knowledgeTools = ['lookup-leaf', 'search-leaves'] as const;
+  const note = [
+    `Auto sesji: marka=${known.carBrand ?? ''}, model=${known.carModel ?? ''}, rocznik=${known.year ?? ''}, nadwozie=${known.bodyType ?? ''}.`,
+    `Kaskada: one. recordKey=${known.templateRecordKey}, brand=${known.brandKey ?? ''}, model=${known.modelKey ?? ''}, body=${known.bodyTypeKey ?? ''}.`,
+    'Nie wołaj resolve-template. Nie pytaj ponownie o markę, model, rok ani nadwozie.',
+  ].join(' ');
+  const base = assembleTurnInstructions(turn.profile);
+  return {
+    ...turn,
+    toolIds: [...knowledgeTools],
+    instructions: `${base}\n\n${note}`,
+    execution: { kind: 'knowledge', tools: [...knowledgeTools] },
+    executionNote: note,
+    fitment: undefined,
+    clearFitment: true,
+    collectedSlots: turn.entities,
+    verifiedProduct:
+      known.templateRecordKey && known.brandKey && known.modelKey
+        ? {
+            productId: known.templateRecordKey,
+            brand: known.brandKey,
+            model: known.modelKey,
+          }
+        : undefined,
+  };
+}
 
 function emitTurnLog(
   options: PrepareIntentTurnOptions | undefined,
@@ -475,7 +568,25 @@ export async function prepareIntentTurn(
     acceptedResult,
     message,
   );
+  const known = options?.knownVehicle;
+  const reuseKnown =
+    known !== undefined &&
+    !isFaqSubIntent(turn.subIntent) &&
+    !conflictsWithStoredVehicle(message, turn.entities, known);
+  if (reuseKnown) {
+    turn = { ...turn, entities: mergeKnownVehicle(message, turn.entities, known) };
+  }
+  let resolved = false;
   if (
+    known !== undefined &&
+    reuseKnown &&
+    isResolvedVehicle(known, turn.entities)
+  ) {
+    turn = turnFromKnownVehicle(turn, known);
+    resolved = true;
+  }
+  if (
+    !resolved &&
     turn.execution.kind === 'workflow' &&
     turn.execution.workflow === FITMENT_CASCADE_WORKFLOW
   ) {

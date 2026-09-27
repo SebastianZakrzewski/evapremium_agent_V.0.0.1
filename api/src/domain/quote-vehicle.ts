@@ -95,6 +95,7 @@ function applyReply(entities: RouterEntities, missing: VehicleSlotKey, message: 
     if (year !== undefined) {
       entities.year = year;
     }
+    harvest(entities, message);
     return;
   }
   if (missing === 'body_type') {

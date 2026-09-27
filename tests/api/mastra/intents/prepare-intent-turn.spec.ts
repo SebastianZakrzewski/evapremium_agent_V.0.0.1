@@ -233,4 +233,39 @@ describe('prepareIntentTurn', () => {
     expect(turn.clearFitment).toBe(true);
     expect(turn.intent).toBe('product_info');
   });
+
+  it('reuses a resolved session car when the follow-up does not name a vehicle', async () => {
+    const turn = await prepareIntentTurn(
+      {
+        qualify: async () => ({
+          intent: 'product_info',
+          confidence: 0.9,
+          sub_intent: null,
+          mode: 'knowledge',
+          entities: { car_brand: 'juz podalem' },
+        }),
+      },
+      'juz podalem',
+      {
+        knownVehicle: {
+          carBrand: 'Toyota',
+          carModel: 'RAV 4',
+          year: 2021,
+          bodyType: 'suv',
+          cascadeStatus: 'one',
+          brandKey: 'Toyota ',
+          modelKey: 'Rav4 (XA50) 5 gen',
+          bodyTypeKey: 'suv',
+          templateRecordKey: 'passenger_car|toyota|rav4_xa50_5_gen|2019-2026|suv|2554',
+        },
+      },
+    );
+
+    expect(turn.execution.kind).toBe('knowledge');
+    expect(turn.executionNote).toContain('marka=Toyota');
+    expect(turn.executionNote).toContain('recordKey=passenger_car|toyota|rav4_xa50_5_gen|2019-2026|suv|2554');
+    expect(turn.executionNote).toContain('Nie pytaj ponownie');
+    expect(turn.entities.car_brand).toBe('Toyota');
+    expect(turn.collectedSlots?.car_brand).toBe('Toyota');
+  });
 });

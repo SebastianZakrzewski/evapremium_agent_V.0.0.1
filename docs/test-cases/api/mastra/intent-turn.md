@@ -12,6 +12,7 @@ Nest. `quote-price` tylko na `pricing`. SSE bez zmiany (`stream-chat-message.spe
 | turn-002 | critical | Pytanie o dopasowanie z modelem → fitment_cascade |
 | turn-003 | high | Brak id w katalogu → błąd, nie cichy drop |
 | turn-004 | critical | delivery: search-leaves + lookup-leaf |
+| turn-006 | critical | Zapisane one wraca przy „już podałem” |
 
 ### turn-001 — pricing: quote-vehicle
 
@@ -52,3 +53,12 @@ Nest. `quote-price` tylko na `pricing`. SSE bez zmiany (`stream-chat-message.spe
 - **Logika:** Nieznane id toola nie jest pomijane.
 - **Wejście:** katalog tylko `lookup-leaf`, żądanie `quote-price`
 - **Wyjście:** throw `unknown shop tool: quote-price`
+
+### turn-006 — Zapisane one wraca przy „już podałem”
+
+- **Kod:** `tests/api/mastra/intents/prepare-intent-turn.spec.ts` → `it('reuses a resolved session car when the follow-up does not name a vehicle')`
+- **Krytyczność:** critical
+- **Logika:** profil z `cascadeStatus=one` wchodzi do tury, zanim model odpowie. Encja równa całemu zdaniu nie podmienia marki i nie kasuje `recordKey`.
+- **Wejście:** „juz podalem”, encja `car_brand=juz podalem`, znane auto Toyota RAV 4 2021 SUV z `recordKey`
+- **Wyjście:** `execution=knowledge`, notatka z `marka=Toyota` i `recordKey`, encja marki Toyota
+

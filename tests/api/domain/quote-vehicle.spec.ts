@@ -1,4 +1,4 @@
-import { advanceQuoteVehicle, collectVehicleStep, isSlotReply } from '@api/domain/quote-vehicle';
+import { advanceQuoteVehicle, advanceVehicleSlots, collectVehicleStep, isSlotReply } from '@api/domain/quote-vehicle';
 import { StubIntentQualifier } from '@api/mastra/intents/stub-intent-qualifier';
 import { prepareIntentTurn } from '@api/mastra/intents/prepare-intent-turn';
 import type { IntentQualifier } from '@api/mastra/intents/intent-qualifier';
@@ -52,6 +52,21 @@ describe('quote vehicle workflow', () => {
         year: 2019,
         body_type: 'kombi',
       },
+    });
+  });
+
+  it('keeps the body given in the same reply as the year', () => {
+    const collected = advanceVehicleSlots({
+      slots: { car_brand: 'Toyota', car_model: 'RAV4' },
+      message: '2021 rok SUV',
+    });
+
+    expect(collected.missing).toBeUndefined();
+    expect(collected.slots).toEqual({
+      car_brand: 'Toyota',
+      car_model: 'RAV4',
+      year: 2021,
+      body_type: 'suv',
     });
   });
 

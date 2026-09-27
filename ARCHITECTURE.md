@@ -88,8 +88,12 @@ serwerowo (nie anon z widgetu).
    `20260927140000_session_clients.sql`, apply PROD za zgodą): imię, nazwisko,
    telefon, mail i zgoda, jeśli klient je podał, oraz auto i klucz szablonu.
    Kolejna tura dostaje z tego rekordu tylko ten wycinek, którego potrzebuje
-   odpowiedź (auto przy doborze i wycenie). Pytanie o kolor albo materiał nie
-   dostaje profilu.
+   odpowiedź: auto przy doborze, wycenie i dalszym ciągu `product_info`
+   (na przykład „i jak?”). Pytanie o kolor, materiał, dostawę albo reklamację
+   nie dostaje profilu. Zapisany wynik `one` wraca do tury, zanim model
+   odpowie, o ile nowe zdanie nie nazywa innego auta. Przypadkowa encja z
+   całego zdania („już podałem”) nie nadpisuje marki. Odpowiedź na rok
+   zbiera też nadwozie z tego samego zdania.
 2. **Cennik:** `pricing_vehicle_categories`, `pricing_variants`,
    `pricing_category_variants`, `pricing_matrix` (cena = kategoria + wariant +
    `mat_type`). Zakres: wszystkie szablony z tabeli, nie podzbiór „hitów”.

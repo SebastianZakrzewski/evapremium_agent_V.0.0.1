@@ -1,6 +1,8 @@
 import {
+  conflictsWithStoredVehicle,
   contextNeedForTurn,
   SessionClient,
+  shouldRememberQualifierEntities,
 } from '@api/domain/session-client';
 
 describe('session client', () => {
@@ -94,6 +96,16 @@ describe('session client', () => {
     expect(quote).toContain('marka=Toyota');
     expect(quote).toContain('wariant=standard');
     expect(quote).not.toContain('Anna');
+
+    const followUp = client.note(
+      contextNeedForTurn({
+        intent: 'product_info',
+        subIntent: null,
+        execution: { kind: 'knowledge' },
+      }),
+    );
+    expect(followUp).toContain('marka=Toyota');
+    expect(followUp).not.toContain('Anna');
   });
 
   it('clears the resolved template when the client names another car', () => {
@@ -112,5 +124,21 @@ describe('session client', () => {
     expect(next.data.carBrand).toBe('Audi');
     expect(next.data.templateRecordKey).toBeUndefined();
     expect(next.data.cascadeStatus).toBe('suspended');
+  });
+
+  it('does not treat the whole follow-up sentence as a new brand', () => {
+    expect(
+      conflictsWithStoredVehicle(
+        'juz podalem',
+        { car_brand: 'juz podalem' },
+        { carBrand: 'Toyota' },
+      ),
+    ).toBe(false);
+    expect(
+      shouldRememberQualifierEntities({
+        subIntent: null,
+        execution: { kind: 'knowledge' },
+      }),
+    ).toBe(false);
   });
 });

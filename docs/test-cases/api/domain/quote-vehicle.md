@@ -13,6 +13,7 @@ nie ładuje modułu workflow Mastry (ten sam powód co `createIntentWorkflow`).
 | quote-wf-002 | high | Resume bez kwalifikatora |
 | quote-wf-003 | medium | Nowe pytanie zamyka workflow |
 | quote-wf-004 | high | Payload suspend i gotowy wynik kroku |
+| quote-wf-005 | high | Rok i nadwozie w jednej odpowiedzi |
 
 ### quote-wf-001 — Suspend do kompletu slotów
 
@@ -45,3 +46,12 @@ nie ładuje modułu workflow Mastry (ten sam powód co `createIntentWorkflow`).
 - **Logika:** Krok Mastry przekazuje ten payload do `suspend` albo zwraca gotowość z `quote-vehicle`.
 - **Wejście:** puste encje; potem `car_brand: Volkswagen` i wiadomość `Golf 8`
 - **Wyjście:** `action: suspend` / `waiting_for_vehicle`; potem `action: complete` z tool `quote-vehicle`
+
+### quote-wf-005 — Rok i nadwozie w jednej odpowiedzi
+
+- **Kod:** `tests/api/domain/quote-vehicle.spec.ts` → `it('keeps the body given in the same reply as the year')`
+- **Krytyczność:** high
+- **Logika:** gdy brakuje roku, zdanie z rokiem i nadwoziem uzupełnia oba sloty.
+- **Wejście:** sloty Toyota i RAV4, wiadomość `2021 rok SUV`
+- **Wyjście:** brak brakującego slotu, `year=2021`, `body_type=suv`
+

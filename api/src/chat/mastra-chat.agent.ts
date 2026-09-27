@@ -2,8 +2,10 @@ import type { Agent } from '@mastra/core/agent';
 import { recordAgentEvent } from '../agent-events/record-agent-event';
 import type { FitmentCascadePort } from '../domain/fitment-session';
 import {
+  conflictsWithStoredVehicle,
   contextNeedForTurn,
   SessionClient,
+  shouldRememberQualifierEntities,
 } from '../domain/session-client';
 import type { SessionClients } from './session-clients';
 import type { AgentEventSink } from '../agent-events/agent-event';
@@ -91,15 +93,25 @@ export class MastraChatAgent implements ChatAgent {
       sessionId === undefined
         ? undefined
         : this.intentState.getFitment(sessionId);
+    const stored =
+      sessionId !== undefined && this.sessionClients !== undefined
+        ? await this.sessionClients.get(sessionId)
+        : undefined;
     const prepared = await prepareIntentTurn(this.qualifier, message, {
       currentIntent,
       quoteWorkflow,
       fitment,
+      knownVehicle: stored?.hasFacts() ? stored.data : undefined,
       cascade: this.cascade,
       sessionId,
       log: logIntentTurnToConsole,
     });
-    const withClient = await this.applySessionClient(message, sessionId, prepared);
+    const withClient = await this.applySessionClient(
+      message,
+      sessionId,
+      prepared,
+      stored,
+    );
     if (sessionId !== undefined) {
       if (withClient.verifiedProduct) {
         this.verifiedBySession.set(sessionId, withClient.verifiedProduct);
@@ -141,27 +153,34 @@ export class MastraChatAgent implements ChatAgent {
     message: string,
     sessionId: string | undefined,
     prepared: PreparedTurn,
+    stored?: SessionClient,
   ): Promise<PreparedTurn> {
     if (sessionId === undefined || this.sessionClients === undefined) {
       return prepared;
     }
-    const stored =
-      (await this.sessionClients.get(sessionId)) ??
-      SessionClient.empty(sessionId);
-    const next = stored
+    const current = stored ?? SessionClient.empty(sessionId);
+    const next = current
       .rememberUtterance(message, new Date().toISOString())
       .rememberVehicle({
-        entities: prepared.entities,
+        entities: shouldRememberQualifierEntities(prepared)
+          ? prepared.entities
+          : {},
         collectedSlots: prepared.collectedSlots,
         fitment: prepared.fitment,
         quoteEntities: prepared.quoteWorkflow?.entities,
         cascadeMatch: prepared.fitment ? undefined : prepared.cascadeMatch,
         verifiedProduct: prepared.verifiedProduct,
       });
-    if (next.hasFacts() && !next.equals(stored)) {
+    if (next.hasFacts() && !next.equals(current)) {
       await this.sessionClients.save(next);
     }
-    const note = next.note(contextNeedForTurn(prepared));
+    const note = next.note(
+      contextNeedForTurn({
+        intent: prepared.intent,
+        subIntent: prepared.subIntent,
+        execution: prepared.execution,
+      }),
+    );
     if (!note) {
       return prepared;
     }
