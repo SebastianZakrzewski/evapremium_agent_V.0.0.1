@@ -2,7 +2,6 @@ import type { Agent } from '@mastra/core/agent';
 import { recordAgentEvent } from '../agent-events/record-agent-event';
 import type { FitmentCascadePort } from '../domain/fitment-session';
 import {
-  conflictsWithStoredVehicle,
   contextNeedForTurn,
   SessionClient,
   shouldRememberQualifierEntities,
