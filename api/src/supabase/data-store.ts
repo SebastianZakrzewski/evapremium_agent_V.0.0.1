@@ -11,6 +11,12 @@ export type DataStore = {
     table: string,
     row: Record<string, unknown>,
   ): Promise<Record<string, unknown>>;
+  upsert(
+    schema: string,
+    table: string,
+    row: Record<string, unknown>,
+    onConflict: string,
+  ): Promise<Record<string, unknown>>;
 };
 
 export function tableKey(schema: string, table: string): string {
@@ -45,6 +51,27 @@ export class MemoryDataStore implements DataStore {
       stored.id = crypto.randomUUID();
     }
     this.tables[key] = [...(this.tables[key] ?? []), stored];
+    return stored;
+  }
+
+  async upsert(
+    schema: string,
+    table: string,
+    row: Record<string, unknown>,
+    onConflict: string,
+  ): Promise<Record<string, unknown>> {
+    const key = tableKey(schema, table);
+    const rows = this.tables[key] ?? [];
+    const conflict = row[onConflict];
+    const index = rows.findIndex((stored) => stored[onConflict] === conflict);
+    const stored = { ...row };
+    if (index === -1) {
+      this.tables[key] = [...rows, stored];
+      return stored;
+    }
+    const next = [...rows];
+    next[index] = stored;
+    this.tables[key] = next;
     return stored;
   }
 }

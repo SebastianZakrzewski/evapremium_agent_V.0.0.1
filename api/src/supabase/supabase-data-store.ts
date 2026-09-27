@@ -60,6 +60,24 @@ export class SupabaseDataStore implements DataStore {
     }
     return data as Record<string, unknown>;
   }
+
+  async upsert(
+    schema: string,
+    table: string,
+    row: Record<string, unknown>,
+    onConflict: string,
+  ): Promise<Record<string, unknown>> {
+    const { data, error } = await this.client
+      .schema(schema)
+      .from(table)
+      .upsert(row, { onConflict })
+      .select()
+      .single();
+    if (error || !data) {
+      throw new Error(`${schema}.${table}: ${error?.message ?? 'upsert failed'}`);
+    }
+    return data as Record<string, unknown>;
+  }
 }
 
 export function createSupabaseDataStore(

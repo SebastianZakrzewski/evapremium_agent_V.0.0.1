@@ -83,7 +83,13 @@ serwerowo (nie anon z widgetu).
    Brakujące pole wstrzymuje workflow
    (`fitment_cascade` albo `quote_vehicle`) i agent dopytuje. Krótka odpowiedź
    uzupełnia następny slot bez nowej kwalifikacji. Filtr rusza dopiero przy
-   komplecie. Stan jest w pamięci procesu.
+   komplecie. Stan zbierania slotów jest w pamięci procesu. Po turze Nest
+   zapisuje zebrane fakty w `eva_bot.session_clients` (migracja
+   `20260927140000_session_clients.sql`, apply PROD za zgodą): imię, nazwisko,
+   telefon, mail i zgoda, jeśli klient je podał, oraz auto i klucz szablonu.
+   Kolejna tura dostaje z tego rekordu tylko ten wycinek, którego potrzebuje
+   odpowiedź (auto przy doborze i wycenie). Pytanie o kolor albo materiał nie
+   dostaje profilu.
 2. **Cennik:** `pricing_vehicle_categories`, `pricing_variants`,
    `pricing_category_variants`, `pricing_matrix` (cena = kategoria + wariant +
    `mat_type`). Zakres: wszystkie szablony z tabeli, nie podzbiór „hitów”.

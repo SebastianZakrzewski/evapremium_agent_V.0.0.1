@@ -63,7 +63,10 @@ FAQ: `eva_bot.context_node_embeddings` (pomocniczy; fakt = `context_nodes`).
 Nest: klucz service / `DATABASE_URL`, nie anon z widgetu.
 
 Tekst klauzuli i informacji o czacie: liście `zgoda-lead` i `chat-zapis` w
-`eva_bot.context_nodes`, nie prompt.
+`eva_bot.context_nodes`, nie prompt. Fakty podane w sesji (imię, nazwisko,
+telefon, mail, zgoda, auto) siedzą w `eva_bot.session_clients`. Zapisuje je
+Nest, nie model. Lead do Bitrixa dalej wymaga zgody. Tych pól nie wkładać
+do logu kontenera.
 
 ## Ryzyko (nie naprawiane w tej zmianie)
 

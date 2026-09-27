@@ -105,6 +105,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Gałąź tury (tool-e) | [api/mastra/intent-turn.md](api/mastra/intent-turn.md) | `tests/api/mastra/intents/prepare-intent-turn.spec.ts` |
 | Fallback intencji i lead | [api/mastra/intent-fallback.md](api/mastra/intent-fallback.md) | `tests/api/mastra/intents/intent-fallback.spec.ts` |
 | Pamięć intencji sesji | [api/mastra/intent-session-memory.md](api/mastra/intent-session-memory.md) | `tests/api/mastra/intents/accept-intent-transition.spec.ts` |
+| Profil klienta sesji | [api/domain/session-client.md](api/domain/session-client.md) | `tests/api/domain/session-client.spec.ts`, `tests/api/chat/session-clients.spec.ts` |
 | Log tury intencji | [api/mastra/intent-turn-log.md](api/mastra/intent-turn-log.md) | `tests/api/mastra/intents/intent-turn-log.spec.ts` |
 | Request context tury | [api/mastra/eva-turn-request-context.md](api/mastra/eva-turn-request-context.md) | `tests/api/mastra/eva-turn-request-context.spec.ts` |
 | Katalog shop-tooli Mastry | [api/mastra/shop-tool-catalog.md](api/mastra/shop-tool-catalog.md) | `tests/api/mastra/tools/shop-tool-catalog.spec.ts` |

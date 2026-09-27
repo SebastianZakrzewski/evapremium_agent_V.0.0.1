@@ -57,6 +57,7 @@ export type PreparedTurn = {
   clearFitment?: boolean;
   cascadeMatch?: 'none' | 'one' | 'many';
   verifiedProduct?: VerifiedProduct;
+  collectedSlots?: RouterEntities;
   relatedBranches: string[];
   executionNote?: string;
 };
@@ -398,12 +399,15 @@ async function resumeFitmentTurn(
       },
     });
   }
-  return turnFromCascade(
-    await advanceFitmentCascade({
-      slots: collected.slots,
-      resolve: (input) => cascade.resolve(input),
-    }),
-  );
+  return {
+    ...turnFromCascade(
+      await advanceFitmentCascade({
+        slots: collected.slots,
+        resolve: (input) => cascade.resolve(input),
+      }),
+    ),
+    collectedSlots: collected.slots,
+  };
 }
 
 export async function prepareIntentTurn(
@@ -487,12 +491,16 @@ export async function prepareIntentTurn(
         },
       };
     } else if (options?.cascade) {
-      turn = turnFromCascade(
-        await advanceFitmentCascade({
-          slots: turn.entities,
-          resolve: (input) => options.cascade!.resolve(input),
-        }),
-      );
+      const slots = turn.entities;
+      turn = {
+        ...turnFromCascade(
+          await advanceFitmentCascade({
+            slots,
+            resolve: (input) => options.cascade!.resolve(input),
+          }),
+        ),
+        collectedSlots: slots,
+      };
     }
   }
   if (turn.subIntent === 'fitment' && turn.fitment === undefined && !turn.clearFitment) {

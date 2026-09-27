@@ -14,6 +14,12 @@ import { CHAT_AGENT } from './chat-agent.port';
 import { ChatController } from './chat.controller';
 import { ChatService } from './chat.service';
 import { CHAT_SESSIONS, InMemoryChatSessions } from './chat-session';
+import {
+  SESSION_CLIENTS,
+  InMemorySessionClients,
+  SupabaseSessionClients,
+  type SessionClients,
+} from './session-clients';
 import { MastraChatAgent } from './mastra-chat.agent';
 import { ShopTools } from './shop-tools';
 import { StubChatAgent } from './stub-chat.agent';
@@ -64,6 +70,12 @@ import type { FitmentCascadePort } from '../domain/fitment-session';
           : new InMemoryChatSessions(() => randomUUID()),
       inject: [DATA_STORE],
     },
+    {
+      provide: SESSION_CLIENTS,
+      useFactory: (store: DataStore | undefined) =>
+        store ? new SupabaseSessionClients(store) : new InMemorySessionClients(),
+      inject: [DATA_STORE],
+    },
     ChatService,
     {
       provide: INTENT_SESSION_STATE,
@@ -85,6 +97,7 @@ import type { FitmentCascadePort } from '../domain/fitment-session';
         intentState: IntentSessionState,
         events: AgentEventSink,
         templates: TemplateCascadeService,
+        sessionClients: SessionClients,
       ) => {
         if (!mastra) {
           return new StubChatAgent(tools);
@@ -99,6 +112,7 @@ import type { FitmentCascadePort } from '../domain/fitment-session';
           intentState,
           events,
           cascade,
+          sessionClients,
         );
       },
       inject: [
@@ -107,6 +121,7 @@ import type { FitmentCascadePort } from '../domain/fitment-session';
         INTENT_SESSION_STATE,
         AGENT_EVENTS,
         TemplateCascadeService,
+        SESSION_CLIENTS,
       ],
     },
   ],
