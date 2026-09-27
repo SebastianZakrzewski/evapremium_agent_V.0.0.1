@@ -68,6 +68,8 @@ serwerowo (nie anon z widgetu).
 
 1. **Szablony:** `evapremium_shop.mat_templates` (~2756, aktywne szablony).
    Kaskada po `brand_key` / `model_key` / `body_type_*_key` / lata / `record_key`.
+   Wiersze o tej samej marce, modelu, latach, nadwoziu i kategorii cennika liczą się
+   jako jeden szablon (zostaje mniejszy `record_key`); różne auta dalej dają `many`.
    Kategoria cennika: `dealer_pricing_category_key`. Gdy jest `DEEPSEEK_API_KEY`,
    markę i model wybierają dwa kroki klasyfikacji: pełna lista `brand_key`,
    potem krótka lista `model_key` tej marki. Istnienie szablonu zostaje w

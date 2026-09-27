@@ -143,6 +143,56 @@ describe('template cascade', () => {
     expect(withNoise).toEqual(brandOnly);
     expect(withNoise.status).toBe('many');
   });
+
+  it('collapses duplicate rows of the same vehicle to one template', () => {
+    const wagon = CASCADE_TEMPLATES.find((row) => row.id === 'tmpl-golf-mk8-wagon');
+    if (!wagon) {
+      throw new Error('fixture missing golf mk8 wagon');
+    }
+    const copy: MatTemplate = {
+      ...wagon,
+      id: 'tmpl-golf-mk8-wagon-copy',
+      recordKey: 'passenger_car|volkswagen|golfmk8_8_gen|2019-|wagon|9',
+    };
+
+    const result = resolveTemplate(
+      { brand: 'vw', model: 'Golf 8', bodyType: 'kombi', year: 2021 },
+      [copy, wagon],
+      CASCADE_ALIASES,
+    );
+
+    expect(result).toEqual({
+      status: 'one',
+      template: wagon,
+    });
+  });
+
+  it('keeps distinct vehicles when only one of them is duplicated', () => {
+    const hatch = CASCADE_TEMPLATES.find((row) => row.id === 'tmpl-golf-mk8-hatch');
+    const wagon = CASCADE_TEMPLATES.find((row) => row.id === 'tmpl-golf-mk8-wagon');
+    if (!hatch || !wagon) {
+      throw new Error('fixture missing golf mk8 templates');
+    }
+    const hatchCopy: MatTemplate = {
+      ...hatch,
+      id: 'tmpl-golf-mk8-hatch-copy',
+      recordKey: 'passenger_car|volkswagen|golfmk8_8_gen|2019-|hatchback|99',
+    };
+
+    const result = resolveTemplate(
+      { brand: 'vw', model: 'golf 8' },
+      [hatchCopy, wagon, hatch],
+      CASCADE_ALIASES,
+    );
+
+    expect(result.status).toBe('many');
+    if (result.status === 'many') {
+      expect(result.templates.map((row) => row.id)).toEqual([
+        'tmpl-golf-mk8-hatch',
+        'tmpl-golf-mk8-wagon',
+      ]);
+    }
+  });
 });
 
 function classifying(brandKey: string | null, modelKeys: string[]): VehicleKeyClassifier {

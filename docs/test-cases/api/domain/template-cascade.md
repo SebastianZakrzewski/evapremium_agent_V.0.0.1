@@ -5,7 +5,7 @@ Fixture: `tests/api/templates/in-memory/cascade-fixture.ts`
 Standard: [docs/test-cases/README.md](../../README.md)
 
 Logika zestawu: surowe sloty → normalizacja → alias albo klasyfikacja kluczy
-→ jeden filtr `mat_templates` → `none` / `one` / `many`. Klasyfikacja dostaje
+→ jeden filtr `mat_templates` → zwinięcie zdublowanych wierszy tego samego auta → `none` / `one` / `many`. Klasyfikacja dostaje
 listę kluczy z katalogu i stub w teście; filtr nadal nie ufa kluczowi spoza listy.
 
 | id | Krytyczność | Tytuł |
@@ -27,6 +27,8 @@ listę kluczy z katalogu i stub w teście; filtr nadal nie ufa kluczowi spoza li
 | cascade-015 | medium | Shortlista modeli jednej marki |
 | cascade-016 | high | Marka ze spacją na końcu klucza |
 | cascade-017 | high | Dwa klucze po trim → none |
+| cascade-018 | critical | Zdublowany wiersz tego samego auta → one |
+| cascade-019 | high | Duplikat nie chowa innego nadwozia |
 
 ### cascade-001 — Normalizacja slotów
 
@@ -163,3 +165,19 @@ listę kluczy z katalogu i stub w teście; filtr nadal nie ufa kluczowi spoza li
 - **Logika:** dwa klucze, które po obcięciu spacji są tym samym napisem, nie są wybierane.
 - **Wejście:** `Citroen` i `Citroen `, stub marki ` Citroen`
 - **Wyjście:** `{ status: 'none' }`
+
+### cascade-018 — Zdublowany wiersz tego samego auta → one
+
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('collapses duplicate rows of the same vehicle to one template')`
+- **Krytyczność:** critical
+- **Logika:** dwa wiersze o tej samej marce, modelu, latach, nadwoziu i kategorii cennika to jeden szablon. Zostaje rekord o mniejszym `record_key`. Różne `id` i numer wiersza Excela nie dają `many`.
+- **Wejście:** dwa szablony Golf MK8 kombi, `record_key` `…|wagon|9` i `…|wagon|2`, sloty `{ brand: 'vw', model: 'Golf 8', bodyType: 'kombi', year: 2021 }`
+- **Wyjście:** `{ status: 'one', template.id: 'tmpl-golf-mk8-wagon' }`
+
+### cascade-019 — Duplikat nie chowa innego nadwozia
+
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('keeps distinct vehicles when only one of them is duplicated')`
+- **Krytyczność:** high
+- **Logika:** zwijane są tylko kopie tego samego auta. Inne nadwozie zostaje osobnym szablonem.
+- **Wejście:** dwa wiersze Golf MK8 hatchback i jeden kombi, sloty `{ brand: 'vw', model: 'golf 8' }`
+- **Wyjście:** `status: 'many'`, id `tmpl-golf-mk8-hatch` i `tmpl-golf-mk8-wagon`

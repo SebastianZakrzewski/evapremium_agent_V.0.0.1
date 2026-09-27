@@ -184,15 +184,43 @@ function filterTemplates(
   });
 }
 
+function vehicleIdentity(template: MatTemplate): string {
+  return [
+    template.brandKey,
+    template.modelKey,
+    template.dealerPricingCategoryKey,
+    template.yearFrom ?? '',
+    template.yearTo ?? '',
+    template.isOpenEnded ? '1' : '0',
+    template.bodyTypeKey ?? '',
+    template.bodyType1Key ?? '',
+    template.bodyType2Key ?? '',
+    template.bodyType3Key ?? '',
+  ].join('\0');
+}
+
+function collapseDuplicateTemplates(matches: MatTemplate[]): MatTemplate[] {
+  const byIdentity = new Map<string, MatTemplate>();
+  for (const template of matches) {
+    const identity = vehicleIdentity(template);
+    const current = byIdentity.get(identity);
+    if (!current || template.recordKey < current.recordKey) {
+      byIdentity.set(identity, template);
+    }
+  }
+  return [...byIdentity.values()];
+}
+
 function toResult(matches: MatTemplate[]): TemplateCascadeResult {
-  const first = matches[0];
+  const unique = collapseDuplicateTemplates(matches);
+  const first = unique[0];
   if (!first) {
     return { status: 'none' };
   }
-  if (matches.length === 1) {
+  if (unique.length === 1) {
     return { status: 'one', template: first };
   }
-  return { status: 'many', templates: matches };
+  return { status: 'many', templates: unique };
 }
 
 export function resolveTemplate(
