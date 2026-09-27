@@ -13,6 +13,15 @@ export type ExecutionChoice =
   | { kind: 'workflow'; workflow: string }
   | { kind: 'clarify' };
 
+function hasVehicleSlot(entities: RouterEntities): boolean {
+  return (
+    inputPresent(entities, 'car_brand') ||
+    inputPresent(entities, 'car_model') ||
+    inputPresent(entities, 'year') ||
+    inputPresent(entities, 'body_type')
+  );
+}
+
 function inputPresent(entities: RouterEntities, key: keyof RouterEntities): boolean {
   if (key === 'year') {
     return typeof entities.year === 'number';
@@ -33,32 +42,25 @@ export function chooseExecution(input: {
     return { kind: 'clarify' };
   }
 
+  if (input.config.slug === 'fitment' && hasVehicleSlot(input.entities)) {
+    return { kind: 'workflow', workflow: FITMENT_CASCADE_WORKFLOW };
+  }
+
   if (input.mode === 'knowledge') {
     return {
       kind: 'knowledge',
-      tools: input.config.allowedTools.filter((tool) => {
-        if (tool === 'quote-price' || tool === 'quote-vehicle') {
-          return false;
-        }
-        if (tool === 'resolve-template' && input.config.slug !== 'fitment') {
-          return false;
-        }
-        return true;
-      }),
+      tools: input.config.allowedTools.filter(
+        (tool) =>
+          tool !== 'quote-price' &&
+          tool !== 'quote-vehicle' &&
+          tool !== 'resolve-template',
+      ),
     };
   }
 
   const slotsReady = input.config.requiredInputs.every((key) =>
     inputPresent(input.entities, key),
   );
-  if (
-    input.config.slug === 'fitment' &&
-    input.mode === 'action' &&
-    slotsReady
-  ) {
-    return { kind: 'workflow', workflow: FITMENT_CASCADE_WORKFLOW };
-  }
-
   const ready = input.config.directTool !== undefined && slotsReady;
   if (ready && input.config.directTool !== undefined) {
     return {

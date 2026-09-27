@@ -46,6 +46,34 @@ describe('chooseExecution', () => {
     ).toEqual({ kind: 'workflow', workflow: 'quote_vehicle' });
   });
 
+  it('starts fitment_cascade when a knowledge question already names the car', () => {
+    const fitment = subIntentBySlug('fitment');
+    if (fitment === undefined) {
+      throw new Error('fitment is required');
+    }
+    expect(
+      chooseExecution({
+        mode: 'knowledge',
+        entities: { car_brand: 'Toyota', car_model: 'RAV4' },
+        config: fitment,
+      }),
+    ).toEqual({ kind: 'workflow', workflow: 'fitment_cascade' });
+  });
+
+  it('keeps a fitment question without a car on faq tools', () => {
+    const fitment = subIntentBySlug('fitment');
+    if (fitment === undefined) {
+      throw new Error('fitment is required');
+    }
+    expect(
+      chooseExecution({
+        mode: 'knowledge',
+        entities: {},
+        config: fitment,
+      }),
+    ).toEqual({ kind: 'knowledge', tools: ['lookup-leaf', 'search-leaves'] });
+  });
+
   it('runs a complete fitment action through the cascade workflow', () => {
     const fitment = subIntentBySlug('fitment');
     if (fitment === undefined) {

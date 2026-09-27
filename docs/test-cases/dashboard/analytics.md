@@ -14,6 +14,6 @@ i link do sesji z odpowiedzi `GET /v1/dashboard/analytics`.
 
 - **Kod:** `tests/dashboard/App.test.tsx` → `it('shows pass counts, failure reasons and a session link')`
 - **Krytyczność:** high
-- **Logika:** operator widzi 3 z 4 oraz powód `lookup_outside` i schodzi do sesji. Odpytanie idzie z Bearer na `/v1/dashboard/analytics`.
+- **Logika:** operator widzi wykres 3 z 4, powód `lookup_outside` i schodzi do sesji. Odpytanie idzie z Bearer na `/v1/dashboard/analytics`.
 - **Wejście:** hash `#/analityka`, data `2026-09-26`, fixture 4 tur / 1 fail `session-miss`
-- **Wyjście:** nagłówki Analityka i `3 z 4`; tekst „Slug spoza rankingu”; href `#/sessions/session-miss`
+- **Wyjście:** nagłówki Analityka i `3 z 4`; tekst „Slug spoza rankingu” na wykresie i przy porażce; href `#/sessions/session-miss`

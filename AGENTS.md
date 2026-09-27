@@ -24,6 +24,9 @@ poznawania projektu, wprowadzania zmian i utrzymywania dokumentacji.
    (dataset, BM25, RRF, rerank): `docs/design-docs/context-leaf-hybrid-retrieval.md`,
    `docs/exec-plans/active/context-leaf-hybrid-retrieval.md`.
    Mastra: `docs/references/mastra/INDEX.md`, potem jeden fragment.
+   Wtyczka widgetu (osadzenie, `window.widgetPlugin`):
+   `widget/public/widget-plugin.md`. Skrót dla innego projektu: opis
+   repozytorium na GitHubie.
 6. Przed zmianą kodu sprawdź istniejące wzorce i testy.
    Katalog przypadków (wejście / wyjście / logika / krytyczność):
    `docs/test-cases/README.md`.

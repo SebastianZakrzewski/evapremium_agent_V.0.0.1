@@ -16,6 +16,7 @@ komplecie. Nowe pytanie zamyka snapshot.
 | fitment-004 | high | Wznowienie workflow bez kwalifikatora |
 | fitment-007 | high | Krok kaskady wstrzymuje się na nadwoziu |
 | fitment-008 | high | Tura akcji uruchamia workflow i nie daje resolve-template |
+| fitment-009 | high | Pytanie z autem otwiera kaskadę i trzyma markę na rocznik |
 | fitment-005 | medium | Nowe pytanie czyści snapshot |
 | fitment-006 | high | Narzędzie zapisuje snapshot w sesji tury |
 
@@ -49,7 +50,7 @@ komplecie. Nowe pytanie zamyka snapshot.
 - **Krytyczność:** high
 - **Logika:** krótka odpowiedź wznawia krok kaskady. Wynik `one` trafia do noty tury.
 - **Wejście:** snapshot `waiting_for_body` dla Golfa, wiadomość `hatcback`
-- **Wyjście:** `Kaskada: one`, `body=hatchback`, kwalifikator nie jest wołany
+- **Wyjście:** `Kaskada: one`, `body=hatchback`, `verifiedProduct` z `recordKey` hatchbacka Golfa, kwalifikator nie jest wołany
 
 ### fitment-007 — Krok kaskady wstrzymuje się na nadwoziu
 
@@ -66,6 +67,14 @@ komplecie. Nowe pytanie zamyka snapshot.
 - **Logika:** kompletna akcja dopasowania woła filtr w workflow i czeka na nadwozie.
 - **Wejście:** `Chcę dopasować dywaniki do VW Golf 8` na fixture
 - **Wyjście:** `workflow: fitment_cascade`, puste toole, nota `Brakuje rocznika`
+
+### fitment-009 — Pytanie z autem otwiera kaskadę i trzyma markę na rocznik
+
+- **Kod:** `tests/api/mastra/intents/prepare-intent-turn.spec.ts` → `it('keeps brand and model from a knowledge fitment when the year arrives next')`
+- **Krytyczność:** high
+- **Logika:** pytanie z marką i modelem, nawet przy `mode: knowledge`, otwiera workflow. Krótki rocznik dopisuje rok bez nowej kwalifikacji.
+- **Wejście:** encje `BMW` / `X5`, `mode: knowledge`, potem wiadomość `2021 rok`
+- **Wyjście:** pierwsza tura `fitment_cascade` bez tooli, brakuje rocznika; po odpowiedzi snapshot ma rok 2021 i brakuje typu nadwozia
 
 ### fitment-005 — Nowe pytanie czyści snapshot
 

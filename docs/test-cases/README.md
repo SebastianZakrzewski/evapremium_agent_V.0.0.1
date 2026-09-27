@@ -128,6 +128,8 @@ Przy wątpliwości wybierz wyższy poziom.
 | Embeddings liści (pgvector / OpenAI) | [api/context-tree/embeddings.md](api/context-tree/embeddings.md) | `tests/api/context-tree/embeddings/*.spec.ts`, `tests/api/domain/context-leaf-ingest.spec.ts`, `tests/api/scripts/ingest-context-leaves.test.mjs` |
 | Widget czat (wycena i miss) | [widget/chat-ui.md](widget/chat-ui.md) | `tests/widget/chat/ChatPanel.test.tsx`, `tests/widget/chat/format-turn.test.ts`, `tests/widget/App.test.tsx` |
 | Snippet sklepu | [widget/snippet.md](widget/snippet.md) | `tests/widget/embed/shop-snippet.test.ts` |
+| Obiekt konfiguracji widgetu | [widget/widget-config.md](widget/widget-config.md) | `tests/widget/embed/widget-config.test.ts` |
+| Wtyczka widgetu | [widget/widget-plugin.md](widget/widget-plugin.md) | `tests/widget/embed/widget-plugin.test.ts` |
 | Dashboard — przegląd doby | [dashboard/overview.md](dashboard/overview.md) | `tests/dashboard/App.test.tsx` |
 | Dashboard — sesje | [dashboard/sessions.md](dashboard/sessions.md) | `tests/dashboard/App.test.tsx` |
 | Dashboard — graf kontekstu | [dashboard/context-graph.md](dashboard/context-graph.md) | `tests/dashboard/App.test.tsx` |

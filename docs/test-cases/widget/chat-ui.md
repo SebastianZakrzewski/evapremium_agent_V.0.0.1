@@ -19,6 +19,9 @@ Kwota nie pochodzi z modelu w widgecie.
 | widget-009 | high | parser SSE: tokeny i `done` |
 | widget-010 | high | UI dokłada tokeny z `onDelta` |
 | widget-011 | high | Powitanie i chipy tematów |
+| widget-012 | medium | Żywy status „pisze…” w nagłówku |
+| widget-013 | low | Wyślij nieaktywny przy pustym drafcie |
+| widget-014 | high | Karta produktu sklepu po marce i modelu |
 
 ### widget-002 — UI wyceny orientacyjnej
 
@@ -99,3 +102,29 @@ Kwota nie pochodzi z modelu w widgecie.
 - **Logika:** widget otwiera sesję przy montażu; klik chipa wysyła kanoniczną wiadomość i chowa tematy. Tekst powitania z API, nie z modelu w UI.
 - **Wejście:** `createSession` z `greeting` + chip `Dopasowanie do auta`
 - **Wyjście:** `postMessage(..., 'Chcę dobrać dywaniki EVA do mojego auta.')`; brak chipów po kliku
+
+### widget-012 — Żywy status „pisze…” w nagłówku
+
+- **Kod:** `tests/widget/chat/ChatPanel.test.tsx` → `it('shows a live typing status while the assistant is answering')`
+- **Krytyczność:** medium
+- **Logika:** agent ma wyglądać na obecnego: w spoczynku nagłówek pokazuje „Online”, a od wysłania wiadomości do końca odpowiedzi — „pisze…” oraz wskaźnik pisania w pęcherzyku asystenta.
+- **Wejście:** `postMessage` zwraca obietnicę rozwiązywaną ręcznie; wiadomość `golf 8 komplet`
+- **Wyjście:** przed odpowiedzią `pisze…` i element `aria-label="Pisze"`; po rozwiązaniu tekst `Gotowe.`, brak `pisze…`, ponownie `Online`
+
+### widget-013 — Wyślij nieaktywny przy pustym drafcie
+
+- **Kod:** `tests/widget/chat/ChatPanel.test.tsx` → `it('keeps the send button disabled until the draft has text')`
+- **Krytyczność:** low
+- **Logika:** przycisk wysyłki (ikona, `aria-label="Wyślij"`) aktywuje się dopiero, gdy draft ma treść poza białymi znakami.
+- **Wejście:** pusty draft, potem `'   '`, potem `golf 8`
+- **Wyjście:** disabled, disabled, enabled
+
+### widget-014 — Karta produktu sklepu po marce i modelu
+
+- **Kod:** `tests/widget/chat/ChatPanel.test.tsx` → `it('shows the shop product card after the agent verifies brand and model')`, `tests/widget/chat/shop-product-card.test.ts`
+- **Krytyczność:** high
+- **Logika:** po weryfikacji marki i modelu UI wstawia kartę sklepu z `cardUrl`. Adres karty jest ze sklepu, nie z modelu.
+- **Wejście:** `?cardUrl=https://shop.example/dywaniki?brand={brand}`, payload `product` dla Audi A4
+- **Wyjście:** iframe `Karta produktu` o `src` `https://shop.example/dywaniki?brand=audi`
+
+Uwaga: `widget/src/setup.ts` ustawia `MotionGlobalConfig.skipAnimations`, bo jsdom nie ma klatek animacji i animacje wyjścia trzymałyby węzły w DOM. Zniknięcie elementów (`AnimatePresence`) jest nadal asynchroniczne, więc asercje „brak w DOM” w widget-011 i widget-012 idą przez `waitFor`.

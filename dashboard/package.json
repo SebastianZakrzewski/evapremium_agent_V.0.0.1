@@ -26,6 +26,8 @@
     "vitest": "^5.0.0"
   },
   "dependencies": {
+    "motion": "^13.4.4",
+    "motionchart": "^0.2.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   }

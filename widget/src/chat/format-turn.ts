@@ -3,6 +3,11 @@ export type ChatTurnData = {
   amount?: number;
   currency?: string;
   body?: string;
+  product?: {
+    productId: string;
+    brand: string;
+    model: string;
+  };
 };
 
 export type AssistantTurn = {

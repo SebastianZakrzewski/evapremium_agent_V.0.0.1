@@ -103,8 +103,11 @@ export const SUB_INTENT_CATALOG: readonly SubIntentConfig[] = [
       'Klient pyta, czy dywaniki pasują do konkretnego auta, albo chce je dopasować.',
     parentIntent: 'product_info',
     examples: {
-      knowledge: ['Czy dywaniki pasują do Golfa 8?'],
-      action: ['Dobierz dywaniki do Golfa 8.'],
+      knowledge: ['Jak dobieracie dywaniki do auta?'],
+      action: [
+        'Dobierz dywaniki do Golfa 8.',
+        'Czy macie dywaniki do Toyoty RAV4?',
+      ],
     },
     negativeExamples: ['Jakie macie kolory?', 'Ile kosztują dywaniki?'],
     relatedBranches: ['dopasowanie'],

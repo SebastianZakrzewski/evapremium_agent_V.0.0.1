@@ -50,15 +50,19 @@ Czysta funkcja `chooseExecution` po kwalifikacji:
 | --- | --- |
 | brak sub-intencji | toole profilu intencji (dotychczasowa pętla) |
 | `mode = knowledge` | `lookup-leaf` / `search-leaves` z allowlisty sub-intencji |
+| `fitment` i jest marka, model, rok albo nadwozie | `fitment_cascade`, także gdy kwalifikator dał `knowledge` |
 | `mode = action` i komplet `requiredInputs` | `directTool` (allowlista sub-intencji) |
 | `mode = action` i brak pól, jest `fallbackWorkflow` | workflow, zero shop-tooli w tej turze |
 | `ambiguous` albo mode spoza `allowedModes` | dopytanie, zero shop-tooli |
 
 „Czy pola są kompletne?” nie idzie do modelu. Cena i fakt nadal z Nest.
 
-`fitment` i `indicative_quote` w `action` wymagają marki, modelu, roku i typu
-nadwozia. Brak któregokolwiek pola uruchamia workflow (`fitment_cascade` albo
-`quote_vehicle`). Agent pyta o następny brakujący slot. Krótka odpowiedź
+`fitment` z którąkolwiek daną auta (marka, model, rok, nadwozie) uruchamia
+`fitment_cascade` także przy `mode = knowledge`. Pytanie „czy macie / czy pasują
+dywaniki do tego auta” nie zostaje na `resolve-template`. Bez auta zostaje FAQ
+(`lookup-leaf`, `search-leaves`). `indicative_quote` w `action` wymaga marki,
+modelu, roku i typu nadwozia. Brak któregokolwiek pola uruchamia workflow
+(`fitment_cascade` albo `quote_vehicle`). Agent pyta o następny brakujący slot. Krótka odpowiedź
 uzupełnia go bez nowej kwalifikacji. Kaskada i wycena ruszają dopiero przy
 komplecie czterech pól.
 

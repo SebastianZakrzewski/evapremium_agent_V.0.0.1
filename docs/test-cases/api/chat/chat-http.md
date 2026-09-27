@@ -20,6 +20,7 @@ env Supabase. Bez Bitrix w tym zestawie.
 | chat-007 | high | SSE: klatka `delta` |
 | chat-008 | high | SSE: tokeny, potem `done` |
 | chat-010 | medium | SSE przekazuje sessionId do agenta |
+| chat-011 | high | SSE `done` niesie zweryfikowany produkt |
 | chat-009 | low | Health probe CD |
 
 ### chat-001 — Sesja + wycena z narzędzia Nest
@@ -93,6 +94,14 @@ env Supabase. Bez Bitrix w tym zestawie.
 - **Logika:** pamięć intencji wymaga `sessionId` przy `stream`; ramki SSE bez zmiany.
 - **Wejście:** sesja `session-intent`, wiadomość `kolejna wiadomosc`
 - **Wyjście:** agent dostał `session-intent`
+
+### chat-011 — SSE `done` niesie zweryfikowany produkt
+
+- **Kod:** `tests/api/chat/stream-chat-message.spec.ts` → `it('puts the verified shop product on done after brand and model match')`
+- **Krytyczność:** high
+- **Logika:** po dopasowaniu marki i modelu klatka `done` niesie `product` ze sklepowym id szablonu.
+- **Wejście:** agent ze `verifiedProduct` dla Golfa
+- **Wyjście:** `done.data.product` z `productId`, `brand`, `model`
 
 ### chat-009 — Health probe CD
 

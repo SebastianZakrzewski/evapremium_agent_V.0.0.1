@@ -9,7 +9,7 @@ Nest. `quote-price` tylko na `pricing`. SSE bez zmiany (`stream-chat-message.spe
 | --- | --- | --- |
 | turn-001 | critical | pricing z marką i modelem: quote-vehicle |
 | turn-005 | high | wycena bez marki → workflow, zero quote-price |
-| turn-002 | critical | product_info bez quote-price |
+| turn-002 | critical | Pytanie o dopasowanie z modelem → fitment_cascade |
 | turn-003 | high | Brak id w katalogu → błąd, nie cichy drop |
 | turn-004 | critical | delivery: search-leaves + lookup-leaf |
 
@@ -29,13 +29,13 @@ Nest. `quote-price` tylko na `pricing`. SSE bez zmiany (`stream-chat-message.spe
 - **Wejście:** `Ile kosztują dywaniki do Golfa 8?`
 - **Wyjście:** `execution.kind: workflow`, `toolIds: []`, krok `waiting_for_vehicle`
 
-### turn-002 — product_info bez quote-price
+### turn-002 — Pytanie o dopasowanie z modelem → fitment_cascade
 
-- **Kod:** `tests/api/mastra/intents/prepare-intent-turn.spec.ts` → `it('does not expose quote-price on product_info')`
+- **Kod:** `tests/api/mastra/intents/prepare-intent-turn.spec.ts` → `it('starts the fitment cascade when the question names a model')`
 - **Krytyczność:** critical
-- **Logika:** Kwota nie może być wywołana na Q&A — tool nie ma w mapie tury.
+- **Logika:** Nazwany model otwiera kaskadę. Tura nie dostaje `quote-price` ani `resolve-template`.
 - **Wejście:** `Czy dywaniki pasują do Golfa 8?`
-- **Wyjście:** `intent: product_info`, brak `quote-price`, są `resolve-template`, `lookup-leaf` i `search-leaves`
+- **Wyjście:** `workflow: fitment_cascade`, puste toole, nota `Brakuje marki auta` i `model=Golf 8`
 
 ### turn-004 — delivery: search-leaves + lookup-leaf
 

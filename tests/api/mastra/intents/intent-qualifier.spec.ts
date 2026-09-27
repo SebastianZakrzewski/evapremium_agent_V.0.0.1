@@ -22,6 +22,9 @@ describe('StubIntentQualifier', () => {
   it('maps a fit question to product_info', async () => {
     const result = await qualifier.qualify('Czy dywaniki pasują do Golfa 8?');
     expect(result.intent).toBe('product_info');
+    expect(result.sub_intent).toBe('fitment');
+    expect(result.mode).toBe('action');
+    expect(result.entities).toEqual({ car_model: 'Golf 8' });
   });
 
   it('maps unknown copy to out_of_scope', async () => {

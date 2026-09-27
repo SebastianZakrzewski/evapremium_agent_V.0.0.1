@@ -79,4 +79,30 @@ describe('streamChatMessage', () => {
     await collect(sessions, agent, sessionId, 'kolejna wiadomosc');
     expect(agent.sessionIds).toEqual(['session-intent']);
   });
+
+  it('puts the verified shop product on done after brand and model match', async () => {
+    const sessions = new InMemoryChatSessions(() => 'session-card');
+    const { sessionId } = await sessions.create();
+    const product = {
+      productId: 'passenger_car|volkswagen|golfmk8_8_gen|2019-|hatchback|1',
+      brand: 'volkswagen',
+      model: 'golfmk8_8_gen',
+    };
+    const agent: ChatAgent = {
+      handle: () => Promise.resolve({ text: 'pasuje', data: { status: 'generated' } }),
+      stream: async function* () {
+        yield 'pasuje';
+      },
+      verifiedProduct: () => product,
+    };
+    const frames = await collect(sessions, agent, sessionId, 'hatchback');
+    expect(frames.at(-1)).toEqual({
+      event: 'done',
+      data: {
+        sessionId: 'session-card',
+        text: 'pasuje',
+        data: { status: 'generated', product },
+      },
+    });
+  });
 });

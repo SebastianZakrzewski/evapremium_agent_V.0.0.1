@@ -20,7 +20,11 @@ export async function* streamChatMessage(
       text += chunk;
       yield { event: 'delta', data: { text: chunk } };
     }
-    const turn = { text, data: { status: 'generated' } };
+    const product = agent.verifiedProduct?.(sessionId);
+    const turn = {
+      text,
+      data: product ? { status: 'generated' as const, product } : { status: 'generated' as const },
+    };
     await sessions.appendMessage({ sessionId, role: 'assistant', body: turn.text });
     yield { event: 'done', data: { sessionId, ...turn } };
     return;

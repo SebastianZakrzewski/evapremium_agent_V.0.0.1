@@ -493,6 +493,10 @@ select:focus {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
+
   .session-detail {
     grid-template-columns: 1fr;
     gap: 56px;
@@ -678,46 +682,38 @@ select:focus {
   letter-spacing: -0.03em;
 }
 
-.share-row + .share-row {
-  margin-top: 14px;
+.chart-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 28px;
+  align-items: start;
 }
 
-.share-caption {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 6px;
-  color: #4d4f49;
-  font-size: 0.92rem;
+.chart-frame {
+  width: 100%;
+  min-height: 280px;
 }
 
-.share-track {
-  height: 10px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: #e6e6e1;
+.chart-frame svg {
+  display: block;
+  max-width: 100%;
 }
 
-.share-fill {
-  height: 100%;
-  border-radius: inherit;
-  background: #20211f;
-}
-
-.intent-breakdown {
-  margin: 0;
+.reason-readout {
+  margin: 8px 0 0;
   padding: 0;
   list-style: none;
 }
 
-.intent-breakdown li {
+.reason-readout li {
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  padding: 12px 0;
+  padding: 8px 0;
   border-top: 1px solid #e4e4de;
+  color: #4d4f49;
 }
 
-.intent-breakdown li:last-child {
+.reason-readout li:last-child {
   border-bottom: 1px solid #e4e4de;
 }

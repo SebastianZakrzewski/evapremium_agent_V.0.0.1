@@ -74,9 +74,11 @@ serwerowo (nie anon z widgetu).
    filtrze Nestu. Aliasy `eva_bot.vehicle_slot_aliases` (`slot_kind`,
    `alias_normalized`, `canonical_key`, opcjonalny `brand_key` dla modeli)
    zostają dla nadwozia i dla ścieżki bez klasyfikatora. Tabela jest na PROD
-   (migracja `20260911220000_vehicle_slot_aliases.sql`). W teście: fixture,
+   (migracja `20260911220000_vehicle_slot_aliases.sql`).    W teście: fixture,
    jeden strzał ze znanymi kluczami → 0 / 1 / N. Dopasowanie i wycena wymagają
-   marki, modelu, roku i typu nadwozia. Brakujące pole wstrzymuje workflow
+   marki, modelu, roku i typu nadwozia. Pytanie o dopasowanie, które już nazywa
+   auto, uruchamia `fitment_cascade` także gdy kwalifikator zwróci `knowledge`.
+   Brakujące pole wstrzymuje workflow
    (`fitment_cascade` albo `quote_vehicle`) i agent dopytuje. Krótka odpowiedź
    uzupełnia następny slot bez nowej kwalifikacji. Filtr rusza dopiero przy
    komplecie. Stan jest w pamięci procesu.
@@ -148,6 +150,25 @@ zdarzenia `done` (`data` z Nest). CORS: `https://evapremium.pl`,
 `https://www.evapremium.pl` oraz opcjonalny `WIDGET_ORIGIN` (hostowany
 widget / Vercel). Publiczny id widgetu w snippecie, nie sekret. Szczegóły:
 `docs/SECURITY.md`.
+
+**Zaakceptowane:** obiekt widgetu (`WidgetConfig`) jest interfejsem
+konfiguracji. Sklep implementuje ten obiekt u siebie. `showProduct` jest
+jego polem i niesie kartę sklepu — tę samą, która jest na stronie sklepu.
+Widget nie definiuje wyglądu karty. Pole jest opcjonalne: brak karty zostawia
+sam czat.
+
+Pole `showProduct`:
+
+- `productId` — publiczny identyfikator produktu w tym sklepie.
+- `cardUrl` — adres HTTPS, pod którym sklep serwuje tę kartę.
+
+**Zaimplementowane:** `parseWidgetConfig` czyta obiekt widgetu. Przy
+`showProduct` wymaga niepustego `productId` i `cardUrl` wyłącznie `https`.
+Wdrożenie w innym serwisie: skrypt `widget-plugin.js` z originu widgetu.
+Inny projekt pobiera kontrakt z GitHuba
+(opis repozytorium i `widget/public/widget-plugin.md`). Gdy kaskada
+wskazuje jeden szablon (marka i model), tura niesie `verifiedProduct`, a
+okno czatu otwiera `/dywaniki?brand={slug}` (`CarModelsSection`).
 
 ## LLM
 

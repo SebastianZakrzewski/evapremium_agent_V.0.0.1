@@ -11,6 +11,8 @@ Logika zestawu: backend, nie model, wybiera wiedzę, tool albo workflow.
 | exec-003 | high | Brak slotu → quote_vehicle |
 | exec-004 | high | ambiguous → clarify |
 | exec-005 | high | Kompletne dopasowanie → fitment_cascade |
+| exec-006 | high | Wiedza z autem → fitment_cascade |
+| exec-007 | high | Dopasowanie bez auta → FAQ, bez resolve-template |
 
 ### exec-001 — Wiedza o cenie bez quote-price
 
@@ -43,6 +45,22 @@ Logika zestawu: backend, nie model, wybiera wiedzę, tool albo workflow.
 - **Logika:** Akcja z marką i modelem uruchamia kaskadę w workflow, nie jako bezpośredni tool.
 - **Wejście:** `fitment`, `mode: action`, `Volkswagen`, `Golf 8`
 - **Wyjście:** `{ kind: 'workflow', workflow: 'fitment_cascade' }`
+
+### exec-006 — Wiedza z autem → fitment_cascade
+
+- **Kod:** `tests/api/domain/choose-execution.spec.ts` → `it('starts fitment_cascade when a knowledge question already names the car')`
+- **Krytyczność:** high
+- **Logika:** Kwalifikator może nazwać „czy macie dywaniki do auta” wiedzą. Slot auta i tak otwiera kaskadę.
+- **Wejście:** `fitment`, `mode: knowledge`, `Toyota`, `RAV4`
+- **Wyjście:** `{ kind: 'workflow', workflow: 'fitment_cascade' }`
+
+### exec-007 — Dopasowanie bez auta → FAQ, bez resolve-template
+
+- **Kod:** `tests/api/domain/choose-execution.spec.ts` → `it('keeps a fitment question without a car on faq tools')`
+- **Krytyczność:** high
+- **Logika:** Samo pytanie jak dobierać, bez auta, zostaje przy liściach FAQ. `resolve-template` nie omija workflow.
+- **Wejście:** `fitment`, `mode: knowledge`, puste encje
+- **Wyjście:** `{ kind: 'knowledge', tools: ['lookup-leaf', 'search-leaves'] }`
 
 ### exec-004 — ambiguous → clarify
 

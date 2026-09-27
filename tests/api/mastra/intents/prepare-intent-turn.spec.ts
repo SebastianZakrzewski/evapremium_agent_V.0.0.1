@@ -59,19 +59,22 @@ describe('prepareIntentTurn', () => {
     expect(turn.instructions).toContain('Brakuje marki auta');
   });
 
-  it('does not expose quote-price on product_info', async () => {
+  it('starts the fitment cascade when the question names a model', async () => {
     const turn = await prepareIntentTurn(
       qualifier,
       'Czy dywaniki pasują do Golfa 8?',
     );
-    const tools = selectTurnTools(shopCatalog, turn.toolIds);
 
     expect(turn.intent).toBe('product_info');
+    expect(turn.execution).toEqual({
+      kind: 'workflow',
+      workflow: 'fitment_cascade',
+    });
+    expect(turn.toolIds).toEqual([]);
+    expect(turn.executionNote).toContain('Brakuje marki auta');
+    expect(turn.executionNote).toContain('model=Golf 8');
     expect(profileAllowsTool(turn.toolIds, 'quote-price')).toBe(false);
-    expect(tools).not.toHaveProperty('quote-price');
-    expect(Object.keys(tools).sort()).toEqual(
-      ['lookup-leaf', 'resolve-template', 'search-leaves'].sort(),
-    );
+    expect(profileAllowsTool(turn.toolIds, 'resolve-template')).toBe(false);
   });
 
   it('gives delivery search-leaves and lookup-leaf without quote-price', async () => {
@@ -163,7 +166,55 @@ describe('prepareIntentTurn', () => {
     expect(turn.execution.kind).toBe('knowledge');
     expect(turn.executionNote).toContain('Kaskada: one');
     expect(turn.executionNote).toContain('body=hatchback');
+    expect(turn.verifiedProduct).toEqual({
+      productId: 'passenger_car|volkswagen|golfmk8_8_gen|2019-|hatchback|1',
+      brand: 'Volkswagen',
+      model: 'Golf(MK8) 8 gen',
+    });
     expect(turn.toolIds).not.toContain('resolve-template');
+  });
+
+  it('keeps brand and model from a knowledge fitment when the year arrives next', async () => {
+    const first = await prepareIntentTurn(
+      {
+        qualify: async () => ({
+          intent: 'product_info',
+          confidence: 0.95,
+          sub_intent: 'fitment',
+          mode: 'knowledge',
+          entities: { car_brand: 'BMW', car_model: 'X5' },
+        }),
+      },
+      'Czy posiadacie dywaniki do BMW X5 ?',
+    );
+
+    expect(first.execution).toEqual({
+      kind: 'workflow',
+      workflow: 'fitment_cascade',
+    });
+    expect(first.toolIds).toEqual([]);
+    expect(first.fitment?.missing).toBe('year');
+    expect(first.fitment?.slots).toEqual({ car_brand: 'BMW', car_model: 'X5' });
+
+    const second = await prepareIntentTurn(
+      {
+        qualify: async () => {
+          throw new Error('should not qualify');
+        },
+      },
+      '2021 rok',
+      { fitment: first.fitment },
+    );
+
+    expect(second.entities).toMatchObject({
+      car_brand: 'BMW',
+      car_model: 'X5',
+      year: 2021,
+    });
+    expect(second.fitment?.missing).toBe('body_type');
+    expect(second.executionNote).toContain('marka=BMW');
+    expect(second.executionNote).toContain('model=X5');
+    expect(second.executionNote).toContain('rocznik=2021');
   });
 
   it('drops a saved fitment when the next message is a new question', async () => {

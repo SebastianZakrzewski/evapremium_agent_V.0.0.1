@@ -18,6 +18,11 @@ export type ChatTurn = {
     amount?: number;
     currency?: string;
     body?: string;
+    product?: {
+      productId: string;
+      brand: string;
+      model: string;
+    };
   };
 };
 

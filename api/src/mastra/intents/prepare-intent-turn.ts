@@ -37,6 +37,12 @@ import type { QualifyResult, ShopIntent, ShopToolId } from './schema';
 export const EVA_TURN_BASE_INSTRUCTIONS =
   'Język: polski. Cena i fakt tylko z narzędzi Nest. Bez SQL. Bez kwoty spoza quote-price. Bez faktu spoza lookup-leaf.';
 
+export type VerifiedProduct = {
+  productId: string;
+  brand: string;
+  model: string;
+};
+
 export type PreparedTurn = {
   intent: ShopIntent;
   profile: IntentProfile;
@@ -50,6 +56,7 @@ export type PreparedTurn = {
   fitment?: FitmentSnapshot;
   clearFitment?: boolean;
   cascadeMatch?: 'none' | 'one' | 'many';
+  verifiedProduct?: VerifiedProduct;
   relatedBranches: string[];
   executionNote?: string;
 };
@@ -136,11 +143,7 @@ function executionNoteFor(
     return `Wykonanie: wywołaj ${execution.tool}.`;
   }
   if (execution.kind === 'workflow' && execution.workflow === FITMENT_CASCADE_WORKFLOW) {
-    const missing = advanceVehicleSlots({ slots: entities }).missing;
-    if (missing === undefined) {
-      return undefined;
-    }
-    return `Brakuje ${MISSING_LABEL[missing]}. Zapytaj o to. Nie wołaj resolve-template.`;
+    return missingVehicleFact(entities);
   }
   if (execution.kind === 'workflow') {
     const advanced = advanceQuoteVehicle({ entities });
@@ -277,9 +280,68 @@ export function traceForTurn(turn: PreparedTurn): Record<string, string | null> 
   });
 }
 
+function knownVehicleFact(slots: RouterEntities): string {
+  const parts: string[] = [];
+  if (slots.car_brand) {
+    parts.push(`marka=${slots.car_brand}`);
+  }
+  if (slots.car_model) {
+    parts.push(`model=${slots.car_model}`);
+  }
+  if (typeof slots.year === 'number') {
+    parts.push(`rocznik=${slots.year}`);
+  }
+  if (slots.body_type) {
+    parts.push(`nadwozie=${slots.body_type}`);
+  }
+  return parts.length > 0 ? ` Znane: ${parts.join(', ')}.` : '';
+}
+
+function missingVehicleFact(entities: RouterEntities): string | undefined {
+  const collected = advanceVehicleSlots({ slots: entities });
+  if (collected.missing === undefined) {
+    return undefined;
+  }
+  return `Brakuje ${MISSING_LABEL[collected.missing]}.${knownVehicleFact(collected.slots)} Zapytaj tylko o brakujące. Nie wołaj resolve-template.`;
+}
+
+function rememberPartialFitment(entities: RouterEntities): FitmentSnapshot | undefined {
+  const collected = advanceVehicleSlots({ slots: entities });
+  const slots = collected.slots;
+  const hasSlot =
+    Boolean(slots.car_brand) ||
+    Boolean(slots.car_model) ||
+    typeof slots.year === 'number' ||
+    Boolean(slots.body_type);
+  if (collected.missing === undefined || !hasSlot) {
+    return undefined;
+  }
+  return {
+    workflow: FITMENT_CASCADE_WORKFLOW,
+    step: 'waiting_for_vehicle',
+    missing: collected.missing,
+    slots,
+  };
+}
+
+function verifiedProductFromCascade(
+  advance: FitmentCascadeAdvance,
+): VerifiedProduct | undefined {
+  if (advance.status !== 'ready' || advance.result.status !== 'one') {
+    return undefined;
+  }
+  const { template } = advance.result;
+  const brand = template.brandKey.trim();
+  const model = template.modelKey.trim();
+  if (brand === '' || model === '') {
+    return undefined;
+  }
+  return { productId: template.recordKey, brand, model };
+}
+
 function cascadeFact(advance: FitmentCascadeAdvance): string {
   if (advance.status === 'suspended') {
-    return `Brakuje ${MISSING_LABEL[advance.snapshot.missing]}. Zapytaj o to. Nie wołaj resolve-template.`;
+    return `Brakuje ${MISSING_LABEL[advance.snapshot.missing]}.${knownVehicleFact(advance.snapshot.slots)} Zapytaj tylko o brakujące. Nie wołaj resolve-template.`;
   }
   const result = advance.result;
   if (result.status === 'none') {
@@ -313,6 +375,7 @@ function turnFromCascade(advance: FitmentCascadeAdvance): PreparedTurn {
     fitment: suspended ? advance.snapshot : undefined,
     clearFitment: suspended ? undefined : true,
     cascadeMatch: suspended ? 'many' : advance.result.status,
+    verifiedProduct: verifiedProductFromCascade(advance),
     relatedBranches: ['dopasowanie'],
     executionNote,
   };
@@ -348,10 +411,11 @@ export async function prepareIntentTurn(
   message: string,
   options?: PrepareIntentTurnOptions,
 ): Promise<PreparedTurn> {
+  const slotReply = isSlotReply(message);
   if (
     options?.fitment !== undefined &&
     options.quoteWorkflow === undefined &&
-    isSlotReply(message)
+    slotReply
   ) {
     return emitTurnLog(
       options,
@@ -363,7 +427,7 @@ export async function prepareIntentTurn(
 
   if (
     options?.quoteWorkflow !== undefined &&
-    isSlotReply(message)
+    slotReply
   ) {
     return emitTurnLog(options, resumeQuoteTurn(options.quoteWorkflow, message), {
       candidateIntent: 'pricing',
@@ -429,6 +493,12 @@ export async function prepareIntentTurn(
           resolve: (input) => options.cascade!.resolve(input),
         }),
       );
+    }
+  }
+  if (turn.subIntent === 'fitment' && turn.fitment === undefined && !turn.clearFitment) {
+    const fitment = rememberPartialFitment(turn.entities);
+    if (fitment) {
+      turn = { ...turn, fitment };
     }
   }
   return emitTurnLog(options, turn, {

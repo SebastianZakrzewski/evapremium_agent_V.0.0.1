@@ -599,7 +599,7 @@ describe('dashboard analytics', () => {
         await screen.findByRole('heading', { name: 'Analityka' }),
       ).toBeInTheDocument();
       expect(screen.getByRole('heading', { name: '3 z 4' })).toBeInTheDocument();
-      expect(screen.getByText('Slug spoza rankingu')).toBeInTheDocument();
+      expect(screen.getAllByText('Slug spoza rankingu').length).toBeGreaterThan(0);
       expect(screen.getByRole('link', { name: 'session-miss' })).toHaveAttribute(
         'href',
         '#/sessions/session-miss',

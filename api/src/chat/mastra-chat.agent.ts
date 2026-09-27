@@ -13,10 +13,13 @@ import {
   prepareIntentTurn,
   traceForTurn,
   type PreparedTurn,
+  type VerifiedProduct,
 } from '../mastra/intents/prepare-intent-turn';
 import type { ChatAgent, ChatAgentTurn } from './chat-agent.port';
 
 export class MastraChatAgent implements ChatAgent {
+  private readonly verifiedBySession = new Map<string, VerifiedProduct>();
+
   constructor(
     private readonly agent: Pick<Agent, 'stream'>,
     private readonly qualifier: IntentQualifier,
@@ -34,6 +37,13 @@ export class MastraChatAgent implements ChatAgent {
       text += chunk;
     }
     return { text, data: { status: 'generated' } };
+  }
+
+  verifiedProduct(sessionId?: string): VerifiedProduct | undefined {
+    if (sessionId === undefined) {
+      return undefined;
+    }
+    return this.verifiedBySession.get(sessionId);
   }
 
   async *stream(
@@ -84,6 +94,11 @@ export class MastraChatAgent implements ChatAgent {
       log: logIntentTurnToConsole,
     });
     if (sessionId !== undefined) {
+      if (prepared.verifiedProduct) {
+        this.verifiedBySession.set(sessionId, prepared.verifiedProduct);
+      } else {
+        this.verifiedBySession.delete(sessionId);
+      }
       this.intentState.set(sessionId, prepared.intent);
       this.intentState.setQuoteWorkflow(sessionId, prepared.quoteWorkflow);
       if (prepared.fitment) {

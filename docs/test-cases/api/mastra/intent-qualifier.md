@@ -29,9 +29,9 @@ Czat / SSE nietknięte (Slice 3).
 
 - **Kod:** `tests/api/mastra/intents/intent-qualifier.spec.ts` → `it('maps a fit question to product_info')`
 - **Krytyczność:** medium
-- **Logika:** Fit / katalog to `product_info`, nie wycena.
+- **Logika:** Fit / katalog to `product_info` i `fitment` w trybie akcji, nie wycena.
 - **Wejście:** `Czy dywaniki pasują do Golfa 8?`
-- **Wyjście:** `intent: product_info`
+- **Wyjście:** `intent: product_info`, `sub_intent: fitment`, `mode: action`, model `Golf 8`
 
 ### qualify-003 — Poza ofertą → out_of_scope
 

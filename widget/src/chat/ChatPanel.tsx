@@ -1,12 +1,29 @@
+import { AnimatePresence, MotionConfig, motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
-import type { ChatApi, SessionOpenerSuggestion } from './chat-api';
+import type { ChatApi, ChatTurn, SessionOpenerSuggestion } from './chat-api';
+import { ChatHeader } from './ChatHeader';
 import { formatAssistantTurn } from './format-turn';
+import { MessageBubble } from './MessageBubble';
+import { shopCardUrlFromSearch, shopProductCardSrc } from './shop-product-card';
+import '@fontsource-variable/montserrat';
 import './ChatPanel.css';
 
 type ChatLine = {
   role: 'user' | 'assistant';
   text: string;
+  cardSrc?: string;
 };
+
+function cardSrcForTurn(turn: ChatTurn): string | undefined {
+  const product = turn.data.product;
+  if (!product) {
+    return undefined;
+  }
+  return (
+    shopProductCardSrc(shopCardUrlFromSearch(window.location.search), product) ??
+    undefined
+  );
+}
 
 type ChatPanelProps = {
   api: ChatApi;
@@ -22,6 +39,7 @@ export function ChatPanel({ api }: ChatPanelProps) {
   const [busy, setBusy] = useState(false);
   const opening = useRef<Promise<string> | null>(null);
   const conversationStarted = useRef(false);
+  const messagesRef = useRef<HTMLUListElement>(null);
 
   async function ensureSession(): Promise<string> {
     if (sessionId) {
@@ -84,6 +102,7 @@ export function ChatPanel({ api }: ChatPanelProps) {
         next[next.length - 1] = {
           role: 'assistant',
           text: formatAssistantTurn(turn),
+          cardSrc: cardSrcForTurn(turn),
         };
         return next;
       });
@@ -101,76 +120,115 @@ export function ChatPanel({ api }: ChatPanelProps) {
     }
   }
 
+  useEffect(() => {
+    const list = messagesRef.current;
+    if (list && typeof list.scrollTo === 'function') {
+      list.scrollTo({ top: list.scrollHeight, behavior: 'smooth' });
+    }
+  }, [lines]);
+
+  const canSend = draft.trim() !== '' && !busy;
+
   return (
-    <section className="eva-chat" aria-label="Czat EvaBot">
-      <header className="eva-chat__header">
-        <img
-          className="eva-chat__avatar"
-          src="/evabot-icon.jpg"
-          alt=""
-          width={56}
-          height={56}
-        />
-        <div>
-          <h1 className="eva-chat__title">EvaBot</h1>
-          <p className="eva-chat__brand">EVA Premium</p>
-        </div>
-      </header>
-      <p className="eva-chat__notice">Rozmowa jest zapisywana.</p>
-      <ul className="eva-chat__messages" aria-label="Wiadomości czatu">
-        {lines.map((line, index) => (
-          <li
-            key={`${index}-${line.role}`}
-            className={`eva-chat__bubble eva-chat__bubble--${line.role}`}
-          >
-            {line.role === 'assistant' && line.text === '' && busy ? (
-              <span className="eva-chat__typing" aria-label="Pisze">
-                ●●●
-              </span>
-            ) : (
-              line.text
-            )}
-          </li>
-        ))}
-      </ul>
-      {suggestions.length > 0 ? (
-        <div className="eva-chat__topics" role="group" aria-label="Tematy rozmowy">
-          {suggestions.map((chip) => (
-            <button
-              key={chip.id}
-              type="button"
-              className="eva-chat__topic"
-              disabled={busy}
-              onClick={() => {
-                void send(chip.message);
-              }}
-            >
-              {chip.label}
-            </button>
-          ))}
-        </div>
-      ) : null}
-      <form
-        className="eva-chat__composer"
-        onSubmit={(event) => {
-          event.preventDefault();
-          void send();
-        }}
+    <MotionConfig reducedMotion="user">
+      <motion.section
+        className="eva-chat"
+        aria-label="Czat EvaBot"
+        initial={{ opacity: 0, y: 12, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       >
-        <label className="eva-chat__label">
-          Wiadomość
-          <input
-            className="eva-chat__input"
-            value={draft}
-            onChange={(event) => setDraft(event.target.value)}
-            disabled={busy}
-            placeholder="Opisz auto lub zadaj pytanie…"
-          />
-        </label>
-        <button className="eva-chat__send" type="submit" disabled={busy}>
-          Wyślij
-        </button>
-      </form>
-    </section>
+        <ChatHeader typing={busy} />
+        <p className="eva-chat__notice">Rozmowa jest zapisywana.</p>
+        <ul
+          ref={messagesRef}
+          className="eva-chat__messages"
+          aria-label="Wiadomości czatu"
+          aria-live="polite"
+        >
+          {lines.map((line, index) => (
+            <MessageBubble
+              key={`${index}-${line.role}`}
+              role={line.role}
+              text={line.text}
+              cardSrc={line.cardSrc}
+              pending={busy && line.role === 'assistant' && index === lines.length - 1}
+              showAvatar={line.role === 'assistant' && lines[index - 1]?.role !== 'assistant'}
+            />
+          ))}
+        </ul>
+        <AnimatePresence initial={false}>
+          {suggestions.length > 0 ? (
+            <motion.div
+              key="topics"
+              className="eva-chat__topics"
+              role="group"
+              aria-label="Tematy rozmowy"
+              initial="hidden"
+              animate="shown"
+              exit={{ opacity: 0, y: 8, transition: { duration: 0.15 } }}
+              variants={{ shown: { transition: { staggerChildren: 0.06, delayChildren: 0.2 } } }}
+            >
+              {suggestions.map((chip) => (
+                <motion.button
+                  key={chip.id}
+                  type="button"
+                  className="eva-chat__topic"
+                  disabled={busy}
+                  variants={{
+                    hidden: { opacity: 0, y: 8 },
+                    shown: { opacity: 1, y: 0 },
+                  }}
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => {
+                    void send(chip.message);
+                  }}
+                >
+                  {chip.label}
+                </motion.button>
+              ))}
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+        <form
+          className="eva-chat__composer"
+          onSubmit={(event) => {
+            event.preventDefault();
+            void send();
+          }}
+        >
+          <label className="eva-chat__field">
+            <span className="eva-chat__label">Wiadomość</span>
+            <input
+              className="eva-chat__input"
+              value={draft}
+              onChange={(event) => setDraft(event.target.value)}
+              disabled={busy}
+              placeholder="Opisz auto lub zadaj pytanie…"
+            />
+          </label>
+          <motion.button
+            className="eva-chat__send"
+            type="submit"
+            aria-label="Wyślij"
+            disabled={!canSend}
+            whileHover={canSend ? { scale: 1.06 } : undefined}
+            whileTap={canSend ? { scale: 0.9 } : undefined}
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path
+                d="M4 12h14M13 6l6 6-6 6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </motion.button>
+        </form>
+      </motion.section>
+    </MotionConfig>
   );
 }

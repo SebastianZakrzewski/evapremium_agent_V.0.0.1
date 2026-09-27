@@ -87,7 +87,9 @@ function matchMode(
   }
   if (
     subIntent === 'fitment' &&
-    /dobierz|dobrać|dobrac|chcę dopas|chce dopas/.test(text)
+    /dobierz|dobrać|dobrac|chcę dopas|chce dopas|pasuj|macie|posiadacie/.test(
+      text,
+    )
   ) {
     return 'action';
   }

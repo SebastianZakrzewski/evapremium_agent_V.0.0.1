@@ -12,7 +12,7 @@ Na stronie serwisu, najpierw obiekt, potem skrypt z originu widgetu:
   window.widgetPlugin = {
     showProduct: {
       productId: "audi-a4",
-      cardUrl: "https://sklep.example/cards/audi-a4",
+      cardUrl: "https://sklep.example/dywaniki?brand={brand}",
     },
   };
 </script>
@@ -23,8 +23,8 @@ Na stronie serwisu, najpierw obiekt, potem skrypt z originu widgetu:
 ></script>
 ```
 
-`productId` to publiczne id produktu. `cardUrl` to adres `https` karty tego
-serwisu. Pusty `window.widgetPlugin` zostawia sam czat. Złe `showProduct`
+`productId` to publiczne id produktu. `cardUrl` to adres `https` okna
+`/dywaniki?brand={brand}`. Pusty `window.widgetPlugin` zostawia sam czat. Złe `showProduct`
 nie montuje ramki.
 
 Produkcyjny origin widgetu: `https://widget-xi-eight.vercel.app`
