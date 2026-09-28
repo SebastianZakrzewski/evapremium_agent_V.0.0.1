@@ -185,14 +185,13 @@ describe('ChatPanel', () => {
       {},
       '',
       '/?cardUrl=' +
-        encodeURIComponent('https://shop.example/dywaniki?brand={brand}'),
+        encodeURIComponent('https://shop.example/dywaniki?brand={brand_key}'),
     );
     const api = mockApi({
       status: 'generated',
       product: {
         productId: 'audi-a4',
-        brand: 'audi',
-        model: 'a4',
+        fields: { brand_key: 'audi' },
       },
     });
     render(<ChatPanel api={api} />);

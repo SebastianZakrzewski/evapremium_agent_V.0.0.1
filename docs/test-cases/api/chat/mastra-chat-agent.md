@@ -2,7 +2,8 @@
 
 Kod: `tests/api/chat/mastra-chat.agent.spec.ts`
 
-Logika zestawu: czat Nest nie tworzy `Agent` co turę. Po qualify woła
+Logika zestawu: czat Nest nie tworzy `Agent` co turę. Tura wczytuje stan sesji,
+przygotowuje intencję, zapamiętuje klienta i zapisuje eventy, potem woła
 zarejestrowanego agenta z `requestContext.intent`.
 
 | id | Krytyczność | Tytuł |

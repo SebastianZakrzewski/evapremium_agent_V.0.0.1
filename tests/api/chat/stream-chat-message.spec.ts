@@ -85,8 +85,12 @@ describe('streamChatMessage', () => {
     const { sessionId } = await sessions.create();
     const product = {
       productId: 'passenger_car|volkswagen|golfmk8_8_gen|2019-|hatchback|1',
-      brand: 'volkswagen',
-      model: 'golfmk8_8_gen',
+      fields: {
+        brand_key: 'volkswagen',
+        model_key: 'golfmk8_8_gen',
+        generation: '2019-',
+        body_type_key: 'hatchback',
+      },
     };
     const agent: ChatAgent = {
       handle: () => Promise.resolve({ text: 'pasuje', data: { status: 'generated' } }),

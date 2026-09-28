@@ -12,7 +12,7 @@ Na stronie serwisu, najpierw obiekt, potem skrypt z originu widgetu:
   window.widgetPlugin = {
     showProduct: {
       productId: "audi-a4",
-      cardUrl: "https://sklep.example/dywaniki?brand={brand}",
+      cardUrl: "https://sklep.example/modele?brand={brand_key}&model={model_family_key}&generation={generation}&bodyType={body_type_key}",
     },
   };
 </script>
@@ -23,8 +23,10 @@ Na stronie serwisu, najpierw obiekt, potem skrypt z originu widgetu:
 ></script>
 ```
 
-`productId` to publiczne id produktu. `cardUrl` to adres `https` okna
-`/dywaniki?brand={brand}`. Pusty `window.widgetPlugin` zostawia sam czat. Złe `showProduct`
+`productId` to publiczne id produktu. `cardUrl` to adres `https` z tokenami
+`{productId}` i `{kolumna}` pól dopasowanego wiersza. Widget nie nazywa tych
+pól. Zostawiona klamra nie otwiera okna. Opcjonalne `mountObject` renderuje obiekt sklepu
+(`id` i słownik `fields`) obok czatu. Pusty `window.widgetPlugin` zostawia sam czat. Złe `showProduct`
 nie montuje ramki.
 
 Produkcyjny origin widgetu: `https://widget-xi-eight.vercel.app`

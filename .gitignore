@@ -12,6 +12,11 @@ docs/provider_configuration.json
 .DS_Store
 Thumbs.db
 *.tsbuildinfo
+**/__pycache__/
+tests/**/*.js
+tests/**/*.js.map
+tests/**/*.d.ts
+api/tmp-*
 .mastra/
 .vercel/
 *.pem

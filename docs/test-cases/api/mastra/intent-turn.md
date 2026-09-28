@@ -2,8 +2,10 @@
 
 Kod: `tests/api/mastra/intents/prepare-intent-turn.spec.ts`
 
-Logika zestawu: kwalifikacja → `IntentProfile` → mapa tooli tury ⊆ katalogu
-Nest. `quote-price` tylko na `pricing`. SSE bez zmiany (`stream-chat-message.spec.ts`).
+Logika zestawu: otwarty workflow (`TURN_WORKFLOWS` w `ChatModule`) wznawia się
+przed nową kwalifikacją. Potem kwalifikacja → `IntentProfile` → mapa tooli tury
+⊆ katalogu Nest. `quote-price` tylko na `pricing`. SSE bez zmiany
+(`stream-chat-message.spec.ts`).
 
 | id | Krytyczność | Tytuł |
 | --- | --- | --- |

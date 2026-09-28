@@ -29,6 +29,16 @@ describe('widget plugin', () => {
     });
   });
 
+  it('keeps mountObject off the chat frame address', () => {
+    const mountObject = () => undefined;
+    expect(
+      installWidgetPlugin('https://widget.example.cdn', 'eva-shop', { mountObject }),
+    ).toEqual({
+      config: { mountObject },
+      iframeSrc: 'https://widget.example.cdn/?widget=eva-shop',
+    });
+  });
+
   it('installs chat when the shop leaves the domain fields empty', () => {
     expect(installWidgetPlugin('https://widget.example.cdn/', 'other-shop', {})).toEqual({
       config: {},

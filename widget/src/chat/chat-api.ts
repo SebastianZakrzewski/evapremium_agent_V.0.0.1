@@ -20,8 +20,7 @@ export type ChatTurn = {
     body?: string;
     product?: {
       productId: string;
-      brand: string;
-      model: string;
+      fields: Record<string, string>;
     };
   };
 };

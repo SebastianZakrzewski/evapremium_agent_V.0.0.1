@@ -15,6 +15,8 @@ describe('loadMatTemplates', () => {
           year_from: 2019,
           year_to: null,
           is_open_ended: true,
+          model_family_key: 'Golf',
+          generation: '2019-',
           body_type_key: 'hatchback',
           body_type_1_key: 'hatchback',
           body_type_2_key: null,
@@ -37,6 +39,8 @@ describe('loadMatTemplates', () => {
         bodyType1Key: 'hatchback',
         bodyType2Key: null,
         bodyType3Key: null,
+        modelFamilyKey: 'Golf',
+        generation: '2019-',
       },
     ]);
   });

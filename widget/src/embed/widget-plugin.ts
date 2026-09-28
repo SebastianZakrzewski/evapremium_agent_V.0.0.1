@@ -11,7 +11,8 @@ export type WidgetPluginInstall = {
 
 /**
  * Reads the host's widget object and builds the chat frame URL.
- * `showProduct` is carried as query fields. An invalid object does not install.
+ * `showProduct` is carried as query fields. `mountObject` stays on the host
+ * config and is not copied into the frame URL. An invalid object does not install.
  */
 export function installWidgetPlugin(
   widgetOrigin: string,

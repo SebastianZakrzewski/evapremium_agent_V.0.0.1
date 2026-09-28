@@ -15,6 +15,7 @@ serwera.
 | widget-plugin-003 | high | Brak montowania przy złym `showProduct` |
 | widget-plugin-004 | high | Publiczny skrypt i global `widgetPlugin` |
 | widget-plugin-005 | high | Dokument agenta obok skryptu |
+| widget-plugin-006 | high | `mountObject` nie wchodzi do adresu czatu |
 
 ### widget-plugin-001 — Montowanie czatu z obiektu widgetu
 
@@ -55,3 +56,11 @@ serwera.
 - **Logika:** `widget/public/widget-plugin.md` podaje adres, z którego inny projekt pobiera kontrakt z GitHuba.
 - **Wejście:** treść `widget/public/widget-plugin.md`
 - **Wyjście:** wzmianki `window.widgetPlugin`, `showProduct`, `widget-plugin.js` i surowy adres tego pliku na GitHubie
+
+### widget-plugin-006 — `mountObject` nie wchodzi do adresu czatu
+
+- **Kod:** `tests/widget/embed/widget-plugin.test.ts` → `it('keeps mountObject off the chat frame address')`
+- **Krytyczność:** high
+- **Logika:** metoda renderowania zostaje w konfiguracji hosta. Adres iframe niesie tylko id widgetu.
+- **Wejście:** origin `https://widget.example.cdn`, id `eva-shop`, `mountObject` jako funkcja
+- **Wyjście:** `config` z tą funkcją, `iframeSrc` z samym `widget=eva-shop`

@@ -61,6 +61,10 @@ export type MatTemplate = {
   bodyType1Key: string | null;
   bodyType2Key: string | null;
   bodyType3Key: string | null;
+  /** Shop card column. Absent on fixtures that do not load the catalog row. */
+  modelFamilyKey?: string;
+  /** Shop card column. Absent on fixtures that do not load the catalog row. */
+  generation?: string;
 };
 
 export type TemplateCascadeResult =

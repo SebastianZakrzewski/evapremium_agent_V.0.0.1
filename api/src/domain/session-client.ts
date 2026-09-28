@@ -38,7 +38,7 @@ export type VehicleTurnMemory = {
   fitment?: Pick<FitmentSnapshot, 'missing' | 'slots'>;
   quoteEntities?: RouterEntities;
   cascadeMatch?: CascadeStatus;
-  verifiedProduct?: { productId: string; brand: string; model: string };
+  verifiedProduct?: { productId: string; fields: Record<string, string> };
 };
 
 const NAME_PATTERN =
@@ -147,8 +147,13 @@ export class SessionClient {
       next.cascadeStatus = turn.cascadeMatch;
     }
     if (turn.verifiedProduct) {
-      next.brandKey = turn.verifiedProduct.brand;
-      next.modelKey = turn.verifiedProduct.model;
+      const { fields } = turn.verifiedProduct;
+      if (fields.brand_key) {
+        next.brandKey = fields.brand_key;
+      }
+      if (fields.model_key) {
+        next.modelKey = fields.model_key;
+      }
       next.templateRecordKey = turn.verifiedProduct.productId;
     }
     return new SessionClient(next);

@@ -41,8 +41,10 @@ describe('session client', () => {
       cascadeMatch: 'one',
       verifiedProduct: {
         productId: 'passenger_car|toyota|rav4|2554',
-        brand: 'Toyota ',
-        model: 'Rav4 (XA50) 5 gen',
+        fields: {
+          brand_key: 'Toyota ',
+          model_key: 'Rav4 (XA50) 5 gen',
+        },
       },
     });
 

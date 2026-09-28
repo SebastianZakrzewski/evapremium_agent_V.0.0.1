@@ -45,6 +45,17 @@ Kierunek zależności: sklep ładuje snippet → hostowany widget → NestJS;
 Mastra → NestJS; NestJS → Supabase; NestJS → Bitrix24 (leady).
 LLM nie sięga do bazy ani nie jest źródłem cen ani polityki sklepu.
 
+Skorupa tury siedzi w `ChatModule`: HTTP, kwalifikacja, `acceptIntentTransition`,
+stan sesji, stream Mastry, eventy. Kwalifikator nie wznawia workflow.
+`ChatModule` wstrzykuje `TURN_WORKFLOWS` (`evaTurnWorkflows`): otwarty
+`fitment_cascade` albo `quote_vehicle` dostaje wiadomość i albo dopytuje
+o slot, albo woła Nest. Inny sklep podmienia ten provider, katalog tooli
+i prompt-bloki, zostawiając moduły Nest. Nazwy `createEvaMastra` /
+`evaShopAgent` zostają przy tej aplikacji.
+
+Moduły produktu zostają osobno: `TemplateCascadeModule`, `PricingModule`,
+`ContextTreeModule`, `LeadModule`. Cena, szablon i liść FAQ wychodzą stamtąd.
+
 Kod w jednym gicie, pakiety `api`, `widget` i `dashboard`. Deploy nadal
 rozdzielony: Nest na Hetznerze; widget i dashboard jako **osobne** originy
 Vercel. SPA dashboardu nie robi rewrite `/v1` na VPS. Projektu Vercel
@@ -54,7 +65,7 @@ apply za zgodą, nie kolejnym slice'em planu.
 | Warstwa | Technologia | Odpowiedzialność |
 | --- | --- | --- |
 | Prezentacja | React, hostowany widget | Snippet na `evapremium.pl`; UI czatu z Waszego originu |
-| Agent / LLM | Mastra + DeepSeek | Czat z kluczem: qualify → `IntentProfile` → ten sam `evaShopAgent` (`RequestContext.intent`, podzbiór tooli); `verify` bez klucza: stub. Studio: kontener `evabot-studio` (`:4111` → `/mastra` na Nest) |
+| Agent / LLM | Mastra + DeepSeek | Czat z kluczem: qualify → `IntentProfile` → ten sam `evaShopAgent` (`RequestContext.intent`, podzbiór tooli). Wznowienie `fitment_cascade` i `quote_vehicle` idzie przez `TURN_WORKFLOWS` wstrzyknięty w `ChatModule`. `verify` bez klucza: stub. Studio: kontener `evabot-studio` (`:4111` → `/mastra` na Nest) |
 | Logika biznesowa | NestJS | Kaskada filtrów, wycena, context tree, utworzenie leada; jedyne I/O do danych i CRM |
 | Dane | Supabase PROD | `evapremium_shop` (szablony, cennik), `eva_bot` (aliasy slotów, sesje, context tree) |
 | CRM | Bitrix24 | Kolejka pracy człowieka (zapis leada z czatu) |
@@ -174,13 +185,23 @@ Pole `showProduct`:
 - `productId` — publiczny identyfikator produktu w tym sklepie.
 - `cardUrl` — adres HTTPS, pod którym sklep serwuje tę kartę.
 
+**Zaakceptowane:** opcjonalne `mountObject` montuje obiekt sklepu obok czatu.
+Kontrakt nie nazywa pól domeny. Argument to `MountedObject`: niepuste `id`
+oraz `fields` jako słownik napisów. Sklep czyta z `fields` własne klucze.
+Widget nie interpretuje kluczy, nie dokleja ceny ani HTML. Funkcja zostaje
+na stronie sklepu i nie wchodzi do query iframe. Brak metody zostawia sam
+czat. Zdjęcie widoku to komunikat `eva.object` z `object: null`.
+Źródło typu: `widget/src/embed/widget-config.ts`. Opis dla sklepu:
+`widget/public/widget-plugin.md`.
+
 **Zaimplementowane:** `parseWidgetConfig` czyta obiekt widgetu. Przy
 `showProduct` wymaga niepustego `productId` i `cardUrl` wyłącznie `https`.
 Wdrożenie w innym serwisie: skrypt `widget-plugin.js` z originu widgetu.
 Inny projekt pobiera kontrakt z GitHuba
 (opis repozytorium i `widget/public/widget-plugin.md`). Gdy kaskada
-wskazuje jeden szablon (marka i model), tura niesie `verifiedProduct`, a
-okno czatu otwiera `/dywaniki?brand={slug}` (`CarModelsSection`).
+wskazuje jeden szablon, tura niesie `verifiedProduct` (`productId` i `fields`).
+Widget wypełnia tokeny `cardUrl` tym słownikiem i otwiera iframe dopiero,
+gdy w adresie nie została żadna klamra.
 
 ## LLM
 
@@ -205,11 +226,14 @@ wywołaniu. `chooseExecution` wybiera wiedzę, `directTool` albo workflow
 procesu). Niska pewność: jedno `reclassify`, potem `out_of_scope` (zero
 shop-tooli). Brak profilu / błąd kwalifikatora → `out_of_scope`, nie
 `general_agent`. `allowedTransitions` zostaje strażnikiem grubej intencji.
-`MastraChatAgent` przy kluczu DeepSeek: qualify → fallback →
-`acceptIntentTransition` (stan sesji w `InMemoryIntentSessionState`) →
-**ten sam** `evaShopAgent` z instancji Mastry (`createEvaMastra`).
+`MastraChatAgent` przy kluczu DeepSeek: wczytaj stan sesji → `prepareIntentTurn`
+(wznów otwarty workflow albo kwalifikuj → fallback → `acceptIntentTransition`)
+→ zapamiętaj klienta → zapisz eventy → **ten sam** `evaShopAgent` z instancji
+Mastry (`createEvaMastra`). Handlery workflow rejestruje `ChatModule`
+(`TURN_WORKFLOWS`), nie kwalifikator.
 Allowlista tooli tury pochodzi z sub-intencji, gdy jest rozpoznana.
-Wycena na profilu to jeden tool `quote-vehicle`; składanie kaskady i macierzy nie jest podłączone.
+Wycena na profilu to jeden tool `quote-vehicle`. Nest składa kaskadę i macierz
+w `composeQuoteVehicle`, nie model.
 Ślad `decision_trace` nie zawiera treści wiadomości. Retrieval liścia
 z miękkim bonusem gałęzi, gdy tura poda `relatedBranches`; puste bonusy
 zostawiają dotychczasową rurę. Per-intent: `RequestContext.intent`;

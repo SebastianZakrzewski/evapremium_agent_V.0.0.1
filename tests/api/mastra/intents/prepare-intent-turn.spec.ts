@@ -168,8 +168,12 @@ describe('prepareIntentTurn', () => {
     expect(turn.executionNote).toContain('body=hatchback');
     expect(turn.verifiedProduct).toEqual({
       productId: 'passenger_car|volkswagen|golfmk8_8_gen|2019-|hatchback|1',
-      brand: 'Volkswagen',
-      model: 'Golf(MK8) 8 gen',
+      fields: {
+        brand_key: 'Volkswagen',
+        model_key: 'Golf(MK8) 8 gen',
+        body_type_key: 'hatchback',
+        year_from: '2019',
+      },
     });
     expect(turn.toolIds).not.toContain('resolve-template');
   });
@@ -267,5 +271,13 @@ describe('prepareIntentTurn', () => {
     expect(turn.executionNote).toContain('Nie pytaj ponownie');
     expect(turn.entities.car_brand).toBe('Toyota');
     expect(turn.collectedSlots?.car_brand).toBe('Toyota');
+    expect(turn.verifiedProduct).toEqual({
+      productId: 'passenger_car|toyota|rav4_xa50_5_gen|2019-2026|suv|2554',
+      fields: {
+        brand_key: 'Toyota',
+        model_key: 'Rav4 (XA50) 5 gen',
+        body_type_key: 'suv',
+      },
+    });
   });
 });

@@ -29,13 +29,17 @@ import { createEvaMastra } from '../mastra/create-eva-mastra';
 import { EVA_SHOP_AGENT_KEY } from '../mastra/create-eva-mastra-agent';
 import { EVA_MASTRA } from '../mastra/eva-mastra.token';
 import { createEvaQualifierAgent } from '../mastra/intents/create-eva-qualifier-agent';
+import { evaTurnWorkflows } from '../mastra/intents/eva-turn-workflows';
 import { MastraIntentQualifier } from '../mastra/intents/mastra-intent-qualifier';
+import {
+  TURN_WORKFLOWS,
+  type TurnWorkflows,
+} from '../mastra/intents/turn-workflows';
 import {
   INTENT_SESSION_STATE,
   InMemoryIntentSessionState,
   type IntentSessionState,
 } from '../mastra/intents/intent-session-state';
-import type { FitmentCascadePort } from '../domain/fitment-session';
 
 @Module({
   imports: [
@@ -82,6 +86,15 @@ import type { FitmentCascadePort } from '../domain/fitment-session';
       useClass: InMemoryIntentSessionState,
     },
     {
+      provide: TURN_WORKFLOWS,
+      useFactory: (templates: TemplateCascadeService): TurnWorkflows =>
+        evaTurnWorkflows({
+          resolve: (input) => templates.resolve(input),
+          listAliases: () => templates.listAliases(),
+        }),
+      inject: [TemplateCascadeService],
+    },
+    {
       provide: EVA_MASTRA,
       useFactory: (tools: ShopTools, events: AgentEventSink) =>
         process.env.DEEPSEEK_API_KEY
@@ -96,23 +109,20 @@ import type { FitmentCascadePort } from '../domain/fitment-session';
         tools: ShopTools,
         intentState: IntentSessionState,
         events: AgentEventSink,
-        templates: TemplateCascadeService,
         sessionClients: SessionClients,
+        workflows: TurnWorkflows,
       ) => {
         if (!mastra) {
           return new StubChatAgent(tools);
         }
-        const cascade: FitmentCascadePort = {
-          resolve: (input) => templates.resolve(input),
-          listAliases: () => templates.listAliases(),
-        };
         return new MastraChatAgent(
           mastra.getAgent(EVA_SHOP_AGENT_KEY),
           new MastraIntentQualifier(createEvaQualifierAgent()),
           intentState,
           events,
-          cascade,
+          undefined,
           sessionClients,
+          workflows,
         );
       },
       inject: [
@@ -120,8 +130,8 @@ import type { FitmentCascadePort } from '../domain/fitment-session';
         ShopTools,
         INTENT_SESSION_STATE,
         AGENT_EVENTS,
-        TemplateCascadeService,
         SESSION_CLIENTS,
+        TURN_WORKFLOWS,
       ],
     },
   ],

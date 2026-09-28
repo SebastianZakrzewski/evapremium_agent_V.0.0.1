@@ -10,7 +10,6 @@ export interface ChatAgent {
   stream?(message: string, sessionId?: string): AsyncIterable<string>;
   verifiedProduct?(sessionId?: string): {
     productId: string;
-    brand: string;
-    model: string;
+    fields: Record<string, string>;
   } | undefined;
 }

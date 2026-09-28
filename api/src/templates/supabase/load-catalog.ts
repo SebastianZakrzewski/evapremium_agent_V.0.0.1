@@ -15,6 +15,8 @@ type TemplateRow = {
   body_type_1_key: string | null;
   body_type_2_key: string | null;
   body_type_3_key: string | null;
+  model_family_key?: string | null;
+  generation?: string | null;
 };
 
 type AliasRow = {
@@ -39,6 +41,10 @@ export function mapMatTemplateRow(row: TemplateRow): MatTemplate {
     bodyType1Key: row.body_type_1_key,
     bodyType2Key: row.body_type_2_key,
     bodyType3Key: row.body_type_3_key,
+    ...(typeof row.model_family_key === 'string'
+      ? { modelFamilyKey: row.model_family_key }
+      : {}),
+    ...(typeof row.generation === 'string' ? { generation: row.generation } : {}),
   };
 }
 

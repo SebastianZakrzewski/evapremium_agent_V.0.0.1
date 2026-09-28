@@ -21,6 +21,7 @@ import {
   type PreparedTurn,
   type VerifiedProduct,
 } from '../mastra/intents/prepare-intent-turn';
+import type { TurnWorkflows } from '../mastra/intents/turn-workflows';
 import type { ChatAgent, ChatAgentTurn } from './chat-agent.port';
 
 export class MastraChatAgent implements ChatAgent {
@@ -33,6 +34,7 @@ export class MastraChatAgent implements ChatAgent {
     private readonly events?: AgentEventSink,
     private readonly cascade?: FitmentCascadePort,
     private readonly sessionClients?: SessionClients,
+    private readonly workflows?: TurnWorkflows,
   ) {}
 
   async handle(
@@ -82,26 +84,14 @@ export class MastraChatAgent implements ChatAgent {
     message: string,
     sessionId?: string,
   ): Promise<PreparedTurn> {
-    const currentIntent =
-      sessionId === undefined ? undefined : this.intentState.get(sessionId);
-    const quoteWorkflow =
-      sessionId === undefined
-        ? undefined
-        : this.intentState.getQuoteWorkflow(sessionId);
-    const fitment =
-      sessionId === undefined
-        ? undefined
-        : this.intentState.getFitment(sessionId);
-    const stored =
-      sessionId !== undefined && this.sessionClients !== undefined
-        ? await this.sessionClients.get(sessionId)
-        : undefined;
+    const session = await this.readSession(sessionId);
     const prepared = await prepareIntentTurn(this.qualifier, message, {
-      currentIntent,
-      quoteWorkflow,
-      fitment,
-      knownVehicle: stored?.hasFacts() ? stored.data : undefined,
+      currentIntent: session.currentIntent,
+      quoteWorkflow: session.quoteWorkflow,
+      fitment: session.fitment,
+      knownVehicle: session.client?.hasFacts() ? session.client.data : undefined,
       cascade: this.cascade,
+      workflows: this.workflows,
       sessionId,
       log: logIntentTurnToConsole,
     });
@@ -109,43 +99,66 @@ export class MastraChatAgent implements ChatAgent {
       message,
       sessionId,
       prepared,
-      stored,
+      session.client,
     );
-    if (sessionId !== undefined) {
-      if (withClient.verifiedProduct) {
-        this.verifiedBySession.set(sessionId, withClient.verifiedProduct);
-      } else {
-        this.verifiedBySession.delete(sessionId);
-      }
-      this.intentState.set(sessionId, withClient.intent);
-      this.intentState.setQuoteWorkflow(sessionId, withClient.quoteWorkflow);
-      if (withClient.fitment) {
-        this.intentState.setFitment(sessionId, withClient.fitment);
-      } else if (withClient.clearFitment) {
-        this.intentState.setFitment(sessionId, undefined);
-      }
+    this.storeTurn(sessionId, withClient);
+    this.recordTurn(sessionId, withClient);
+    return withClient;
+  }
+
+  private async readSession(sessionId?: string): Promise<{
+    currentIntent: ReturnType<IntentSessionState['get']>;
+    quoteWorkflow: ReturnType<IntentSessionState['getQuoteWorkflow']>;
+    fitment: ReturnType<IntentSessionState['getFitment']>;
+    client?: SessionClient;
+  }> {
+    if (sessionId === undefined) {
+      return {
+        currentIntent: undefined,
+        quoteWorkflow: undefined,
+        fitment: undefined,
+      };
     }
-    if (withClient.cascadeMatch) {
+    return {
+      currentIntent: this.intentState.get(sessionId),
+      quoteWorkflow: this.intentState.getQuoteWorkflow(sessionId),
+      fitment: this.intentState.getFitment(sessionId),
+      client:
+        this.sessionClients === undefined
+          ? undefined
+          : await this.sessionClients.get(sessionId),
+    };
+  }
+
+  private storeTurn(sessionId: string | undefined, turn: PreparedTurn): void {
+    if (sessionId === undefined) {
+      return;
+    }
+    if (turn.verifiedProduct) {
+      this.verifiedBySession.set(sessionId, turn.verifiedProduct);
+    } else {
+      this.verifiedBySession.delete(sessionId);
+    }
+    this.intentState.set(sessionId, turn.intent);
+    this.intentState.setQuoteWorkflow(sessionId, turn.quoteWorkflow);
+    if (turn.fitment) {
+      this.intentState.setFitment(sessionId, turn.fitment);
+    } else if (turn.clearFitment) {
+      this.intentState.setFitment(sessionId, undefined);
+    }
+  }
+
+  private recordTurn(sessionId: string | undefined, turn: PreparedTurn): void {
+    if (turn.cascadeMatch) {
       recordAgentEvent(
         this.events,
         'cascade_resolved',
-        { match: withClient.cascadeMatch },
+        { match: turn.cascadeMatch },
         sessionId,
       );
     }
-    recordAgentEvent(
-      this.events,
-      'intent_accepted',
-      { intent: withClient.intent },
-      sessionId,
-    );
-    recordAgentEvent(
-      this.events,
-      'decision_trace',
-      traceForTurn(withClient),
-      sessionId,
-    );
-    return withClient;
+    recordAgentEvent(this.events, 'intent_accepted', { intent: turn.intent }, sessionId);
+    recordAgentEvent(this.events, 'decision_trace', traceForTurn(turn), sessionId);
   }
 
   private async applySessionClient(
