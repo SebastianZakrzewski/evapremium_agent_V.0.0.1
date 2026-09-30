@@ -100,8 +100,8 @@ Kwota nie pochodzi z modelu w widgecie.
 - **Kod:** `tests/widget/chat/ChatPanel.test.tsx` → `it('opens a session with greeting chips and sends the chip message')`
 - **Krytyczność:** high
 - **Logika:** widget otwiera sesję przy montażu; klik chipa wysyła kanoniczną wiadomość i chowa tematy. Tekst powitania z API, nie z modelu w UI.
-- **Wejście:** `createSession` z `greeting` + chip `Dopasowanie do auta`
-- **Wyjście:** `postMessage(..., 'Chcę dobrać dywaniki EVA do mojego auta.')`; brak chipów po kliku
+- **Wejście:** `createSession` z `greeting` + chip `Szablon pod markę i model?`
+- **Wyjście:** `postMessage(..., 'Czy macie dywaniki EVA dopasowane do mojej marki, modelu i rocznika?')`; brak chipów po kliku
 
 ### widget-012 — Żywy status „pisze…” w nagłówku
 

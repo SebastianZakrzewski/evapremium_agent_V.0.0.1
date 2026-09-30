@@ -6,17 +6,19 @@ import { ChatPanel } from '@widget/chat/ChatPanel';
 const opener: CreatedSession = {
   sessionId: 's1',
   greeting:
-    'Pomagam dobrać dywaniki EVA do auta, podać orientacyjną wycenę i odpowiedzieć na pytania o materiał, dostawę, gwarancję i pielęgnację. Cena i fakty biorę z katalogu sklepu — nie zgaduję.\n\nWybierz temat albo napisz własne pytanie.',
+    'Pomagam sprawdzić, czy mamy szablon dywaników EVA pod Twoją markę, model i rocznik, podać orientacyjną cenę kompletu oraz odpowiedzieć o piance EVA, kolorach, czasie szycia, dostawie kurierem, gwarancji i czyszczeniu. Cena i fakty biorę z katalogu sklepu — nie zgaduję.\n\nWybierz pytanie albo napisz własne.',
   suggestions: [
     {
       id: 'fit',
-      label: 'Dopasowanie do auta',
-      message: 'Chcę dobrać dywaniki EVA do mojego auta.',
+      label: 'Szablon pod markę i model?',
+      message:
+        'Czy macie dywaniki EVA dopasowane do mojej marki, modelu i rocznika?',
     },
     {
       id: 'pricing',
-      label: 'Wycena orientacyjna',
-      message: 'Ile kosztują dywaniki EVA do mojego auta?',
+      label: 'Cena kompletu do auta?',
+      message:
+        'Jaka jest orientacyjna cena kompletu dywaników EVA do mojego auta?',
     },
   ],
 };
@@ -151,7 +153,7 @@ describe('ChatPanel', () => {
       target: { value: 'golf 8' },
     });
     expect(send).toBeEnabled();
-    await screen.findByText(/Pomagam dobrać dywaniki EVA/);
+    await screen.findByText(/szablon dywaników EVA/);
   });
 
   it('opens a session with greeting chips and sends the chip message', async () => {
@@ -163,19 +165,19 @@ describe('ChatPanel', () => {
     }));
     render(<ChatPanel api={api} />);
     expect(
-      await screen.findByRole('button', { name: 'Dopasowanie do auta' }),
+      await screen.findByRole('button', { name: 'Szablon pod markę i model?' }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/Pomagam dobrać dywaniki EVA/)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Dopasowanie do auta' }));
+    expect(screen.getByText(/szablon dywaników EVA/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Szablon pod markę i model?' }));
     expect(await screen.findByText('Podaj markę, model i rocznik.')).toBeInTheDocument();
     expect(api.postMessage).toHaveBeenCalledWith(
       's1',
-      'Chcę dobrać dywaniki EVA do mojego auta.',
+      'Czy macie dywaniki EVA dopasowane do mojej marki, modelu i rocznika?',
       expect.any(Function),
     );
     await waitFor(() => {
       expect(
-        screen.queryByRole('button', { name: 'Dopasowanie do auta' }),
+        screen.queryByRole('button', { name: 'Szablon pod markę i model?' }),
       ).not.toBeInTheDocument();
     });
   });

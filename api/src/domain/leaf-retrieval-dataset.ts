@@ -182,14 +182,14 @@ export const LEAF_RETRIEVAL_DATASET: LeafRetrievalCase[] = [
   },
   {
     id: 'chip-materials',
-    query: 'Z czego są zrobione dywaniki i jakie są kolory?',
+    query: 'Z jakiej pianki EVA są dywaniki i jakie kolory są w ofercie?',
     expectSlugs: ['material-eva', 'kolory'],
     intent: 'product_info',
     kind: 'faq',
   },
   {
     id: 'chip-delivery',
-    query: 'Kiedy wyślecie zamówienie i jak wygląda dostawa?',
+    query: 'Ile trwa szycie kompletu i jak wygląda dostawa kurierem?',
     expectSlugs: ['dostawa', 'czas-produkcji'],
     intent: 'delivery',
     kind: 'faq',
@@ -197,14 +197,16 @@ export const LEAF_RETRIEVAL_DATASET: LeafRetrievalCase[] = [
   },
   {
     id: 'chip-after-sales',
-    query: 'Jaka jest gwarancja i jak czyścić dywaniki EVA?',
+    query:
+      'Jaka jest gwarancja na wady materiałowe i jak czyścić dywaniki EVA?',
     expectSlugs: ['gwarancja', 'czyszczenie'],
     intent: 'after_sales',
     kind: 'faq',
   },
   {
     id: 'chip-fit',
-    query: 'Chcę dobrać dywaniki EVA do mojego auta.',
+    query:
+      'Czy macie dywaniki EVA dopasowane do mojej marki, modelu i rocznika?',
     expectSlugs: ['dopasowanie-model'],
     intent: 'product_info',
     kind: 'faq',

@@ -13,33 +13,37 @@ export type CreatedChatSession = {
 };
 
 export const SESSION_OPENER_GREETING =
-  'Pomagam dobrać dywaniki EVA do auta, podać orientacyjną wycenę i odpowiedzieć na pytania o materiał, dostawę, gwarancję i pielęgnację. Cena i fakty biorę z katalogu sklepu — nie zgaduję.\n\nWybierz temat albo napisz własne pytanie.';
+  'Pomagam sprawdzić, czy mamy szablon dywaników EVA pod Twoją markę, model i rocznik, podać orientacyjną cenę kompletu oraz odpowiedzieć o piance EVA, kolorach, czasie szycia, dostawie kurierem, gwarancji i czyszczeniu. Cena i fakty biorę z katalogu sklepu — nie zgaduję.\n\nWybierz pytanie albo napisz własne.';
 
 export const SESSION_OPENER_SUGGESTIONS: SessionOpenerSuggestion[] = [
   {
     id: 'fit',
-    label: 'Dopasowanie do auta',
-    message: 'Chcę dobrać dywaniki EVA do mojego auta.',
+    label: 'Szablon pod markę i model?',
+    message:
+      'Czy macie dywaniki EVA dopasowane do mojej marki, modelu i rocznika?',
   },
   {
     id: 'pricing',
-    label: 'Wycena orientacyjna',
-    message: 'Ile kosztują dywaniki EVA do mojego auta?',
+    label: 'Cena kompletu do auta?',
+    message:
+      'Jaka jest orientacyjna cena kompletu dywaników EVA do mojego auta?',
   },
   {
     id: 'materials',
-    label: 'Materiał i kolory',
-    message: 'Z czego są zrobione dywaniki i jakie są kolory?',
+    label: 'Pianka EVA i kolory?',
+    message:
+      'Z jakiej pianki EVA są dywaniki i jakie kolory są w ofercie?',
   },
   {
     id: 'delivery',
-    label: 'Dostawa i czas realizacji',
-    message: 'Kiedy wyślecie zamówienie i jak wygląda dostawa?',
+    label: 'Czas szycia i kurier?',
+    message: 'Ile trwa szycie kompletu i jak wygląda dostawa kurierem?',
   },
   {
     id: 'after_sales',
-    label: 'Gwarancja i pielęgnacja',
-    message: 'Jaka jest gwarancja i jak czyścić dywaniki EVA?',
+    label: 'Gwarancja i czyszczenie?',
+    message:
+      'Jaka jest gwarancja na wady materiałowe i jak czyścić dywaniki EVA?',
   },
 ];
 
