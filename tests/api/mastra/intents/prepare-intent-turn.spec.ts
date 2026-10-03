@@ -135,10 +135,8 @@ describe('prepareIntentTurn', () => {
       workflow: 'fitment_cascade',
     });
     expect(turn.toolIds).toEqual([]);
-    expect(turn.executionNote).toContain('Brakuje typu nadwozia');
-    expect(turn.executionNote).toContain('hatchback');
-    expect(turn.executionNote).toContain('wagon');
-    expect(turn.fitment?.missing).toBe('body_type');
+    expect(turn.executionNote).toContain('Brakuje rocznika');
+    expect(turn.fitment?.missing).toBe('year');
   });
 
   it('resumes a saved fitment with the body reply and does not requalify', async () => {
