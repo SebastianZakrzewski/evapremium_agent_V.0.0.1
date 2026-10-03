@@ -135,8 +135,10 @@ describe('prepareIntentTurn', () => {
       workflow: 'fitment_cascade',
     });
     expect(turn.toolIds).toEqual([]);
-    expect(turn.executionNote).toContain('Brakuje rocznika');
-    expect(turn.fitment?.missing).toBe('year');
+    expect(turn.executionNote).toContain('Brakuje typu nadwozia');
+    expect(turn.executionNote).toContain('hatchback');
+    expect(turn.executionNote).toContain('wagon');
+    expect(turn.fitment?.missing).toBe('body_type');
   });
 
   it('resumes a saved fitment with the body reply and does not requalify', async () => {
@@ -279,5 +281,50 @@ describe('prepareIntentTurn', () => {
         body_type_key: 'suv',
       },
     });
+  });
+
+  it.each(['Acura', 'Toyota', 'BMW', 'Audi', 'Skoda', 'Volkswagen'])(
+    'asks for the model when only the brand %s is known',
+    async (brand) => {
+      const message = `dywaniki do ${brand}`;
+      const turn = await prepareIntentTurn(
+        {
+          qualify: async () => ({
+            intent: 'product_info',
+            confidence: 0.95,
+            sub_intent: 'fitment',
+            mode: 'action',
+            entities: { car_brand: brand },
+          }),
+        },
+        message,
+      );
+
+      expect(turn.entities.car_model).toBeUndefined();
+      expect(turn.entities.car_brand).toBe(brand);
+      expect(turn.fitment?.missing).toBe('car_model');
+      expect(turn.executionNote).toContain('Brakuje modelu auta');
+      expect(turn.executionNote).toContain(`marka=${brand}`);
+      expect(turn.executionNote).not.toContain(`model=${message}`);
+    },
+  );
+
+  it('keeps a spoken year and still asks for the model', async () => {
+    const turn = await prepareIntentTurn(
+      {
+        qualify: async () => ({
+          intent: 'product_info',
+          confidence: 0.95,
+          sub_intent: 'fitment',
+          mode: 'action',
+          entities: { car_brand: 'Acura' },
+        }),
+      },
+      'dywaniki do Acura 2021',
+    );
+
+    expect(turn.entities.car_model).toBeUndefined();
+    expect(turn.entities.year).toBe(2021);
+    expect(turn.fitment?.missing).toBe('car_model');
   });
 });

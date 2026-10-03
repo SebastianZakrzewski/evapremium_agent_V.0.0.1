@@ -15,6 +15,7 @@ przed nową kwalifikacją. Potem kwalifikacja → `IntentProfile` → mapa tooli
 | turn-003 | high | Brak id w katalogu → błąd, nie cichy drop |
 | turn-004 | critical | delivery: search-leaves + lookup-leaf |
 | turn-006 | critical | Zapisane one wraca przy „już podałem” |
+| turn-007 | critical | Sama marka pyta o model, bez zdania w slocie |
 
 ### turn-001 — pricing: quote-vehicle
 
@@ -63,4 +64,12 @@ przed nową kwalifikacją. Potem kwalifikacja → `IntentProfile` → mapa tooli
 - **Logika:** profil z `cascadeStatus=one` wchodzi do tury, zanim model odpowie. Encja równa całemu zdaniu nie podmienia marki i nie kasuje `recordKey`.
 - **Wejście:** „juz podalem”, encja `car_brand=juz podalem`, znane auto Toyota RAV 4 2021 SUV z `recordKey`
 - **Wyjście:** `execution=knowledge`, notatka z `marka=Toyota` i `recordKey`, encja marki Toyota
+
+### turn-007 — Sama marka pyta o model, bez zdania w slocie
+
+- **Kod:** `tests/api/mastra/intents/prepare-intent-turn.spec.ts` → `it.each(...)('asks for the model when only the brand %s is known')` oraz `it('keeps a spoken year and still asks for the model')`
+- **Krytyczność:** critical
+- **Logika:** pierwsza tura nie wpisuje całego zdania w `car_model`. Brak modelu zostawia pytanie o model dla każdej marki. Rok z tego samego zdania zostaje.
+- **Wejście:** kwalifikator z samą marką (`Acura`, `Toyota`, `BMW`, `Audi`, `Skoda`, `Volkswagen`) i tekst `dywaniki do <marka>`; osobno `dywaniki do Acura 2021`
+- **Wyjście:** `car_model` puste, `fitment.missing = car_model`, nota `Brakuje modelu auta`; przy roczniku `year = 2021` i nadal brak modelu
 

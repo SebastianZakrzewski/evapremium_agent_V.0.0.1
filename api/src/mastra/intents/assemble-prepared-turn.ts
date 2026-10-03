@@ -189,6 +189,7 @@ export function assembledTurn(
   const entities = advanceVehicleSlots({
     slots: result?.entities ?? {},
     message,
+    fillMissingFromMessage: false,
   }).slots;
   const execution = executionFor(profile, result, entities);
   const config = alignedConfig(profile, result);

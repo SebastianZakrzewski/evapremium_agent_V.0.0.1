@@ -1,4 +1,5 @@
 import type { RouterEntities } from './sub-intent-catalog';
+import type { VehicleSlotAlias } from './template-cascade';
 
 export const QUOTE_VEHICLE_WORKFLOW = 'quote_vehicle';
 
@@ -56,86 +57,187 @@ export function readYear(text: string): number | undefined {
   return Number(match[1]);
 }
 
-export function readBodyType(text: string): string | undefined {
+export function readBodyType(
+  text: string,
+  aliases?: VehicleSlotAlias[],
+): string | undefined {
+  return matchBodyType(text, aliases)?.alias;
+}
+
+export function readVehicleReply(
+  message: string,
+  aliases?: VehicleSlotAlias[],
+): { year?: number; body?: string; rest: string } {
+  const year = readYear(message);
+  const body = matchBodyType(message, aliases);
+  let rest = message;
+  if (body) {
+    rest = rest.replace(
+      new RegExp(`\\b${escapeRegExp(body.token)}\\b`, 'iu'),
+      ' ',
+    );
+  }
+  if (year !== undefined) {
+    rest = rest.replace(new RegExp(`\\b${year}\\b`, 'u'), ' ');
+  }
+  rest = rest.replace(/\b(rok|rocznik)\b/giu, ' ');
+  return {
+    year,
+    body: body?.alias,
+    rest: rest.replace(/\s+/g, ' ').trim(),
+  };
+}
+
+function bodyForms(
+  aliases: VehicleSlotAlias[] | undefined,
+): { alias: string; label: string }[] {
+  const forms: { alias: string; label: string }[] = [];
+  const seen = new Set<string>();
+  for (const row of aliases ?? []) {
+    if (row.slotKind !== 'body_type') {
+      continue;
+    }
+    const label = row.aliasNormalized.trim().toLowerCase();
+    if (label.length === 0 || seen.has(label)) {
+      continue;
+    }
+    seen.add(label);
+    forms.push({ alias: label, label });
+  }
+  for (const alias of BODY_ALIASES) {
+    if (seen.has(alias)) {
+      continue;
+    }
+    seen.add(alias);
+    forms.push({ alias, label: alias });
+  }
+  return forms;
+}
+
+function matchBodyType(
+  text: string,
+  aliases?: VehicleSlotAlias[],
+): { alias: string; token: string } | undefined {
   const normalized = text.trim().toLowerCase().replace(/\s+/g, ' ');
   if (normalized.length === 0) {
     return undefined;
   }
-  const exact = BODY_ALIASES.find((alias) => alias === normalized);
+  const forms = bodyForms(aliases);
+  const exact = forms.find((form) => form.label === normalized);
   if (exact) {
-    return exact;
+    return { alias: exact.alias, token: exact.label };
   }
-  const inside = BODY_ALIASES.find((alias) =>
-    new RegExp(`\\b${alias}\\b`, 'iu').test(normalized),
-  );
+  const inside = forms
+    .filter((form) => new RegExp(`\\b${escapeRegExp(form.label)}\\b`, 'iu').test(normalized))
+    .sort((left, right) => right.label.length - left.label.length)[0];
   if (inside) {
-    return inside;
+    return { alias: inside.alias, token: inside.label };
   }
-  const closest = BODY_ALIASES.map((alias) => ({
-    alias,
-    distance: levenshtein(normalized, alias),
-  })).sort(
-    (left, right) =>
-      left.distance - right.distance || left.alias.localeCompare(right.alias),
-  );
-  const best = closest[0];
-  const next = closest[1];
-  if (!best || best.distance > 2) {
+  const tokens = normalized.split(' ').filter((token) => token.length > 0);
+  let best: { alias: string; token: string; distance: number } | undefined;
+  let tied = false;
+  for (const token of tokens) {
+    if (token.length < 4) {
+      continue;
+    }
+    for (const form of forms) {
+      if (Math.abs(token.length - form.label.length) > 2) {
+        continue;
+      }
+      const distance = levenshtein(token, form.label);
+      if (distance === 0 || distance > 2) {
+        continue;
+      }
+      if (!best || distance < best.distance) {
+        best = { alias: form.alias, token, distance };
+        tied = false;
+      } else if (distance === best.distance && form.alias !== best.alias) {
+        tied = true;
+      }
+    }
+  }
+  if (!best || tied) {
     return undefined;
   }
-  if (next && next.distance === best.distance) {
-    return undefined;
-  }
-  return best.alias;
+  return { alias: best.alias, token: best.token };
 }
 
-function applyReply(entities: RouterEntities, missing: VehicleSlotKey, message: string): void {
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function applyReply(
+  entities: RouterEntities,
+  missing: VehicleSlotKey,
+  message: string,
+  aliases?: VehicleSlotAlias[],
+): void {
+  const parsed = readVehicleReply(message, aliases);
   if (missing === 'year') {
-    const year = readYear(message);
-    if (year !== undefined) {
-      entities.year = year;
+    if (parsed.year !== undefined) {
+      entities.year = parsed.year;
     }
-    harvest(entities, message);
+    if (parsed.body !== undefined && entities.body_type === undefined) {
+      entities.body_type = parsed.body;
+    }
     return;
   }
   if (missing === 'body_type') {
-    const body = readBodyType(message);
-    if (body !== undefined) {
-      entities.body_type = body;
+    if (parsed.body !== undefined) {
+      entities.body_type = parsed.body;
+    }
+    if (parsed.year !== undefined && entities.year === undefined) {
+      entities.year = parsed.year;
     }
     return;
   }
-  entities[missing] = message.trim();
+  if (parsed.year !== undefined && entities.year === undefined) {
+    entities.year = parsed.year;
+  }
+  if (parsed.body !== undefined && entities.body_type === undefined) {
+    entities.body_type = parsed.body;
+  }
+  if (parsed.rest) {
+    entities[missing] = parsed.rest;
+    return;
+  }
+  if (parsed.year === undefined && parsed.body === undefined) {
+    entities[missing] = message.trim();
+  }
 }
 
-function harvest(entities: RouterEntities, message: string): void {
-  if (entities.year === undefined) {
-    const year = readYear(message);
-    if (year !== undefined) {
-      entities.year = year;
-    }
+function harvest(
+  entities: RouterEntities,
+  message: string,
+  aliases?: VehicleSlotAlias[],
+): void {
+  const parsed = readVehicleReply(message, aliases);
+  if (entities.year === undefined && parsed.year !== undefined) {
+    entities.year = parsed.year;
   }
-  if (entities.body_type === undefined) {
-    const body = readBodyType(message);
-    if (body !== undefined) {
-      entities.body_type = body;
-    }
+  if (entities.body_type === undefined && parsed.body !== undefined) {
+    entities.body_type = parsed.body;
   }
 }
 
 export function advanceVehicleSlots(input: {
   slots: RouterEntities;
   message?: string;
+  aliases?: VehicleSlotAlias[];
+  asked?: VehicleSlotKey;
+  /** First-turn text must not be copied into an empty brand or model slot. */
+  fillMissingFromMessage?: boolean;
 }): { slots: RouterEntities; missing?: VehicleSlotKey } {
   const slots = filled(input.slots);
   if (input.message !== undefined) {
-    if (isSlotReply(input.message)) {
-      const missing = firstMissing(slots);
+    const fillMissing = input.fillMissingFromMessage !== false;
+    if (fillMissing && isSlotReply(input.message)) {
+      const missing = input.asked ?? firstMissing(slots);
       if (missing !== undefined) {
-        applyReply(slots, missing, input.message);
+        applyReply(slots, missing, input.message, input.aliases);
       }
     } else {
-      harvest(slots, input.message);
+      harvest(slots, input.message, input.aliases);
     }
   }
   return { slots, missing: firstMissing(slots) };

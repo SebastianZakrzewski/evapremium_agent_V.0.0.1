@@ -55,6 +55,21 @@ describe('quote vehicle workflow', () => {
     });
   });
 
+  it('keeps year and body written in the model reply', () => {
+    const collected = advanceVehicleSlots({
+      slots: { car_brand: 'Volkswagen' },
+      message: 'Golf 8 kombi 2020',
+    });
+
+    expect(collected.slots).toEqual({
+      car_brand: 'Volkswagen',
+      car_model: 'Golf 8',
+      year: 2020,
+      body_type: 'kombi',
+    });
+    expect(collected.missing).toBeUndefined();
+  });
+
   it('keeps the body given in the same reply as the year', () => {
     const collected = advanceVehicleSlots({
       slots: { car_brand: 'Toyota', car_model: 'RAV4' },
