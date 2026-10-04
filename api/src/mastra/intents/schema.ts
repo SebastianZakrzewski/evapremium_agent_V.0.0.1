@@ -8,6 +8,7 @@ export const SHOP_TOOL_IDS = [
   'resolve-template',
   'quote-price',
   'quote-vehicle',
+  'collect-contact',
   'lookup-leaf',
   'search-leaves',
 ] as const;

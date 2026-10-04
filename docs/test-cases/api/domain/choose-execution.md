@@ -28,7 +28,7 @@ Logika zestawu: backend, nie model, wybiera wiedzę, tool albo workflow.
 - **Krytyczność:** critical
 - **Logika:** Przy komplecie czterech pól akcja wskazuje `directTool`, a `quote-price` zostaje na allowliście.
 - **Wejście:** `Volkswagen`, `Golf 8`, rok `2019`, nadwozie `kombi`, `mode: action`
-- **Wyjście:** `kind: tool`, tool `quote-vehicle`
+- **Wyjście:** `kind: tool`, tool `quote-vehicle`, allowlista zawiera też `collect-contact`
 
 ### exec-003 — Brak slotu → quote_vehicle
 

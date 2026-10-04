@@ -66,12 +66,21 @@ import { SupabaseIntentSessionState } from '../mastra/intents/supabase-intent-se
         pricing: PricingService,
         contextTree: ContextTreeService,
         events: AgentEventSink,
-      ) => new ShopTools(templates, pricing, contextTree, events),
+        sessionClients: SessionClients,
+      ) =>
+        new ShopTools(
+          templates,
+          pricing,
+          contextTree,
+          events,
+          sessionClients,
+        ),
       inject: [
         TemplateCascadeService,
         PricingService,
         ContextTreeService,
         AGENT_EVENTS,
+        SESSION_CLIENTS,
       ],
     },
     {

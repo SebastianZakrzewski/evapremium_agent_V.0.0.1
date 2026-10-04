@@ -1,3 +1,4 @@
+import type { ContactWorkflowSnapshot } from '../../domain/collect-contact';
 import type { FitmentSnapshot } from '../../domain/fitment-session';
 import type { QuoteWorkflowSnapshot } from '../../domain/quote-vehicle';
 import type { ShopIntent } from './schema';
@@ -14,6 +15,11 @@ export interface IntentSessionState {
   ): void;
   getFitment(sessionId: string): FitmentSnapshot | undefined;
   setFitment(sessionId: string, snapshot: FitmentSnapshot | undefined): void;
+  getContactWorkflow(sessionId: string): ContactWorkflowSnapshot | undefined;
+  setContactWorkflow(
+    sessionId: string,
+    snapshot: ContactWorkflowSnapshot | undefined,
+  ): void;
   load(sessionId: string): Promise<void>;
   flush(sessionId: string): Promise<void>;
 }
@@ -22,6 +28,7 @@ export class InMemoryIntentSessionState implements IntentSessionState {
   private readonly intents = new Map<string, ShopIntent>();
   private readonly quoteWorkflows = new Map<string, QuoteWorkflowSnapshot>();
   private readonly fitments = new Map<string, FitmentSnapshot>();
+  private readonly contactWorkflows = new Map<string, ContactWorkflowSnapshot>();
 
   get(sessionId: string): ShopIntent | undefined {
     return this.intents.get(sessionId);
@@ -56,6 +63,21 @@ export class InMemoryIntentSessionState implements IntentSessionState {
       return;
     }
     this.fitments.set(sessionId, snapshot);
+  }
+
+  getContactWorkflow(sessionId: string): ContactWorkflowSnapshot | undefined {
+    return this.contactWorkflows.get(sessionId);
+  }
+
+  setContactWorkflow(
+    sessionId: string,
+    snapshot: ContactWorkflowSnapshot | undefined,
+  ): void {
+    if (snapshot === undefined) {
+      this.contactWorkflows.delete(sessionId);
+      return;
+    }
+    this.contactWorkflows.set(sessionId, snapshot);
   }
 
   load(): Promise<void> {

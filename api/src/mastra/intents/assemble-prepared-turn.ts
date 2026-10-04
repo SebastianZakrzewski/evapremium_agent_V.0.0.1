@@ -1,3 +1,8 @@
+import {
+  advanceContactCollection,
+  type ContactSlots,
+  type ContactWorkflowSnapshot,
+} from '../../domain/collect-contact';
 import { chooseExecution, type ExecutionChoice } from '../../domain/choose-execution';
 import { FITMENT_CASCADE_WORKFLOW } from '../../domain/fitment-session';
 import type { FitmentSnapshot } from '../../domain/fitment-session';
@@ -22,7 +27,7 @@ import type { VerifiedProduct } from '../../domain/verified-product';
 export type { VerifiedProduct };
 
 export const EVA_TURN_BASE_INSTRUCTIONS =
-  'Język: polski. Cena i fakt tylko z narzędzi Nest. Bez SQL. Bez kwoty spoza quote-price. Bez faktu spoza lookup-leaf.';
+  'Język: polski. Cena i fakt sklepu tylko z narzędzi Nest. Bez SQL. Bez kwoty spoza quote-price. Bez polityki sklepu, której nie zwrócił hit lookup-leaf. Tekst dla klienta nie ujawnia drzewa kontekstu, liści, slugów, narzędzi ani braku rekordu.';
 
 export type PreparedTurn = {
   intent: ShopIntent;
@@ -39,6 +44,8 @@ export type PreparedTurn = {
   cascadeMatch?: 'none' | 'one' | 'many';
   verifiedProduct?: VerifiedProduct;
   collectedSlots?: RouterEntities;
+  contactWorkflow?: ContactWorkflowSnapshot;
+  contactSlots?: ContactSlots;
   relatedBranches: string[];
   executionNote?: string;
 };
@@ -208,4 +215,97 @@ export function assembledTurn(
     relatedBranches: config?.relatedBranches ?? [],
     executionNote,
   };
+}
+
+export function attachContactCollection(
+  turn: PreparedTurn,
+  input: {
+    message?: string;
+    known?: ContactSlots;
+    open?: ContactWorkflowSnapshot;
+  },
+): PreparedTurn {
+  if (
+    turn.intent !== 'pricing' ||
+    turn.subIntent !== 'indicative_quote' ||
+    turn.mode !== 'action'
+  ) {
+    return turn;
+  }
+  const knownReady = Boolean(input.known?.givenName && input.known.phone);
+  const advanced = advanceContactCollection({
+    slots: { ...input.known, ...input.open?.slots },
+    message: input.message,
+    asked: input.open?.missing,
+  });
+  const slots =
+    advanced.status === 'ready' ? advanced.slots : advanced.snapshot.slots;
+  if (knownReady && advanced.status === 'ready' && !messageAddsContact(input.message, input.known)) {
+    return turn;
+  }
+  const exposeTool = turn.execution.kind !== 'workflow';
+  const toolIds =
+    !exposeTool || turn.toolIds.includes('collect-contact')
+      ? turn.toolIds
+      : [...turn.toolIds, 'collect-contact' as const];
+  const note = exposeTool ? contactExecutionNote(advanced) : undefined;
+  const executionNote = [turn.executionNote, note].filter(Boolean).join('\n');
+  return {
+    ...turn,
+    toolIds,
+    contactSlots: hasContactFact(slots) ? slots : undefined,
+    contactWorkflow: advanced.status === 'suspended' ? advanced.snapshot : undefined,
+    executionNote: executionNote || undefined,
+    instructions: note ? `${turn.instructions}\n\n${note}` : turn.instructions,
+  };
+}
+
+export function holdContactWorkflow(
+  turn: PreparedTurn,
+  open: ContactWorkflowSnapshot | undefined,
+): PreparedTurn {
+  if (open === undefined) {
+    return turn;
+  }
+  if (!turn.toolIds.includes('collect-contact')) {
+    return { ...turn, contactWorkflow: open };
+  }
+  const missing = open.missing === 'given_name' ? 'imienia' : 'numeru telefonu';
+  const note = `Zbieranie kontaktu: brakuje ${missing}. E-mail jest opcjonalny. Zapytaj tylko o brakujące i wywołaj collect-contact.`;
+  const executionNote = [turn.executionNote, note].filter(Boolean).join('\n');
+  return {
+    ...turn,
+    contactWorkflow: open,
+    executionNote,
+    instructions: `${turn.instructions}\n\n${note}`,
+  };
+}
+
+function messageAddsContact(
+  message: string | undefined,
+  known: ContactSlots | undefined,
+): boolean {
+  if (message === undefined) {
+    return false;
+  }
+  const read = advanceContactCollection({ slots: known, message });
+  const slots = read.status === 'ready' ? read.slots : read.snapshot.slots;
+  return (
+    slots.givenName !== known?.givenName ||
+    slots.phone !== known?.phone ||
+    slots.email !== known?.email
+  );
+}
+
+function hasContactFact(slots: ContactSlots): boolean {
+  return Boolean(slots.givenName || slots.phone || slots.email);
+}
+
+function contactExecutionNote(advanced: ReturnType<typeof advanceContactCollection>): string {
+  if (advanced.status === 'ready') {
+    const email = advanced.slots.email ? `, email=${advanced.slots.email}` : '';
+    return `Kontakt kompletny: imię=${advanced.slots.givenName}, telefon=${advanced.slots.phone}${email}. Wywołaj collect-contact z tymi polami.`;
+  }
+  const missing = advanced.missing === 'given_name' ? 'imienia' : 'numeru telefonu';
+  return `Zbieranie kontaktu: brakuje ${missing}. E-mail jest opcjonalny. Zapytaj tylko o brakujące i wywołaj collect-contact.`;
 }

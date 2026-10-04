@@ -24,4 +24,4 @@ bez slotów ma workflow, nie tool zamówienia.
 - **Krytyczność:** high
 - **Logika:** Bez marki, modelu, roku i typu nadwozia bezpośredni tool nie rusza; fallback to `quote_vehicle`.
 - **Wejście:** slug `indicative_quote`
-- **Wyjście:** `directTool` `quote-vehicle`, `requiredInputs` marka i model, `fallbackWorkflow` `quote_vehicle`
+- **Wyjście:** `directTool` `quote-vehicle`, allowlista `quote-vehicle` i `collect-contact`, `requiredInputs` marka, model, rok i nadwozie, `fallbackWorkflow` `quote_vehicle`

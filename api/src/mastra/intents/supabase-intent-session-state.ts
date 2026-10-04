@@ -1,3 +1,7 @@
+import {
+  COLLECT_CONTACT_WORKFLOW,
+  type ContactWorkflowSnapshot,
+} from '../../domain/collect-contact';
 import { FITMENT_CASCADE_WORKFLOW, type FitmentSnapshot } from '../../domain/fitment-session';
 import { QUOTE_VEHICLE_WORKFLOW, type QuoteWorkflowSnapshot } from '../../domain/quote-vehicle';
 import type { DataStore } from '../../supabase/data-store';
@@ -12,6 +16,7 @@ type AgentStateRow = {
   intent: unknown;
   quote_workflow: unknown;
   fitment: unknown;
+  contact_workflow: unknown;
 };
 
 export class SupabaseIntentSessionState implements IntentSessionState {
@@ -44,6 +49,17 @@ export class SupabaseIntentSessionState implements IntentSessionState {
     this.memory.setFitment(sessionId, snapshot);
   }
 
+  getContactWorkflow(sessionId: string): ContactWorkflowSnapshot | undefined {
+    return this.memory.getContactWorkflow(sessionId);
+  }
+
+  setContactWorkflow(
+    sessionId: string,
+    snapshot: ContactWorkflowSnapshot | undefined,
+  ): void {
+    this.memory.setContactWorkflow(sessionId, snapshot);
+  }
+
   async load(sessionId: string): Promise<void> {
     if (this.loaded.has(sessionId)) {
       return;
@@ -67,6 +83,10 @@ export class SupabaseIntentSessionState implements IntentSessionState {
     if (fitment) {
       this.memory.setFitment(sessionId, fitment);
     }
+    const contact = parseContact(row?.contact_workflow);
+    if (contact) {
+      this.memory.setContactWorkflow(sessionId, contact);
+    }
     this.loaded.add(sessionId);
   }
 
@@ -79,6 +99,7 @@ export class SupabaseIntentSessionState implements IntentSessionState {
         intent: this.memory.get(sessionId) ?? null,
         quote_workflow: this.memory.getQuoteWorkflow(sessionId) ?? null,
         fitment: this.memory.getFitment(sessionId) ?? null,
+        contact_workflow: this.memory.getContactWorkflow(sessionId) ?? null,
         updated_at: new Date().toISOString(),
       },
       'session_id',
@@ -98,6 +119,21 @@ function parseQuote(value: unknown): QuoteWorkflowSnapshot | undefined {
   }
   const row = value as QuoteWorkflowSnapshot;
   if (row.workflow !== QUOTE_VEHICLE_WORKFLOW || row.step !== 'waiting_for_vehicle') {
+    return undefined;
+  }
+  return row;
+}
+
+function parseContact(value: unknown): ContactWorkflowSnapshot | undefined {
+  if (!value || typeof value !== 'object') {
+    return undefined;
+  }
+  const row = value as ContactWorkflowSnapshot;
+  if (
+    row.workflow !== COLLECT_CONTACT_WORKFLOW ||
+    row.step !== 'waiting_for_contact' ||
+    (row.missing !== 'given_name' && row.missing !== 'phone')
+  ) {
     return undefined;
   }
   return row;

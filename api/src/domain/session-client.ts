@@ -1,3 +1,4 @@
+import type { ContactSlots } from './collect-contact';
 import type { FitmentSnapshot } from './fitment-session';
 import type { RouterEntities } from './sub-intent-catalog';
 import type { VehicleSlotKey } from './quote-vehicle';
@@ -100,6 +101,23 @@ export class SessionClient {
     if (CONSENT_PATTERN.test(message) && !next.contactConsent) {
       next.contactConsent = true;
       next.consentAt = at;
+    }
+    return new SessionClient(next);
+  }
+
+  rememberContact(slots: ContactSlots): SessionClient {
+    const next: SessionClientData = { ...this.data };
+    const givenName = slots.givenName?.trim();
+    const phone = slots.phone?.trim();
+    const email = slots.email?.trim();
+    if (givenName) {
+      next.givenName = givenName;
+    }
+    if (phone) {
+      next.phone = phone;
+    }
+    if (email) {
+      next.email = email;
     }
     return new SessionClient(next);
   }

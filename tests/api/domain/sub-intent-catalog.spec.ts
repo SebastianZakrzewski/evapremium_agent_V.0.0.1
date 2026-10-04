@@ -24,7 +24,7 @@ describe('sub-intent catalog', () => {
   it('sends an incomplete indicative quote to the vehicle workflow', () => {
     const quote = subIntentBySlug('indicative_quote');
     expect(quote?.directTool).toBe('quote-vehicle');
-    expect(quote?.allowedTools).toEqual(['quote-vehicle']);
+    expect(quote?.allowedTools).toEqual(['quote-vehicle', 'collect-contact']);
     expect(quote?.requiredInputs).toEqual([
       'car_brand',
       'car_model',

@@ -26,6 +26,7 @@ export const CATALOG_TOOL_IDS = [
   'resolve-template',
   'quote-price',
   'quote-vehicle',
+  'collect-contact',
   'lookup-leaf',
   'search-leaves',
 ] as const;
@@ -147,7 +148,7 @@ export const SUB_INTENT_CATALOG: readonly SubIntentConfig[] = [
     negativeExamples: ['Jaki jest termin dostawy?', 'Jakie macie kolory?'],
     relatedBranches: [],
     allowedModes: ['knowledge', 'action'],
-    allowedTools: ['quote-vehicle'],
+    allowedTools: ['quote-vehicle', 'collect-contact'],
     relatedWorkflows: ['quote_vehicle'],
     directTool: 'quote-vehicle',
     requiredInputs: ['car_brand', 'car_model', 'year', 'body_type'],

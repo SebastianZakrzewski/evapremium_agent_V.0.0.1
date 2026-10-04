@@ -121,7 +121,7 @@ describe('quote vehicle workflow', () => {
     });
     expect(calls).toEqual(['Ile kosztują dywaniki?']);
     expect(fifth.execution.kind).toBe('tool');
-    expect(fifth.toolIds).toEqual(['quote-vehicle']);
+    expect(fifth.toolIds).toEqual(['quote-vehicle', 'collect-contact']);
     expect(fifth.quoteWorkflow).toBeUndefined();
   });
 

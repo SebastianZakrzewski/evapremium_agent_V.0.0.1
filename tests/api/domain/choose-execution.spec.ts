@@ -32,7 +32,7 @@ describe('chooseExecution', () => {
     ).toEqual({
       kind: 'tool',
       tool: 'quote-vehicle',
-      tools: ['quote-vehicle'],
+      tools: ['quote-vehicle', 'collect-contact'],
     });
   });
 

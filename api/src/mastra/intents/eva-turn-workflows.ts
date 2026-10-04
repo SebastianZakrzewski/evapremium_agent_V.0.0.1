@@ -6,6 +6,10 @@ import {
   type FitmentSnapshot,
 } from '../../domain/fitment-session';
 import {
+  advanceContactCollection,
+  type ContactWorkflowSnapshot,
+} from '../../domain/collect-contact';
+import {
   advanceQuoteVehicle,
   advanceVehicleSlots,
   isSlotReply,
@@ -15,6 +19,7 @@ import { verifiedProductFromTemplate } from '../../domain/verified-product';
 import {
   assembleTurnInstructions,
   assembledTurn,
+  holdContactWorkflow,
   knownVehicleFact,
   missingSlotLabel,
   type PreparedTurn,
@@ -51,19 +56,75 @@ async function resumeOpenWorkflow(
   }
   if (context.fitment !== undefined && context.quoteWorkflow === undefined) {
     return {
-      turn: await resumeFitmentTurn(context.fitment, message, cascade),
+      turn: holdContactWorkflow(
+        await resumeFitmentTurn(context.fitment, message, cascade),
+        context.contactWorkflow,
+      ),
       candidateIntent: 'product_info',
       keepOpenWorkflow: true,
     };
   }
   if (context.quoteWorkflow !== undefined) {
     return {
-      turn: resumeQuoteTurn(context.quoteWorkflow, message),
+      turn: holdContactWorkflow(
+        resumeQuoteTurn(context.quoteWorkflow, message),
+        context.contactWorkflow,
+      ),
+      candidateIntent: 'pricing',
+      keepOpenWorkflow: false,
+    };
+  }
+  if (context.contactWorkflow !== undefined) {
+    return {
+      turn: resumeContactTurn(context.contactWorkflow, message),
       candidateIntent: 'pricing',
       keepOpenWorkflow: false,
     };
   }
   return undefined;
+}
+
+function resumeContactTurn(
+  snapshot: ContactWorkflowSnapshot,
+  message: string,
+): PreparedTurn {
+  const advanced = advanceContactCollection({
+    slots: snapshot.slots,
+    message,
+    asked: snapshot.missing,
+  });
+  const profile = profileOrOutOfScope('pricing');
+  const slots = advanced.status === 'ready' ? advanced.slots : advanced.snapshot.slots;
+  const missing =
+    advanced.status === 'suspended'
+      ? advanced.missing === 'given_name'
+        ? 'imienia'
+        : 'numeru telefonu'
+      : undefined;
+  const email = slots.email ? `, email=${slots.email}` : '';
+  const executionNote =
+    advanced.status === 'ready'
+      ? `Kontakt kompletny: imię=${slots.givenName}, telefon=${slots.phone}${email}. Wywołaj collect-contact z tymi polami.`
+      : `Zbieranie kontaktu: brakuje ${missing}. E-mail jest opcjonalny. Zapytaj tylko o brakujące i wywołaj collect-contact.`;
+  const base = assembleTurnInstructions(profile);
+  return {
+    intent: 'pricing',
+    profile,
+    toolIds: ['collect-contact'],
+    instructions: `${base}\n\n${executionNote}`,
+    subIntent: 'indicative_quote',
+    mode: 'action',
+    entities: {},
+    execution: {
+      kind: 'tool',
+      tool: 'collect-contact',
+      tools: ['collect-contact'],
+    },
+    contactWorkflow: advanced.status === 'suspended' ? advanced.snapshot : undefined,
+    contactSlots: slots.givenName || slots.phone || slots.email ? slots : undefined,
+    relatedBranches: [],
+    executionNote,
+  };
 }
 
 async function continueWorkflow(

@@ -1,3 +1,4 @@
+import type { ContactWorkflowSnapshot } from '../../domain/collect-contact';
 import type { FitmentCascadePort, FitmentSnapshot } from '../../domain/fitment-session';
 import type { QuoteWorkflowSnapshot } from '../../domain/quote-vehicle';
 import type { PreparedTurn } from './assemble-prepared-turn';
@@ -8,6 +9,7 @@ export const TURN_WORKFLOWS = Symbol('TURN_WORKFLOWS');
 export type TurnWorkflowContext = {
   quoteWorkflow?: QuoteWorkflowSnapshot;
   fitment?: FitmentSnapshot;
+  contactWorkflow?: ContactWorkflowSnapshot;
   cascade?: FitmentCascadePort;
 };
 

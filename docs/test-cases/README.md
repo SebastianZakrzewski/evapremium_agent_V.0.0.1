@@ -88,6 +88,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Hybrid vs baseline cosine | [api/domain/hybrid-retrieval-baseline.md](api/domain/hybrid-retrieval-baseline.md) | `tests/api/domain/hybrid-retrieval-baseline.spec.ts` |
 | Extended leaf retrieval eval | [api/domain/leaf-retrieval-extended.md](api/domain/leaf-retrieval-extended.md) | `tests/api/domain/leaf-retrieval-extended.spec.ts` |
 | Katalog sub-intencji | [api/domain/sub-intent-catalog.md](api/domain/sub-intent-catalog.md) | `tests/api/domain/sub-intent-catalog.spec.ts` |
+| Zbieranie kontaktu przy wycenie | [api/domain/collect-contact.md](api/domain/collect-contact.md) | `tests/api/domain/collect-contact.spec.ts` |
 | Wybór wykonania tury | [api/domain/choose-execution.md](api/domain/choose-execution.md) | `tests/api/domain/choose-execution.spec.ts` |
 | Workflow slotów wyceny | [api/domain/quote-vehicle.md](api/domain/quote-vehicle.md) | `tests/api/domain/quote-vehicle.spec.ts` |
 | Workflow kaskady dopasowania | [api/domain/fitment-session.md](api/domain/fitment-session.md) | `tests/api/domain/fitment-session.spec.ts` |

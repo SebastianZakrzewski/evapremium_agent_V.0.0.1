@@ -55,7 +55,10 @@ describe('intentProfileFor', () => {
     expect(intentProfileFor('delivery')?.instructions).toContain(
       'najwyżej raz',
     );
-    expect(intentProfileFor('pricing')?.tools).toEqual(['quote-vehicle']);
+    expect(intentProfileFor('pricing')?.tools).toEqual([
+      'quote-vehicle',
+      'collect-contact',
+    ]);
     expect(intentProfileFor('pricing')?.tools).not.toContain('search-leaves');
     expect(intentProfileFor('delivery')?.tools.sort()).toEqual(
       ['lookup-leaf', 'search-leaves'].sort(),

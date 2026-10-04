@@ -1,3 +1,4 @@
+import type { ContactSlots, ContactWorkflowSnapshot } from '../../domain/collect-contact';
 import { decisionTracePayload } from '../../domain/decision-trace';
 import {
   conflictsWithStoredVehicle,
@@ -17,6 +18,7 @@ import { acceptIntentTransition } from './accept-intent-transition';
 import {
   assembleTurnInstructions,
   assembledTurn,
+  attachContactCollection,
   type PreparedTurn,
 } from './assemble-prepared-turn';
 import { evaTurnWorkflows } from './eva-turn-workflows';
@@ -55,6 +57,8 @@ export type PrepareIntentTurnOptions = {
   currentIntent?: ShopIntent;
   quoteWorkflow?: QuoteWorkflowSnapshot;
   fitment?: FitmentSnapshot;
+  contactWorkflow?: ContactWorkflowSnapshot;
+  knownContact?: ContactSlots;
   knownVehicle?: KnownSessionVehicle;
   cascade?: FitmentCascadePort;
   workflows?: TurnWorkflows;
@@ -109,7 +113,12 @@ export async function prepareIntentTurn(
     options ?? {},
     remembered.resolved,
   );
-  return emitTurnLog(options, continued, {
+  const withContact = attachContactCollection(continued, {
+    message,
+    known: options?.knownContact,
+    open: options?.contactWorkflow,
+  });
+  return emitTurnLog(options, withContact, {
     candidateIntent: qualification.result.intent,
     forcedOutOfScope: false,
   });

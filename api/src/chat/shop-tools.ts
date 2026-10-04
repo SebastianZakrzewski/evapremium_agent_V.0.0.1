@@ -23,6 +23,14 @@ import type {
   TemplateCascadeInput,
   TemplateCascadeResult,
 } from '../domain/template-cascade';
+import {
+  advanceContactCollection,
+  contactSlotsFromClient,
+  normalizeContactInput,
+  type ContactSlots,
+} from '../domain/collect-contact';
+import { SessionClient } from '../domain/session-client';
+import type { SessionClients } from './session-clients';
 import { PricingResolver } from '../pricing/pricing.resolver';
 import { TemplateCascadeResolver } from '../templates/template-cascade.resolver';
 
@@ -32,6 +40,7 @@ export class ShopTools {
     private readonly pricing: PricingResolver,
     private readonly contextTree: ContextTreeResolver,
     private readonly events?: AgentEventSink,
+    private readonly sessionClients?: SessionClients,
   ) {}
 
   async resolveTemplate(
@@ -74,6 +83,51 @@ export class ShopTools {
       });
     }
     return result;
+  }
+
+  async collectContact(input: ContactSlots): Promise<{
+    status: 'waiting' | 'saved' | 'not_saved';
+    missing?: 'given_name' | 'phone';
+    givenName?: string;
+    phone?: string;
+    email?: string;
+  }> {
+    const sessionId = currentTurnSessionId();
+    const stored =
+      sessionId !== undefined && this.sessionClients !== undefined
+        ? await this.sessionClients.get(sessionId)
+        : undefined;
+    const advanced = advanceContactCollection({
+      slots: {
+        ...contactSlotsFromClient(stored?.data ?? {}),
+        ...normalizeContactInput(input),
+      },
+    });
+    const slots =
+      advanced.status === 'ready' ? advanced.slots : advanced.snapshot.slots;
+    const persisted = await this.persistContact(sessionId, slots);
+    if (advanced.status === 'suspended') {
+      return { status: 'waiting', missing: advanced.missing, ...slots };
+    }
+    return { status: persisted ? 'saved' : 'not_saved', ...slots };
+  }
+
+  private async persistContact(
+    sessionId: string | undefined,
+    slots: ContactSlots,
+  ): Promise<boolean> {
+    if (
+      sessionId === undefined ||
+      this.sessionClients === undefined ||
+      (!slots.givenName && !slots.phone && !slots.email)
+    ) {
+      return false;
+    }
+    const current =
+      (await this.sessionClients.get(sessionId)) ??
+      SessionClient.empty(sessionId);
+    await this.sessionClients.save(current.rememberContact(slots));
+    return true;
   }
 
   lookupLeaf(slug: string): ContextLeafLookupResult {

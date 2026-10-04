@@ -19,6 +19,7 @@ const shopCatalog = {
   'resolve-template': { id: 'resolve-template' },
   'quote-price': { id: 'quote-price' },
   'quote-vehicle': { id: 'quote-vehicle' },
+  'collect-contact': { id: 'collect-contact' },
   'lookup-leaf': { id: 'lookup-leaf' },
   'search-leaves': { id: 'search-leaves' },
 };
@@ -37,9 +38,9 @@ describe('prepareIntentTurn', () => {
     expect(turn.execution).toEqual({
       kind: 'tool',
       tool: 'quote-vehicle',
-      tools: ['quote-vehicle'],
+      tools: ['quote-vehicle', 'collect-contact'],
     });
-    expect(Object.keys(tools)).toEqual(['quote-vehicle']);
+    expect(Object.keys(tools)).toEqual(['quote-vehicle', 'collect-contact']);
     expect(profileAllowsTool(turn.toolIds, 'quote-vehicle')).toBe(true);
     expect(turn.instructions).toContain('Wykonanie: wywołaj quote-vehicle');
     expect(turn.instructions).toContain('year=2019');
@@ -89,7 +90,7 @@ describe('prepareIntentTurn', () => {
       ['lookup-leaf', 'search-leaves'].sort(),
     );
     expect(turn.instructions).toContain('search-leaves');
-    expect(turn.instructions).toContain('Miss');
+    expect(turn.instructions).toContain('Nie mów klientowi');
     expect(tools).not.toHaveProperty('quote-price');
   });
 

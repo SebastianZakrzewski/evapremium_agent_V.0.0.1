@@ -1,6 +1,7 @@
 import type { Agent } from '@mastra/core/agent';
 import { recordAgentEvent } from '../agent-events/record-agent-event';
 import type { FitmentCascadePort } from '../domain/fitment-session';
+import { contactSlotsFromClient } from '../domain/collect-contact';
 import {
   contextNeedForTurn,
   SessionClient,
@@ -89,6 +90,10 @@ export class MastraChatAgent implements ChatAgent {
       currentIntent: session.currentIntent,
       quoteWorkflow: session.quoteWorkflow,
       fitment: session.fitment,
+      contactWorkflow: session.contactWorkflow,
+      knownContact: session.client
+        ? contactSlotsFromClient(session.client.data)
+        : undefined,
       knownVehicle: session.client?.hasFacts() ? session.client.data : undefined,
       cascade: this.cascade,
       workflows: this.workflows,
@@ -110,6 +115,7 @@ export class MastraChatAgent implements ChatAgent {
     currentIntent: ReturnType<IntentSessionState['get']>;
     quoteWorkflow: ReturnType<IntentSessionState['getQuoteWorkflow']>;
     fitment: ReturnType<IntentSessionState['getFitment']>;
+    contactWorkflow: ReturnType<IntentSessionState['getContactWorkflow']>;
     client?: SessionClient;
   }> {
     if (sessionId === undefined) {
@@ -117,6 +123,7 @@ export class MastraChatAgent implements ChatAgent {
         currentIntent: undefined,
         quoteWorkflow: undefined,
         fitment: undefined,
+        contactWorkflow: undefined,
       };
     }
     await this.intentState.load(sessionId);
@@ -124,6 +131,7 @@ export class MastraChatAgent implements ChatAgent {
       currentIntent: this.intentState.get(sessionId),
       quoteWorkflow: this.intentState.getQuoteWorkflow(sessionId),
       fitment: this.intentState.getFitment(sessionId),
+      contactWorkflow: this.intentState.getContactWorkflow(sessionId),
       client:
         this.sessionClients === undefined
           ? undefined
@@ -142,6 +150,7 @@ export class MastraChatAgent implements ChatAgent {
     }
     this.intentState.set(sessionId, turn.intent);
     this.intentState.setQuoteWorkflow(sessionId, turn.quoteWorkflow);
+    this.intentState.setContactWorkflow(sessionId, turn.contactWorkflow);
     if (turn.fitment) {
       this.intentState.setFitment(sessionId, turn.fitment);
     } else if (turn.clearFitment) {
@@ -173,7 +182,7 @@ export class MastraChatAgent implements ChatAgent {
       return prepared;
     }
     const current = stored ?? SessionClient.empty(sessionId);
-    const next = current
+    const remembered = current
       .rememberUtterance(message, new Date().toISOString())
       .rememberVehicle({
         entities: shouldRememberQualifierEntities(prepared)
@@ -185,6 +194,9 @@ export class MastraChatAgent implements ChatAgent {
         cascadeMatch: prepared.fitment ? undefined : prepared.cascadeMatch,
         verifiedProduct: prepared.verifiedProduct,
       });
+    const next = prepared.contactSlots
+      ? remembered.rememberContact(prepared.contactSlots)
+      : remembered;
     if (next.hasFacts() && !next.equals(current)) {
       await this.sessionClients.save(next);
     }

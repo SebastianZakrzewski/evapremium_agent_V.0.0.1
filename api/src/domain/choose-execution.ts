@@ -53,6 +53,7 @@ export function chooseExecution(input: {
         (tool) =>
           tool !== 'quote-price' &&
           tool !== 'quote-vehicle' &&
+          tool !== 'collect-contact' &&
           tool !== 'resolve-template',
       ),
     };

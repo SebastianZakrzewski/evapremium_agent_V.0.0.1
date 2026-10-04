@@ -23,7 +23,7 @@ przed nową kwalifikacją. Potem kwalifikacja → `IntentProfile` → mapa tooli
 - **Krytyczność:** critical
 - **Logika:** Gałąź wyceny widzi macierz i kaskadę; instrukcja profilu trafia do tury.
 - **Wejście:** stub qualify `Ile kosztują dywaniki Volkswagen Golf 8?` + katalog tooli
-- **Wyjście:** `intent: pricing`, wykonanie `tool` / `quote-vehicle`, jedyny klucz `quote-vehicle`
+- **Wyjście:** `intent: pricing`, wykonanie `tool` / `quote-vehicle`, klucze `quote-vehicle` i `collect-contact`
 
 ### turn-005 — wycena bez marki → workflow
 
