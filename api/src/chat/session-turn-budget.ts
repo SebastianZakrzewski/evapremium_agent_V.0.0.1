@@ -165,7 +165,7 @@ export class InMemoryChatTurnBudget implements ChatTurnBudget {
   }
 
   private bucketKey(kind: BucketKind, hash: string, now: Date): string {
-    return `${kind}\0${hash}\0${utcHourStart(now)}`;
+    return `${kind}|${hash}|${utcHourStart(now)}`;
   }
 
   private exclusive<T>(work: () => T): Promise<T> {
@@ -348,7 +348,7 @@ export class SupabaseChatTurnBudget implements ChatTurnBudget {
 }
 
 function bucketKey(kind: BucketKind, hash: string, now: Date): string {
-  return `${kind}\0${hash}\0${utcHourStart(now)}`;
+  return `${kind}|${hash}|${utcHourStart(now)}`;
 }
 
 function readPositive(env: NodeJS.ProcessEnv, name: string, fallback: number): number {
