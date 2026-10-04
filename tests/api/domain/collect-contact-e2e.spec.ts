@@ -9,7 +9,10 @@ import {
   SessionClient,
   shouldRememberQualifierEntities,
 } from '@api/domain/session-client';
-import { InMemoryIntentSessionState } from '@api/mastra/intents/intent-session-state';
+import {
+  InMemoryIntentSessionState,
+  type IntentSessionState,
+} from '@api/mastra/intents/intent-session-state';
 import { prepareIntentTurn } from '@api/mastra/intents/prepare-intent-turn';
 import { StubIntentQualifier } from '@api/mastra/intents/stub-intent-qualifier';
 import {
@@ -43,7 +46,7 @@ type ToolResult = {
 
 class QuoteContactSimulation {
   readonly calls: string[] = [];
-  private readonly state = new InMemoryIntentSessionState();
+  private readonly state: IntentSessionState = new InMemoryIntentSessionState();
   private readonly clients = new InMemorySessionClients();
   private readonly qualifier = new StubIntentQualifier();
   private readonly tools: ShopTools;
