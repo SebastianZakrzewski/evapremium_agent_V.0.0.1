@@ -244,4 +244,31 @@ describe('ChatPanel', () => {
     ).toBeInTheDocument();
     expect(screen.getByLabelText('Wiadomość')).toBeEnabled();
   });
+
+  it('renders a contact form and sends the name and phone without an email', async () => {
+    const api = mockApi({ status: 'generated', contactForm: true });
+    render(<ChatPanel api={api} />);
+    fireEvent.change(screen.getByLabelText('Wiadomość'), {
+      target: { value: 'ile kosztują' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Wyślij' }));
+
+    expect(await screen.findByRole('form', { name: 'Dane kontaktowe' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Wyślij kontakt' })).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText('Imię'), { target: { value: 'Anna' } });
+    fireEvent.change(screen.getByLabelText('Numer kontaktowy'), {
+      target: { value: '500 600 700' },
+    });
+    expect(screen.getByLabelText(/Adres e-mail/)).not.toBeRequired();
+    fireEvent.click(screen.getByRole('button', { name: 'Wyślij kontakt' }));
+
+    await waitFor(() => {
+      expect(api.postMessage).toHaveBeenLastCalledWith(
+        's1',
+        'Nazywam się Anna, tel. 500600700',
+        expect.any(Function),
+      );
+    });
+  });
 });

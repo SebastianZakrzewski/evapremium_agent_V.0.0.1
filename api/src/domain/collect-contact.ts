@@ -3,6 +3,16 @@ import { isSlotReply } from './quote-vehicle';
 export const COLLECT_CONTACT_WORKFLOW = 'collect_contact';
 export const COLLECT_CONTACT_TOOL = 'collect-contact';
 
+export function contactFormForTurn(turn: {
+  contactWorkflow?: unknown;
+  toolIds: readonly string[];
+}): boolean {
+  return (
+    turn.contactWorkflow !== undefined &&
+    turn.toolIds.includes(COLLECT_CONTACT_TOOL)
+  );
+}
+
 export type ContactSlotKey = 'given_name' | 'phone';
 
 export type ContactSlots = {

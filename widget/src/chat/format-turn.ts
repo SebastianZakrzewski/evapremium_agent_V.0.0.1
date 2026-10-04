@@ -3,6 +3,7 @@ export type ChatTurnData = {
   amount?: number;
   currency?: string;
   body?: string;
+  contactForm?: boolean;
   product?: {
     productId: string;
     fields: Record<string, string>;

@@ -1,7 +1,10 @@
 import type { Agent } from '@mastra/core/agent';
 import { recordAgentEvent } from '../agent-events/record-agent-event';
 import type { FitmentCascadePort } from '../domain/fitment-session';
-import { contactSlotsFromClient } from '../domain/collect-contact';
+import {
+  contactFormForTurn,
+  contactSlotsFromClient,
+} from '../domain/collect-contact';
 import {
   contextNeedForTurn,
   SessionClient,
@@ -27,6 +30,7 @@ import type { ChatAgent, ChatAgentTurn } from './chat-agent.port';
 
 export class MastraChatAgent implements ChatAgent {
   private readonly verifiedBySession = new Map<string, VerifiedProduct>();
+  private readonly contactFormBySession = new Map<string, true>();
 
   constructor(
     private readonly agent: Pick<Agent, 'stream'>,
@@ -46,7 +50,19 @@ export class MastraChatAgent implements ChatAgent {
     for await (const chunk of this.stream(message, sessionId)) {
       text += chunk;
     }
-    return { text, data: { status: 'generated' } };
+    return {
+      text,
+      data: this.contactForm(sessionId)
+        ? { status: 'generated', contactForm: true }
+        : { status: 'generated' },
+    };
+  }
+
+  contactForm(sessionId?: string): boolean {
+    if (sessionId === undefined) {
+      return false;
+    }
+    return this.contactFormBySession.has(sessionId);
   }
 
   verifiedProduct(sessionId?: string): VerifiedProduct | undefined {
@@ -147,6 +163,11 @@ export class MastraChatAgent implements ChatAgent {
       this.verifiedBySession.set(sessionId, turn.verifiedProduct);
     } else {
       this.verifiedBySession.delete(sessionId);
+    }
+    if (contactFormForTurn(turn)) {
+      this.contactFormBySession.set(sessionId, true);
+    } else {
+      this.contactFormBySession.delete(sessionId);
     }
     this.intentState.set(sessionId, turn.intent);
     this.intentState.setQuoteWorkflow(sessionId, turn.quoteWorkflow);

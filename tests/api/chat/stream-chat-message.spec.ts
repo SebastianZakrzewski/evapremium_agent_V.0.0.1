@@ -112,6 +112,27 @@ describe('streamChatMessage', () => {
     });
   });
 
+  it('puts the contact form on done when the agent is collecting contact', async () => {
+    const sessions = new InMemoryChatSessions(() => 'session-contact');
+    const { sessionId } = await sessions.create();
+    const agent: ChatAgent = {
+      handle: () => Promise.resolve({ text: 'podaj kontakt', data: { status: 'generated' } }),
+      stream: async function* () {
+        yield 'podaj kontakt';
+      },
+      contactForm: () => true,
+    };
+    const frames = await collect(sessions, agent, sessionId, 'kombi');
+    expect(frames.at(-1)).toEqual({
+      event: 'done',
+      data: {
+        sessionId: 'session-contact',
+        text: 'podaj kontakt',
+        data: { status: 'generated', contactForm: true },
+      },
+    });
+  });
+
   it('streams a message that is still inside the turn budget', async () => {
     const sessions = new InMemoryChatSessions(() => 'session-budget');
     const { sessionId } = await sessions.create();

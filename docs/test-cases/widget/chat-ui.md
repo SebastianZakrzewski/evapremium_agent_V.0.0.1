@@ -24,6 +24,7 @@ Kwota nie pochodzi z modelu w widgecie.
 | widget-014 | high | Karta produktu sklepu po marce i modelu |
 | widget-015 | high | Limit tur wyłącza czat |
 | widget-016 | medium | Inny błąd zostawia pole do edycji |
+| widget-017 | high | Formularz kontaktu w oknie czatu |
 
 ### widget-002 — UI wyceny orientacyjnej
 
@@ -144,5 +145,13 @@ Kwota nie pochodzi z modelu w widgecie.
 - **Logika:** błąd sieci nie jest limitem tur.
 - **Wejście:** `postMessage` rzuca `Error('network')`
 - **Wyjście:** `Nie udało się dokończyć tej odpowiedzi.` i pole znowu aktywne
+
+### widget-017 — Formularz kontaktu w oknie czatu
+
+- **Kod:** `tests/widget/chat/ChatPanel.test.tsx` → `it('renders a contact form and sends the name and phone without an email')`
+- **Krytyczność:** high
+- **Logika:** gdy tura niesie `contactForm`, okno czatu pokazuje imię, numer i opcjonalny e-mail. Bez maila wysyłka idzie z imieniem i telefonem.
+- **Wejście:** payload `{ status: 'generated', contactForm: true }`, imię `Anna`, numer `500 600 700`
+- **Wyjście:** formularz `Dane kontaktowe`; przycisk nieaktywny bez numeru; `postMessage` z `Nazywam się Anna, tel. 500600700`
 
 Uwaga: `widget/src/setup.ts` ustawia `MotionGlobalConfig.skipAnimations`, bo jsdom nie ma klatek animacji i animacje wyjścia trzymałyby węzły w DOM. Zniknięcie elementów (`AnimatePresence`) jest nadal asynchroniczne, więc asercje „brak w DOM” w widget-011 i widget-012 idą przez `waitFor`.

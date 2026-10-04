@@ -12,4 +12,5 @@ export interface ChatAgent {
     productId: string;
     fields: Record<string, string>;
   } | undefined;
+  contactForm?(sessionId?: string): boolean;
 }

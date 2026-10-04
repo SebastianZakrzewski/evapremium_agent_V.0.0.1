@@ -13,6 +13,7 @@ type ChatLine = {
   role: 'user' | 'assistant';
   text: string;
   cardSrc?: string;
+  contactForm?: boolean;
 };
 
 function cardSrcForTurn(turn: ChatTurn): string | undefined {
@@ -104,6 +105,7 @@ export function ChatPanel({ api }: ChatPanelProps) {
           role: 'assistant',
           text: formatAssistantTurn(turn),
           cardSrc: cardSrcForTurn(turn),
+          contactForm: turn.data.contactForm === true,
         };
         return next;
       });
@@ -160,6 +162,10 @@ export function ChatPanel({ api }: ChatPanelProps) {
               role={line.role}
               text={line.text}
               cardSrc={line.cardSrc}
+              contactForm={line.contactForm}
+              onContact={(message) => {
+                void send(message);
+              }}
               pending={busy && line.role === 'assistant' && index === lines.length - 1}
               showAvatar={line.role === 'assistant' && lines[index - 1]?.role !== 'assistant'}
             />

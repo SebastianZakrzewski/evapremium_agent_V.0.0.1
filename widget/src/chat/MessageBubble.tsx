@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { useEffect, useRef } from 'react';
 import { readCardSizeMessage } from './card-size';
+import { ContactForm } from './ContactForm';
 import { TypingDots } from './TypingDots';
 
 type MessageBubbleProps = {
@@ -11,6 +12,8 @@ type MessageBubbleProps = {
   /** First assistant bubble after a user message shows the avatar. */
   showAvatar: boolean;
   cardSrc?: string;
+  contactForm?: boolean;
+  onContact?: (message: string) => void;
 };
 
 function ProductCardFrame({ src }: { src: string }) {
@@ -48,7 +51,15 @@ function ProductCardFrame({ src }: { src: string }) {
   );
 }
 
-export function MessageBubble({ role, text, pending, showAvatar, cardSrc }: MessageBubbleProps) {
+export function MessageBubble({
+  role,
+  text,
+  pending,
+  showAvatar,
+  cardSrc,
+  contactForm,
+  onContact,
+}: MessageBubbleProps) {
   const fromUser = role === 'user';
   return (
     <motion.li
@@ -70,6 +81,9 @@ export function MessageBubble({ role, text, pending, showAvatar, cardSrc }: Mess
           <>
             {text}
             {cardSrc ? <ProductCardFrame src={cardSrc} /> : null}
+            {contactForm && onContact && !pending ? (
+              <ContactForm disabled={pending} onSubmit={onContact} />
+            ) : null}
             {pending ? <span className="eva-msg__caret" aria-hidden="true" /> : null}
           </>
         )}

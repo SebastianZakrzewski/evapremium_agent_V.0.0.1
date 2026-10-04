@@ -310,6 +310,59 @@ body {
   box-shadow: 0 0 8px var(--eva-red-glow);
 }
 
+.eva-contact {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.eva-contact__field {
+  display: grid;
+  gap: 4px;
+  color: var(--eva-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.eva-contact__optional {
+  margin-left: 6px;
+  font-weight: 500;
+}
+
+.eva-contact input {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--eva-text);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 8px 10px;
+  outline: none;
+}
+
+.eva-contact input:focus {
+  border-color: var(--eva-red);
+}
+
+.eva-contact__submit {
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--eva-red), var(--eva-red-deep));
+  color: #fff;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.eva-contact__submit:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
 /* Topics */
 
 .eva-chat__topics {
