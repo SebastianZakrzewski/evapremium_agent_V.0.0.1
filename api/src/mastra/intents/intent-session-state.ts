@@ -80,11 +80,11 @@ export class InMemoryIntentSessionState implements IntentSessionState {
     this.contactWorkflows.set(sessionId, snapshot);
   }
 
-  load(): Promise<void> {
+  load(_sessionId: string): Promise<void> {
     return Promise.resolve();
   }
 
-  flush(): Promise<void> {
+  flush(_sessionId: string): Promise<void> {
     return Promise.resolve();
   }
 }
