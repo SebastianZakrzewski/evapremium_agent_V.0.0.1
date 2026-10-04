@@ -104,7 +104,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Kwalifikator intencji | [api/mastra/intent-qualifier.md](api/mastra/intent-qualifier.md) | `tests/api/mastra/intents/intent-qualifier.spec.ts` |
 | Gałąź tury (tool-e) | [api/mastra/intent-turn.md](api/mastra/intent-turn.md) | `tests/api/mastra/intents/prepare-intent-turn.spec.ts` |
 | Fallback intencji i lead | [api/mastra/intent-fallback.md](api/mastra/intent-fallback.md) | `tests/api/mastra/intents/intent-fallback.spec.ts` |
-| Pamięć intencji sesji | [api/mastra/intent-session-memory.md](api/mastra/intent-session-memory.md) | `tests/api/mastra/intents/accept-intent-transition.spec.ts` |
+| Pamięć intencji sesji | [api/mastra/intent-session-memory.md](api/mastra/intent-session-memory.md) | `tests/api/mastra/intents/accept-intent-transition.spec.ts`, `tests/api/mastra/intents/session-agent-state.spec.ts` |
 | Profil klienta sesji | [api/domain/session-client.md](api/domain/session-client.md) | `tests/api/domain/session-client.spec.ts`, `tests/api/chat/session-clients.spec.ts` |
 | Log tury intencji | [api/mastra/intent-turn-log.md](api/mastra/intent-turn-log.md) | `tests/api/mastra/intents/intent-turn-log.spec.ts` |
 | Request context tury | [api/mastra/eva-turn-request-context.md](api/mastra/eva-turn-request-context.md) | `tests/api/mastra/eva-turn-request-context.spec.ts` |
@@ -115,6 +115,7 @@ Przy wątpliwości wybierz wyższy poziom.
 | Query orderBy Studio | [api/mastra/coerce-mastra-query.md](api/mastra/coerce-mastra-query.md) | `tests/api/mastra/coerce-mastra-query.spec.ts` |
 | Agent czatu Mastra | [api/chat/mastra-chat-agent.md](api/chat/mastra-chat-agent.md) | `tests/api/chat/mastra-chat.agent.spec.ts` |
 | Kontrakt HTTP czatu | [api/chat/chat-http.md](api/chat/chat-http.md) | `tests/api/chat/chat.contract.spec.ts` |
+| Budżet tur czatu | [api/chat/session-turn-budget.md](api/chat/session-turn-budget.md) | `tests/api/chat/session-turn-budget.spec.ts`, `tests/api/chat/supabase-session-turn-budget.spec.ts` |
 | Powitanie sesji czatu | [api/chat/session-opener.md](api/chat/session-opener.md) | `tests/api/chat/session-opener.spec.ts` |
 | Zdarzenia domenowe agenta | [api/agent-events/agent-events.md](api/agent-events/agent-events.md) | `tests/api/agent-events/agent-events.spec.ts`, `tests/api/agent-events/tree-turn-log.spec.ts` |
 | Persystencja zdarzeń agenta | [api/agent-events/agent-events-store.md](api/agent-events/agent-events-store.md) | `tests/api/agent-events/supabase-agent-events.spec.ts` |

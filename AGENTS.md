@@ -18,11 +18,11 @@ poznawania projektu, wprowadzania zmian i utrzymywania dokumentacji.
    Workflow intencji: `docs/exec-plans/completed/intent-workflow.md`,
    `docs/design-docs/intent-workflow.md`.
    Dashboard operatora: `docs/product-specs/evapremium-agents-dashboard.md`,
-   `docs/exec-plans/active/evapremium-agents-dashboard.md`.
+   `docs/exec-plans/completed/evapremium-agents-dashboard.md`.
    RAG context tree (po MVP): `docs/design-docs/context-tree-rag.md`,
-   `docs/exec-plans/active/context-tree-rag.md`. Hybrid retrieval slugów
+   `docs/exec-plans/completed/context-tree-rag.md`. Hybrid retrieval slugów
    (dataset, BM25, RRF, rerank): `docs/design-docs/context-leaf-hybrid-retrieval.md`,
-   `docs/exec-plans/active/context-leaf-hybrid-retrieval.md`.
+   `docs/exec-plans/completed/context-leaf-hybrid-retrieval.md`.
    Mastra: `docs/references/mastra/INDEX.md`, potem jeden fragment.
    Wtyczka widgetu (osadzenie, `window.widgetPlugin`):
    `widget/public/widget-plugin.md`. Skrót dla innego projektu: opis
@@ -54,13 +54,16 @@ Większe, wieloetapowe lub ryzykowne zadania powinny otrzymać plan w
 
 Nie twórz infrastruktury planów dla prostych, jednorazowych zmian.
 
+Pętla planu aktywnego (review kontraktu przed kodem, najwyżej pięć rund
+`npm run verify` wewnątrz slice’a, audyt diffu, paczka przekazania, stop przed
+następnym slice): `.cursor/rules/slice-loop.mdc`. Paczka slice’a leży w
+`docs/exec-plans/packets/<slug-planu>/slice-<N>.md` i powstaje po pass audytu.
+To przekazanie pracy między sesjami agenta. „Handoff” w `ARCHITECTURE.md`
+oznacza oddanie rozmowy klienta człowiekowi.
+
 Plan MVP (`docs/exec-plans/completed/mvp-tdd.md`): slice’e 0–7 zamknięte.
-Dashboard operatora: `docs/exec-plans/active/evapremium-agents-dashboard.md`
-(jeden slice na iterację). RAG FAQ (slug, nie fakt):
-`docs/exec-plans/active/context-tree-rag.md`. Ranking slugów (BM25+RRF):
-`docs/exec-plans/active/context-leaf-hybrid-retrieval.md`. Router wykonania
-(sub-intent, mode, workflow wyceny): `docs/design-docs/agent-execution-router.md`,
-`docs/exec-plans/active/agent-execution-router.md`. Bramka historyczna MVP agenta:
+Dashboard operatora, RAG FAQ, ranking slugów, router wykonania i budżet
+tur czatu są w `docs/exec-plans/completed/`. Bramka historyczna MVP agenta:
 `.cursor/rules/mvp-tdd-quality-gate.mdc`.
 
 ## Weryfikacja

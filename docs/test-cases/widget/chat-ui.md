@@ -22,6 +22,8 @@ Kwota nie pochodzi z modelu w widgecie.
 | widget-012 | medium | Żywy status „pisze…” w nagłówku |
 | widget-013 | low | Wyślij nieaktywny przy pustym drafcie |
 | widget-014 | high | Karta produktu sklepu po marce i modelu |
+| widget-015 | high | Limit tur wyłącza czat |
+| widget-016 | medium | Inny błąd zostawia pole do edycji |
 
 ### widget-002 — UI wyceny orientacyjnej
 
@@ -126,5 +128,21 @@ Kwota nie pochodzi z modelu w widgecie.
 - **Logika:** po weryfikacji marki i modelu UI wstawia kartę sklepu z `cardUrl`. Adres karty jest ze sklepu, nie z modelu.
 - **Wejście:** `?cardUrl=https://shop.example/dywaniki?brand={brand}`, payload `product` dla Audi A4
 - **Wyjście:** iframe `Karta produktu` o `src` `https://shop.example/dywaniki?brand=audi`
+
+### widget-015 — Limit tur wyłącza czat
+
+- **Kod:** `tests/widget/chat/ChatPanel.test.tsx` → `it('stops the panel when the turn budget is spent')`
+- **Krytyczność:** high
+- **Logika:** 429 `turn_budget_exceeded` zostawia stały tekst, wyłącza pole i chipy i nie ponawia żądania.
+- **Wejście:** `postMessage` rzuca `TurnBudgetExceededError`, potem drugie kliknięcie Wyślij
+- **Wyjście:** tekst limitu, pole i chip wyłączone, `postMessage` raz
+
+### widget-016 — Inny błąd zostawia pole do edycji
+
+- **Kod:** `tests/widget/chat/ChatPanel.test.tsx` → `it('keeps the composer editable after a network error')`
+- **Krytyczność:** medium
+- **Logika:** błąd sieci nie jest limitem tur.
+- **Wejście:** `postMessage` rzuca `Error('network')`
+- **Wyjście:** `Nie udało się dokończyć tej odpowiedzi.` i pole znowu aktywne
 
 Uwaga: `widget/src/setup.ts` ustawia `MotionGlobalConfig.skipAnimations`, bo jsdom nie ma klatek animacji i animacje wyjścia trzymałyby węzły w DOM. Zniknięcie elementów (`AnimatePresence`) jest nadal asynchroniczne, więc asercje „brak w DOM” w widget-011 i widget-012 idą przez `waitFor`.

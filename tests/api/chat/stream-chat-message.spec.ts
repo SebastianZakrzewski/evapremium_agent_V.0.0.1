@@ -1,5 +1,7 @@
 import { InMemoryChatSessions } from '@api/chat/chat-session';
 import type { ChatAgent, ChatAgentTurn } from '@api/chat/chat-agent.port';
+import { acceptChatTurn } from '@api/chat/accept-chat-turn';
+import { InMemoryChatTurnBudget, TurnBudgetExceededError } from '@api/chat/session-turn-budget';
 import { streamChatMessage } from '@api/chat/stream-chat-message';
 
 class StreamingAgent implements ChatAgent {
@@ -109,4 +111,39 @@ describe('streamChatMessage', () => {
       },
     });
   });
+
+  it('streams a message that is still inside the turn budget', async () => {
+    const sessions = new InMemoryChatSessions(() => 'session-budget');
+    const { sessionId } = await sessions.create();
+    const agent = new RecordingSessionAgent();
+    const ledger = guestBudget();
+    await acceptChatTurn(sessions, ledger, sessionId, 'golf 8', '203.0.113.20');
+    const frames = await collect(sessions, agent, sessionId, 'golf 8');
+    expect(agent.sessionIds).toEqual(['session-budget']);
+    expect(frames.at(-1)).toMatchObject({ event: 'done' });
+  });
+
+  it('does not call the agent or store the user line when the session budget is spent', async () => {
+    const sessions = new InMemoryChatSessions(() => 'session-spent');
+    const { sessionId } = await sessions.create();
+    const agent = new RecordingSessionAgent();
+    const ledger = guestBudget();
+    for (let index = 0; index < 25; index += 1) {
+      await acceptChatTurn(sessions, ledger, sessionId, `t${index}`, '203.0.113.21');
+    }
+    await expect(
+      acceptChatTurn(sessions, ledger, sessionId, 'ponad limit', '203.0.113.21'),
+    ).rejects.toBeInstanceOf(TurnBudgetExceededError);
+    expect(agent.sessionIds).toEqual([]);
+    expect(await sessions.listMessages(sessionId)).toEqual([]);
+  });
 });
+
+function guestBudget(): InMemoryChatTurnBudget {
+  return new InMemoryChatTurnBudget({
+    sessionTurns: 25,
+    guestTurns: 40,
+    guestSessions: 10,
+    salt: 'test-salt',
+  });
+}

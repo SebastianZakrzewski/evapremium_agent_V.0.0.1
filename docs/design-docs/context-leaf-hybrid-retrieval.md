@@ -2,7 +2,7 @@
 
 Źródło prawdy granic: `ARCHITECTURE.md`. Ten dokument: **projekt** rury
 wyszukiwania sluga po kalibracji cosine (hit@1 ≈ 0.57, recall@K = 1.0).
-Plan slice’ów: `docs/exec-plans/active/context-leaf-hybrid-retrieval.md`.
+Plan slice’ów: `docs/exec-plans/completed/context-leaf-hybrid-retrieval.md`.
 Warstwa cosine + `lookup-leaf`: `docs/design-docs/context-tree-rag.md`
 (niezmienniki zostają).
 

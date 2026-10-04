@@ -21,6 +21,12 @@ env Supabase. Bez Bitrix w tym zestawie.
 | chat-008 | high | SSE: tokeny, potem `done` |
 | chat-010 | medium | SSE przekazuje sessionId do agenta |
 | chat-011 | high | SSE `done` niesie zweryfikowany produkt |
+| chat-012 | high | Wiadomość w budżecie woła agenta |
+| chat-013 | high | 26. wiadomość bez agenta i bez zapisu |
+| chat-014 | high | 11. sesja gościa bez `create` |
+| chat-015 | high | Nieznana sesja nie tyka księgi |
+| chat-016 | high | Pusta wiadomość nie tyka księgi |
+| chat-017 | medium | `trust proxy` = 1 |
 | chat-009 | low | Health probe CD |
 
 ### chat-001 — Sesja + wycena z narzędzia Nest
@@ -102,6 +108,54 @@ env Supabase. Bez Bitrix w tym zestawie.
 - **Logika:** po dopasowaniu marki i modelu klatka `done` niesie `product` ze sklepowym id szablonu.
 - **Wejście:** agent ze `verifiedProduct` dla Golfa
 - **Wyjście:** `done.data.product` z `productId`, `brand`, `model`
+
+### chat-012 — Wiadomość w budżecie woła agenta
+
+- **Kod:** `tests/api/chat/stream-chat-message.spec.ts` → `it('streams a message that is still inside the turn budget')`
+- **Krytyczność:** high
+- **Logika:** rezerwacja w budżecie nie zmienia dotychczasowego strumienia.
+- **Wejście:** sesja, `acceptChatTurn` z `golf 8`, potem `streamChatMessage`
+- **Wyjście:** agent dostaje `session-budget`, ostatnia klatka `done`
+
+### chat-013 — 26. wiadomość bez agenta i bez zapisu
+
+- **Kod:** `tests/api/chat/stream-chat-message.spec.ts` → `it('does not call the agent or store the user line when the session budget is spent')`
+- **Krytyczność:** high
+- **Logika:** po 25 turach 26. nie woła agenta i nie dopisuje linii użytkownika.
+- **Wejście:** 25 `acceptChatTurn`, potem `ponad limit`
+- **Wyjście:** `TurnBudgetExceededError`, zero wywołań agenta, pusty transkrypt
+
+### chat-014 — 11. sesja gościa bez `create`
+
+- **Kod:** `tests/api/chat/chat.contract.spec.ts` → `it('does not open a session when the guest session budget is spent')`
+- **Krytyczność:** high
+- **Logika:** 11. otwarcie sesji tego samego gościa w tej samej godzinie nie woła `sessions.create`.
+- **Wejście:** 11 razy `openBudgetedChatSession` z `203.0.113.30` o `03:10Z`
+- **Wyjście:** 10 utworzeń, 11. `TurnBudgetExceededError`
+
+### chat-015 — Nieznana sesja nie tyka księgi
+
+- **Kod:** `tests/api/chat/chat.contract.spec.ts` → `it('keeps an unknown session at 404 and does not touch the ledger')`
+- **Krytyczność:** high
+- **Logika:** brak sesji zostaje `UnknownSessionError` (404 w kontrolerze) i nie schodzi jednostki budżetu.
+- **Wejście:** `acceptChatTurn` dla `missing`
+- **Wyjście:** `UnknownSessionError`, licznik gościa i sesji 0
+
+### chat-016 — Pusta wiadomość nie tyka księgi
+
+- **Kod:** `tests/api/chat/chat.contract.spec.ts` → `it('rejects an empty message before the ledger')`
+- **Krytyczność:** high
+- **Logika:** puste `message` jest 400 i nie rezerwuje tury.
+- **Wejście:** `acceptChatTurn` z `'   '`
+- **Wyjście:** `EmptyChatMessageError`, licznik sesji 0
+
+### chat-017 — `trust proxy` = 1
+
+- **Kod:** `tests/api/chat/chat.contract.spec.ts` → `it('trusts one proxy hop so the guest address is req.ip')`
+- **Krytyczność:** medium
+- **Logika:** jeden hop Caddy. Kontroler bierze `req.ip`, nie nagłówek `X-Forwarded-For`.
+- **Wejście:** `configureChatHttp` na atrapie Express
+- **Wyjście:** `trust proxy` = 1
 
 ### chat-009 — Health probe CD
 

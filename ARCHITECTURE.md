@@ -12,7 +12,9 @@ wycena i context tree: serwisy Nest; przy `SUPABASE_URL` +
 asystenta w transkrypcie); wiadomości SSE. Transkrypt: `ChatSessions` — in-memory
 w teście, `eva_bot.chat_sessions` / `chat_messages` (kolumny PROD `text` +
 `direction`) przy Supabase. DeepSeek za adapterem Mastry; stub bez klucza.
-CORS: originy sklepu + opcjonalny `WIDGET_ORIGIN` (HTTPS). Przy
+CORS: originy sklepu + opcjonalny `WIDGET_ORIGIN` (HTTPS). `trust proxy`
+= 1 (jeden hop Caddy). Budżet tur: 25 wiadomości sesji, 40 wiadomości i
+10 sesji gościa na godzinę UTC; skrót IP, nie adres. Przy
 `MASTRA_STUDIO_TOKEN` + DeepSeek: HTTP Mastry pod `/mastra` (SimpleAuth).
 Studio: drugi kontener (`Dockerfile.studio`) na `:4111` (Caddy basic auth +
 proxy `/mastra` na Nest). System prompt tury: opublikowane prompt-blocks.
@@ -86,15 +88,18 @@ serwerowo (nie anon z widgetu).
    potem krótka lista `model_key` tej marki. Istnienie szablonu zostaje w
    filtrze Nestu. Aliasy `eva_bot.vehicle_slot_aliases` (`slot_kind`,
    `alias_normalized`, `canonical_key`, opcjonalny `brand_key` dla modeli)
-   zostają dla nadwozia i dla ścieżki bez klasyfikatora. Tabela jest na PROD
+   są pierwszym trafieniem marki i modelu; klasyfikator dostaje tylko to, czego
+   alias nie pokrył. Tabela jest na PROD
    (migracja `20260911220000_vehicle_slot_aliases.sql`).    W teście: fixture,
-   jeden strzał ze znanymi kluczami → 0 / 1 / N. Dopasowanie i wycena wymagają
-   marki, modelu, roku i typu nadwozia. Pytanie o dopasowanie, które już nazywa
-   auto, uruchamia `fitment_cascade` także gdy kwalifikator zwróci `knowledge`.
-   Brakujące pole wstrzymuje workflow
+   jeden strzał ze znanymi kluczami → 0 / 1 / N. Wycena wymaga marki, modelu,
+   roku i typu nadwozia. Dopasowanie filtruje już przy marce i modelu i pyta
+   tylko o pole, które jeszcze rozdziela szablony. Pusty wynik zdejmuje najpierw
+   nadwozie, potem rok, i pyta o pole, które wyzerowało trafienia. Pytanie o
+   dopasowanie, które już nazywa auto, uruchamia `fitment_cascade` także gdy
+   kwalifikator zwróci `knowledge`. Brakujące pole wstrzymuje workflow
    (`fitment_cascade` albo `quote_vehicle`) i agent dopytuje. Krótka odpowiedź
-   uzupełnia następny slot bez nowej kwalifikacji. Filtr rusza dopiero przy
-   komplecie. Stan zbierania slotów jest w pamięci procesu. Po turze Nest
+   uzupełnia dopytywany slot, a z tego samego zdania zbierane są też rok i
+   nadwozie. Stan zbierania slotów jest w pamięci procesu. Po turze Nest
    zapisuje zebrane fakty w `eva_bot.session_clients` (migracja
    `20260927140000_session_clients.sql`, apply PROD za zgodą): imię, nazwisko,
    telefon, mail i zgoda, jeśli klient je podał, oraz auto i klucz szablonu.
@@ -249,11 +254,13 @@ Studio Observability: DuckDB (`observability.duckdb` obok LibSQL;
 `MASTRA_STUDIO_TOKEN` Nest montuje `/mastra` (`@mastra/nestjs`, SimpleAuth).
 Studio na VPS: obraz `evabot-studio` (Caddy `:4111`, basic auth, proxy
 `/mastra` → Nest `:3000`, wstrzyknięty Bearer). Browser same-origin, bez tunelu.
-Stan intencji nie jest w Supabase.
+Stan intencji, otwartej wyceny i dopasowania: bez Supabase w pamięci
+procesu; przy `DATA_STORE` w `eva_bot.session_agent_state` (bez treści
+wiadomości).
 
 Szczegół kontraktu: `docs/design-docs/intent-workflow.md`.
 Router wykonania: `docs/design-docs/agent-execution-router.md`.
-Plan: `docs/exec-plans/active/agent-execution-router.md`.
+Plan: `docs/exec-plans/completed/agent-execution-router.md`.
 
 ## Hosting
 
@@ -299,7 +306,7 @@ Bez treści wiadomości.
 Payload eventów bez treści wiadomości. KPI doby z
 eventów, nie z tekstu agenta. Zachowanie:
 `docs/product-specs/evapremium-agents-dashboard.md`.
-Plan: `docs/exec-plans/active/evapremium-agents-dashboard.md`.
+Plan: `docs/exec-plans/completed/evapremium-agents-dashboard.md`.
 Konwersja sklepu i lift widgetu — poza tym zakresem.
 
 ## Późniejsze warstwy (nie implementować w MVP)
@@ -327,17 +334,17 @@ zapisie rozmowy.
 - Treść liści `chat-zapis` i `zgoda-lead` — wklejenie ze sklepu, nie projekt
   architektury.
 - Plan wykonania MVP: `docs/exec-plans/completed/mvp-tdd.md`.
-- Dashboard operatora: `docs/exec-plans/active/evapremium-agents-dashboard.md`.
+- Dashboard operatora: `docs/exec-plans/completed/evapremium-agents-dashboard.md`.
 - Które slugi context tree mapują się na `delivery` vs `after_sales` vs
   `product_info` — przy wypełnianiu profili, nie przy zmianie kaskady.
 - RAG FAQ: indeks, embedder Nest, tool `search-leaves` i skrypt ingestu w
   kodzie. Apply pgvector na PROD tylko za zgodą. Mechanizm:
   `docs/design-docs/context-tree-rag.md`. Plan:
-  `docs/exec-plans/active/context-tree-rag.md`.
+  `docs/exec-plans/completed/context-tree-rag.md`.
 - Ranking slugów (hit@1): baza cosine 2026-09-15 i cele rury —
   `docs/eval/leaf-retrieval-metrics.md`. Projekt:
   `docs/design-docs/context-leaf-hybrid-retrieval.md`,
-  `docs/exec-plans/active/context-leaf-hybrid-retrieval.md`.
+  `docs/exec-plans/completed/context-leaf-hybrid-retrieval.md`.
 
 ## Zasady utrzymania
 
@@ -362,4 +369,4 @@ zapisie rozmowy.
 - `docs/references/mastra/INDEX.md`
 - `docs/product-specs/mvp-obsluga-klienta.md`
 - `docs/product-specs/evapremium-agents-dashboard.md`
-- `docs/exec-plans/active/evapremium-agents-dashboard.md`
+- `docs/exec-plans/completed/evapremium-agents-dashboard.md`

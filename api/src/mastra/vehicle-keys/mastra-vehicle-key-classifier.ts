@@ -49,7 +49,7 @@ export class MastraVehicleKeyClassifier implements VehicleKeyClassifier {
 
   async classifyModel(input: ModelClassificationInput): Promise<string[]> {
     const result = await this.modelAgent.generate(
-      modelClassificationMessage(input.customerModel, input.modelKeys),
+      modelClassificationMessage(input.customerModel, input.modelKeys, input.year),
       {
         structuredOutput: {
           schema: modelClassificationSchema,

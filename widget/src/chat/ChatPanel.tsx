@@ -5,6 +5,7 @@ import { ChatHeader } from './ChatHeader';
 import { formatAssistantTurn } from './format-turn';
 import { MessageBubble } from './MessageBubble';
 import { shopCardUrlFromSearch, shopProductCardSrc } from './shop-product-card';
+import { TURN_BUDGET_MESSAGE, TurnBudgetExceededError } from './turn-budget';
 import '@fontsource-variable/montserrat';
 import './ChatPanel.css';
 
@@ -37,6 +38,7 @@ export function ChatPanel({ api }: ChatPanelProps) {
     [],
   );
   const [busy, setBusy] = useState(false);
+  const [budgetSpent, setBudgetSpent] = useState(false);
   const opening = useRef<Promise<string> | null>(null);
   const conversationStarted = useRef(false);
   const messagesRef = useRef<HTMLUListElement>(null);
@@ -73,13 +75,12 @@ export function ChatPanel({ api }: ChatPanelProps) {
 
   async function send(text = draft) {
     const message = text.trim();
-    if (!message || busy) {
+    if (!message || busy || budgetSpent) {
       return;
     }
     conversationStarted.current = true;
     setBusy(true);
     setDraft('');
-    setSuggestions([]);
     setLines((current) => [
       ...current,
       { role: 'user', text: message },
@@ -106,12 +107,19 @@ export function ChatPanel({ api }: ChatPanelProps) {
         };
         return next;
       });
-    } catch {
+      setSuggestions([]);
+    } catch (error) {
+      if (error instanceof TurnBudgetExceededError) {
+        setBudgetSpent(true);
+      }
       setLines((current) => {
         const next = [...current];
         next[next.length - 1] = {
           role: 'assistant',
-          text: 'Nie udało się dokończyć tej odpowiedzi.',
+          text:
+            error instanceof TurnBudgetExceededError
+              ? TURN_BUDGET_MESSAGE
+              : 'Nie udało się dokończyć tej odpowiedzi.',
         };
         return next;
       });
@@ -127,7 +135,7 @@ export function ChatPanel({ api }: ChatPanelProps) {
     }
   }, [lines]);
 
-  const canSend = draft.trim() !== '' && !busy;
+  const canSend = draft.trim() !== '' && !busy && !budgetSpent;
 
   return (
     <MotionConfig reducedMotion="user">
@@ -174,7 +182,7 @@ export function ChatPanel({ api }: ChatPanelProps) {
                   key={chip.id}
                   type="button"
                   className="eva-chat__topic"
-                  disabled={busy}
+                  disabled={busy || budgetSpent}
                   variants={{
                     hidden: { opacity: 0, y: 8 },
                     shown: { opacity: 1, y: 0 },
@@ -204,7 +212,7 @@ export function ChatPanel({ api }: ChatPanelProps) {
               className="eva-chat__input"
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
-              disabled={busy}
+              disabled={busy || budgetSpent}
               placeholder="Opisz auto lub zadaj pytanie…"
             />
           </label>

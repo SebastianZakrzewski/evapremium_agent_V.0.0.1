@@ -14,6 +14,8 @@ export interface IntentSessionState {
   ): void;
   getFitment(sessionId: string): FitmentSnapshot | undefined;
   setFitment(sessionId: string, snapshot: FitmentSnapshot | undefined): void;
+  load(sessionId: string): Promise<void>;
+  flush(sessionId: string): Promise<void>;
 }
 
 export class InMemoryIntentSessionState implements IntentSessionState {
@@ -54,5 +56,13 @@ export class InMemoryIntentSessionState implements IntentSessionState {
       return;
     }
     this.fitments.set(sessionId, snapshot);
+  }
+
+  load(): Promise<void> {
+    return Promise.resolve();
+  }
+
+  flush(): Promise<void> {
+    return Promise.resolve();
   }
 }

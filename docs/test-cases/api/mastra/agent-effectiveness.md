@@ -1,8 +1,8 @@
 # Ewaluacja skuteczności agenta (FAQ / tool-e)
 
 Kod: `tests/api/mastra/eval/agent-effectiveness.spec.ts` (scorer),
-`tests/api/mastra/eval/agent-effectiveness.live.spec.ts` (DeepSeek, env
-`EVAL_AGENT_EFFECTIVENESS=1`).  
+`api/src/mastra/eval/run-live.ts` (DeepSeek, `EVAL_LABEL`, poza
+`npm run verify`).  
 Standard: [docs/test-cases/README.md](../../README.md)
 
 Logika: 8 scenariuszy → M1–M7 (0/1), rate 0–100, suma ważona

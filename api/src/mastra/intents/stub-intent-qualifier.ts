@@ -1,3 +1,4 @@
+import { readBodyType, readYear } from '../../domain/quote-vehicle';
 import type {
   RouterEntities,
   SubIntentSlug,
@@ -38,6 +39,14 @@ function extractEntities(message: string): RouterEntities {
   const model = message.match(/\bgolf(?:a|em|owi)?(?:\s+(\d+))?/iu);
   if (model !== null) {
     entities.car_model = model[1] !== undefined ? `Golf ${model[1]}` : 'Golf';
+  }
+  const year = readYear(message);
+  if (year !== undefined) {
+    entities.year = year;
+  }
+  const body = readBodyType(message);
+  if (body !== undefined) {
+    entities.body_type = body;
   }
   return entities;
 }

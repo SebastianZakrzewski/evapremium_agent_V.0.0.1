@@ -19,7 +19,10 @@ Sekrety zostają w `/opt/evabot/api/.env` (nie w obrazie).
 Env: `DEEPSEEK_API_KEY`, `BITRIX_WEBHOOK_URL`, `SUPABASE_URL`
 (`https://kmepxyervpeujwvgdqtm.supabase.co`), `SUPABASE_SERVICE_ROLE_KEY`,
 `WIDGET_ORIGIN` (HTTPS origin Vercel, bez slasha), `PORT=3000`,
-`SENTRY_DSN` (adres ingest projektu, nie token `sntryu_`).
+`SENTRY_DSN` (adres ingest projektu, nie token `sntryu_`),
+`CHAT_BUDGET_IP_SALT` (sól skrótu IP budżetu tur; pusta przy Supabase
+blokuje start). Progi `CHAT_SESSION_TURN_LIMIT`, `CHAT_IP_TURN_LIMIT` i
+`CHAT_IP_SESSION_LIMIT` tylko gdy mają odbiegać od 25 / 40 / 10.
 Opcjonalnie RAG FAQ (Nest, nie widget): `OPENAI_API_KEY` (`text-embedding-3-small`).
 Bez tego klucza w `/opt/evabot/api/.env` `search-leaves` zwraca pustą listę
 (embedder wyłączony). Po zmianie `.env` **odtwórz** kontener API (`deploy/update-container.sh`

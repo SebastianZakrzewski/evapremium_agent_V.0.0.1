@@ -22,6 +22,7 @@ const suspendSchema = z.object({
   step: z.literal('waiting_for_vehicle'),
   missing: z.enum(['car_brand', 'car_model', 'year', 'body_type']),
   slots: slotsSchema,
+  options: z.array(z.string()).optional(),
 });
 
 const resumeSchema = z.object({
@@ -48,6 +49,7 @@ export function createFitmentCascadeWorkflow(cascade: FitmentCascadePort) {
         slots: inputData.slots,
         message: resumeData?.message,
         resolve: (input) => cascade.resolve(input),
+        aliases: cascade.listAliases(),
       });
       if (decision.status === 'suspended') {
         return suspend(decision.snapshot);

@@ -46,6 +46,7 @@ docs/
 ├── exec-plans/
 │   ├── active/
 │   ├── completed/
+│   ├── packets/
 │   └── tech-debt-tracker.md
 ├── generated/
 │   └── db-schema.md
@@ -92,6 +93,9 @@ Plany wykonania złożonych, wieloetapowych lub ryzykownych prac.
 
 - `active/` — plany aktualnie realizowane.
 - `completed/` — zakończone plany stanowiące historię wykonania.
+- `packets/<slug-planu>/slice-<N>.md` — paczka przekazania po zamkniętym slice:
+  kontrakt, decyzje, testy, czego następny slice nie rusza. Katalog powstaje
+  z pierwszą paczką, nie wcześniej. Reguła pętli: `.cursor/rules/slice-loop.mdc`.
 - `tech-debt-tracker.md` — świadomie przyjęty dług techniczny, jego wpływ,
   priorytet i warunki usunięcia.
 

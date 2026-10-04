@@ -101,7 +101,7 @@ export class MastraChatAgent implements ChatAgent {
       prepared,
       session.client,
     );
-    this.storeTurn(sessionId, withClient);
+    await this.storeTurn(sessionId, withClient);
     this.recordTurn(sessionId, withClient);
     return withClient;
   }
@@ -119,6 +119,7 @@ export class MastraChatAgent implements ChatAgent {
         fitment: undefined,
       };
     }
+    await this.intentState.load(sessionId);
     return {
       currentIntent: this.intentState.get(sessionId),
       quoteWorkflow: this.intentState.getQuoteWorkflow(sessionId),
@@ -130,7 +131,7 @@ export class MastraChatAgent implements ChatAgent {
     };
   }
 
-  private storeTurn(sessionId: string | undefined, turn: PreparedTurn): void {
+  private async storeTurn(sessionId: string | undefined, turn: PreparedTurn): Promise<void> {
     if (sessionId === undefined) {
       return;
     }
@@ -146,6 +147,7 @@ export class MastraChatAgent implements ChatAgent {
     } else if (turn.clearFitment) {
       this.intentState.setFitment(sessionId, undefined);
     }
+    await this.intentState.flush(sessionId);
   }
 
   private recordTurn(sessionId: string | undefined, turn: PreparedTurn): void {

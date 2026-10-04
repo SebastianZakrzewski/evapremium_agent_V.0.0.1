@@ -42,7 +42,8 @@ Każdy klucz musi być napisany tak samo jak na liście. Nie układasz własnego
 2. Cyfra generacji, słowo w rodzaju „ósemka” i zapis rzymski (VIII) wskazują tę samą generację, gdy lista taką pozycję ma.
 3. Gdy klient podał jedną generację i na liście jest jeden pasujący modelKey, zwróć ten jeden klucz.
 4. Gdy klient nie rozróżnił generacji, a na liście jest kilka generacji tego modelu, zwróć je wszystkie. Nie wybieraj generacji za klienta.
-5. Gdy żaden kandydat nie jest tym modelem, zwróć pustą tablicę.
+5. Gdy w wiadomości jest rok, a klient nie nazwał generacji, rok nie usuwa generacji z listy. Filtr lat jest poza tym krokiem.
+6. Gdy żaden kandydat nie jest tym modelem, zwróć pustą tablicę.
 
 Najpierw porównaj. modelKeys jest wnioskiem i stoi na końcu odpowiedzi.
 
@@ -82,6 +83,8 @@ export function brandClassificationMessage(
 export function modelClassificationMessage(
   customerModel: string,
   modelKeys: string[],
+  year?: number,
 ): string {
-  return `model klienta: ${customerModel}\nkandydaci:\n${modelKeys.map((key) => `- ${key}`).join('\n')}`;
+  const yearLine = typeof year === 'number' ? `\nrok klienta: ${year}` : '';
+  return `model klienta: ${customerModel}${yearLine}\nkandydaci:\n${modelKeys.map((key) => `- ${key}`).join('\n')}`;
 }

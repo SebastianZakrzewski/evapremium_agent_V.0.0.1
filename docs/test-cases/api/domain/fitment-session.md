@@ -4,9 +4,9 @@ Kod: `tests/api/domain/fitment-session.spec.ts`
 Wznowienie tury: `tests/api/mastra/intents/prepare-intent-turn.spec.ts`  
 Zapis ze sklepu: `tests/api/agent-events/agent-events.spec.ts`
 
-Logika zestawu: dopasowanie czeka na markę, model, rok i typ nadwozia. Krótka
-odpowiedź uzupełnia następny brakujący slot. Kaskada rusza dopiero przy
-komplecie. Nowe pytanie zamyka snapshot.
+Logika zestawu: dopasowanie filtruje od marki i modelu. Pyta o rok albo
+nadwozie tylko wtedy, gdy te pola jeszcze rozdzielają szablony albo wyzerowały
+wynik. Krótka odpowiedź uzupełnia dopytywany slot. Nowe pytanie zamyka snapshot.
 
 | id | Krytyczność | Tytuł |
 | --- | --- | --- |
@@ -54,7 +54,7 @@ komplecie. Nowe pytanie zamyka snapshot.
 
 ### fitment-007 — Krok kaskady wstrzymuje się na nadwoziu
 
-- **Kod:** `tests/api/domain/fitment-session.spec.ts` → `it('suspends the cascade until a body reply narrows it to one template')`
+- **Kod:** `tests/api/domain/fitment-session.spec.ts` → `it('resolves one template once the remaining body is known')`
 - **Krytyczność:** high
 - **Logika:** pierwszy strzał `vw` / `golf 8` zostawia dwa nadwozia; `hatcback` domyka do hatchbacka.
 - **Wejście:** fixture kaskady, potem `hatcback`
@@ -66,7 +66,7 @@ komplecie. Nowe pytanie zamyka snapshot.
 - **Krytyczność:** high
 - **Logika:** kompletna akcja dopasowania woła filtr w workflow i czeka na nadwozie.
 - **Wejście:** `Chcę dopasować dywaniki do VW Golf 8` na fixture
-- **Wyjście:** `workflow: fitment_cascade`, puste toole, nota `Brakuje rocznika`
+- **Wyjście:** `workflow: fitment_cascade`, puste toole, nota `Brakuje typu nadwozia` z `hatchback` i `wagon`
 
 ### fitment-009 — Pytanie z autem otwiera kaskadę i trzyma markę na rocznik
 

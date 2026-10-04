@@ -1,6 +1,6 @@
 # Metryki hybrid retrieval — baza i cele
 
-Plan: `docs/exec-plans/active/context-leaf-hybrid-retrieval.md`.  
+Plan: `docs/exec-plans/completed/context-leaf-hybrid-retrieval.md`.  
 Złoto pytań: `api/src/domain/leaf-retrieval-dataset.ts`.
 
 Po wdrożeniu hybrid ranking porównanie jest do tego dokumentu i zrzutów JSON.

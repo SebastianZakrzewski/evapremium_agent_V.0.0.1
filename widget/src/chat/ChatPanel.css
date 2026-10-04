@@ -263,14 +263,19 @@ body {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
+.eva-chat__bubble--assistant:has(.eva-product-card) {
+  padding-bottom: 0;
+  overflow: hidden;
+}
+
 .eva-product-card {
   display: block;
-  width: 100%;
-  height: 220px;
-  margin-top: 10px;
+  width: calc(100% + 30px);
+  height: auto;
+  margin: 10px -15px 0;
   border: 0;
-  border-radius: 12px;
-  background: #fff;
+  border-radius: 0 0 16px 16px;
+  background: transparent;
 }
 
 .eva-msg__caret {

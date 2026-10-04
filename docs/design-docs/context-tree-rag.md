@@ -2,7 +2,7 @@
 
 Źródło prawdy granic: `ARCHITECTURE.md`. Ten dokument: jak ma działać
 wyszukiwanie liści po podobieństwie. Implementacja (slice’e):
-`docs/exec-plans/active/context-tree-rag.md`.
+`docs/exec-plans/completed/context-tree-rag.md`.
 
 To jest projekt **po MVP**. W kodzie nadal jest tylko lookup po slugu.
 Dopóki Slice 3 nie wejdzie, `ARCHITECTURE.md` i `core-beliefs.md` mówią

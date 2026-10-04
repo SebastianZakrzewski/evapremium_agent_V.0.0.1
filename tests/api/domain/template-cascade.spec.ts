@@ -327,6 +327,77 @@ describe('classified template cascade', () => {
     });
   });
 
+  it('uses the alias and does not call the classifier', async () => {
+    const classifier: VehicleKeyClassifier = {
+      classifyBrand: async () => {
+        throw new Error('brand classifier should not run');
+      },
+      classifyModel: async () => {
+        throw new Error('model classifier should not run');
+      },
+    };
+
+    const result = await resolveClassifiedTemplate(
+      { brand: 'vw', model: 'golf 8', bodyType: 'kombi', year: 2021 },
+      CASCADE_TEMPLATES,
+      CASCADE_ALIASES,
+      classifier,
+    );
+
+    expect(result).toMatchObject({
+      status: 'one',
+      template: { id: 'tmpl-golf-mk8-wagon' },
+    });
+  });
+
+  it('passes the year into model classification', async () => {
+    let seenYear: number | undefined;
+    const classifier: VehicleKeyClassifier = {
+      classifyBrand: async () => 'Volkswagen',
+      classifyModel: async (input) => {
+        seenYear = input.year;
+        return ['Golf(MK7) 7 gen'];
+      },
+    };
+
+    await resolveClassifiedTemplate(
+      { brand: 'Volwagen', model: 'golf', year: 2015 },
+      CASCADE_TEMPLATES,
+      CASCADE_ALIASES,
+      classifier,
+    );
+
+    expect(seenYear).toBe(2015);
+  });
+
+  it('retries the shortlist when the classified generation misses the year', async () => {
+    const result = await resolveClassifiedTemplate(
+      { brand: 'vw', model: 'golf', year: 2015 },
+      CASCADE_TEMPLATES,
+      CASCADE_ALIASES,
+      classifying('Volkswagen', ['Golf(MK8) 8 gen']),
+    );
+
+    expect(result.status).toBe('many');
+    if (result.status !== 'many') {
+      return;
+    }
+    expect(result.templates.map((template) => template.id).sort()).toEqual([
+      'tmpl-golf-mk7-hatch',
+      'tmpl-golf-mk7-wagon',
+    ]);
+  });
+
+  it('ranks a spelled generation above the other one', () => {
+    const listed = shortlistModelKeys(
+      CASCADE_TEMPLATES,
+      'Volkswagen',
+      'ósemka',
+    );
+
+    expect(listed[0]).toBe('Golf(MK8) 8 gen');
+  });
+
   it('returns none when trim matches two brand keys', async () => {
     const result = await resolveClassifiedTemplate(
       { brand: 'citroen', model: 'c4' },

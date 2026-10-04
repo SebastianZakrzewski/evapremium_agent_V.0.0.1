@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest';
 import type { ChatApi, ChatTurn, CreatedSession } from '@widget/chat/chat-api';
 import { ChatPanel } from '@widget/chat/ChatPanel';
+import { TURN_BUDGET_MESSAGE, TurnBudgetExceededError } from '@widget/chat/turn-budget';
 
 const opener: CreatedSession = {
   sessionId: 's1',
@@ -203,5 +204,44 @@ describe('ChatPanel', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Wyślij' }));
     const card = await screen.findByTitle('Karta produktu');
     expect(card).toHaveAttribute('src', 'https://shop.example/dywaniki?brand=audi');
+  });
+
+  it('stops the panel when the turn budget is spent', async () => {
+    const api = mockApi({ status: 'generated' });
+    api.postMessage = vi.fn(async () => {
+      throw new TurnBudgetExceededError();
+    });
+    render(<ChatPanel api={api} />);
+    expect(
+      await screen.findByRole('button', { name: 'Szablon pod markę i model?' }),
+    ).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Wiadomość'), {
+      target: { value: 'golf 8' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Wyślij' }));
+    expect(await screen.findByText(TURN_BUDGET_MESSAGE)).toBeInTheDocument();
+    expect(screen.getByLabelText('Wiadomość')).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Szablon pod markę i model?' })).toBeDisabled();
+    fireEvent.change(screen.getByLabelText('Wiadomość'), {
+      target: { value: 'jeszcze raz' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Wyślij' }));
+    expect(api.postMessage).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the composer editable after a network error', async () => {
+    const api = mockApi({ status: 'generated' });
+    api.postMessage = vi.fn(async () => {
+      throw new Error('network');
+    });
+    render(<ChatPanel api={api} />);
+    fireEvent.change(screen.getByLabelText('Wiadomość'), {
+      target: { value: 'golf 8' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Wyślij' }));
+    expect(
+      await screen.findByText('Nie udało się dokończyć tej odpowiedzi.'),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Wiadomość')).toBeEnabled();
   });
 });

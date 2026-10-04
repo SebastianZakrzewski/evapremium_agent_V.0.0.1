@@ -96,4 +96,4 @@ transkryptu, CTA do konfiguratora, zszycie z zamówieniem, eksperyment konwersji
 
 Zachowanie agenta: `docs/product-specs/mvp-obsluga-klienta.md`.
 Granice systemu: `ARCHITECTURE.md`.
-Plan wykonania: `docs/exec-plans/active/evapremium-agents-dashboard.md`.
+Plan wykonania: `docs/exec-plans/completed/evapremium-agents-dashboard.md`.

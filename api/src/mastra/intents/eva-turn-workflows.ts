@@ -89,19 +89,19 @@ async function advanceFitmentTurn(
   turn: PreparedTurn,
   cascade: FitmentCascadePort | undefined,
 ): Promise<PreparedTurn> {
-  const missing = advanceVehicleSlots({ slots: turn.entities }).missing;
-  if (missing !== undefined) {
-    return {
-      ...turn,
-      fitment: {
-        workflow: FITMENT_CASCADE_WORKFLOW,
-        step: 'waiting_for_vehicle',
-        missing,
-        slots: turn.entities,
-      },
-    };
-  }
   if (cascade === undefined) {
+    const missing = advanceVehicleSlots({ slots: turn.entities }).missing;
+    if (missing !== undefined) {
+      return {
+        ...turn,
+        fitment: {
+          workflow: FITMENT_CASCADE_WORKFLOW,
+          step: 'waiting_for_vehicle',
+          missing,
+          slots: turn.entities,
+        },
+      };
+    }
     return turn;
   }
   const slots = turn.entities;
@@ -110,6 +110,7 @@ async function advanceFitmentTurn(
       await advanceFitmentCascade({
         slots,
         resolve: (input) => cascade.resolve(input),
+        aliases: cascade.listAliases(),
       }),
     ),
     collectedSlots: slots,
@@ -167,8 +168,8 @@ async function resumeFitmentTurn(
   message: string,
   cascade?: FitmentCascadePort,
 ): Promise<PreparedTurn> {
-  const collected = advanceVehicleSlots({ slots: snapshot.slots, message });
-  if (collected.missing !== undefined || cascade === undefined) {
+  if (cascade === undefined) {
+    const collected = advanceVehicleSlots({ slots: snapshot.slots, message });
     return turnFromCascade({
       status: 'suspended',
       snapshot: {
@@ -176,18 +177,34 @@ async function resumeFitmentTurn(
         step: 'waiting_for_vehicle',
         missing: collected.missing ?? snapshot.missing,
         slots: collected.slots,
+        options: snapshot.options,
       },
     });
   }
+  const advance = await advanceFitmentCascade({
+    slots: snapshot.slots,
+    message,
+    asked: snapshot.missing,
+    resolve: (input) => cascade.resolve(input),
+    aliases: cascade.listAliases(),
+  });
   return {
-    ...turnFromCascade(
-      await advanceFitmentCascade({
-        slots: collected.slots,
-        resolve: (input) => cascade.resolve(input),
-      }),
-    ),
-    collectedSlots: collected.slots,
+    ...turnFromCascade(advance),
+    collectedSlots: advance.status === 'ready' ? advanceSlots(snapshot, message, cascade) : undefined,
   };
+}
+
+function advanceSlots(
+  snapshot: FitmentSnapshot,
+  message: string,
+  cascade: FitmentCascadePort,
+): FitmentSnapshot['slots'] {
+  return advanceVehicleSlots({
+    slots: snapshot.slots,
+    message,
+    asked: snapshot.missing,
+    aliases: cascade.listAliases(),
+  }).slots;
 }
 
 function verifiedProductFromCascade(advance: FitmentCascadeAdvance) {
@@ -199,7 +216,10 @@ function verifiedProductFromCascade(advance: FitmentCascadeAdvance) {
 
 function cascadeFact(advance: FitmentCascadeAdvance): string {
   if (advance.status === 'suspended') {
-    return `Brakuje ${missingSlotLabel(advance.snapshot.missing)}.${knownVehicleFact(advance.snapshot.slots)} Zapytaj tylko o brakujące. Nie wołaj resolve-template.`;
+    const options = advance.snapshot.options?.length
+      ? ` Do wyboru: ${advance.snapshot.options.join(', ')}.`
+      : '';
+    return `Brakuje ${missingSlotLabel(advance.snapshot.missing)}.${options}${knownVehicleFact(advance.snapshot.slots)} Zapytaj tylko o brakujące. Nie wołaj resolve-template.`;
   }
   const result = advance.result;
   if (result.status === 'none') {
@@ -209,7 +229,15 @@ function cascadeFact(advance: FitmentCascadeAdvance): string {
     const template = result.template;
     return `Kaskada: one. recordKey=${template.recordKey}, brand=${template.brandKey}, model=${template.modelKey}, body=${template.bodyTypeKey ?? ''}. Nie wołaj resolve-template.`;
   }
-  return `Kaskada: many (${result.templates.length}). Nie wołaj resolve-template.`;
+  const models = [...new Set(result.templates.map((template) => template.modelKey))].sort();
+  const bodies = [
+    ...new Set(
+      result.templates
+        .map((template) => template.bodyTypeKey)
+        .filter((key): key is string => Boolean(key)),
+    ),
+  ].sort();
+  return `Kaskada: many (${result.templates.length}). Modele: ${models.join(', ')}. Nadwozia: ${bodies.join(', ')}. Nie wołaj resolve-template.`;
 }
 
 function turnFromCascade(advance: FitmentCascadeAdvance): PreparedTurn {

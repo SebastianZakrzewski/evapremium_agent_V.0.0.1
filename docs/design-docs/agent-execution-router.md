@@ -3,7 +3,7 @@
 Źródło prawdy granic: `ARCHITECTURE.md`. Przepływ intencji (profil, krawędzie):
 `docs/design-docs/intent-workflow.md`. Retrieval liścia:
 `docs/design-docs/context-leaf-hybrid-retrieval.md`.
-Plan: `docs/exec-plans/active/agent-execution-router.md`.
+Plan: `docs/exec-plans/completed/agent-execution-router.md`.
 
 ## Cel
 
@@ -61,10 +61,12 @@ Czysta funkcja `chooseExecution` po kwalifikacji:
 `fitment_cascade` także przy `mode = knowledge`. Pytanie „czy macie / czy pasują
 dywaniki do tego auta” nie zostaje na `resolve-template`. Bez auta zostaje FAQ
 (`lookup-leaf`, `search-leaves`). `indicative_quote` w `action` wymaga marki,
-modelu, roku i typu nadwozia. Brak któregokolwiek pola uruchamia workflow
-(`fitment_cascade` albo `quote_vehicle`). Agent pyta o następny brakujący slot. Krótka odpowiedź
-uzupełnia go bez nowej kwalifikacji. Kaskada i wycena ruszają dopiero przy
-komplecie czterech pól.
+modelu, roku i typu nadwozia. Brak któregokolwiek pola uruchamia `quote_vehicle`.
+`fitment_cascade` filtruje, gdy są marka i model. Dalsze pytanie dotyczy tylko
+pola, które jeszcze rozdziela szablony, albo pola, które wyzerowało wynik.
+Krótka odpowiedź uzupełnia dopytywany slot bez nowej kwalifikacji i może
+dopisać rok oraz nadwozie z tego samego zdania. Wycena rusza przy komplecie
+czterech pól.
 
 `indicative_quote`: po komplecie `directTool = quote-vehicle`. Agent widzi jedną operację.
 `resolve-template` i `quote-price` zostają w Neście. `composeQuoteVehicle`

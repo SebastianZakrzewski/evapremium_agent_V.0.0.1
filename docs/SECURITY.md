@@ -24,6 +24,15 @@ publiczny odpowiednik w `authorized_keys`. Nie commituj klucza prywatnego.
 - To ogranicza obce strony w przeglądarce; nie jest to silne uwierzytelnienie.
 - Transkrypt czatu: nie logować treści wiadomości. Tura intencji: `sessionId`,
   current/candidate/accepted, tool-e (`[intent-turn]` na stdout).
+- Budżet tur: `CHAT_BUDGET_IP_SALT` tylko na serwerze. Gość to SHA-256 z
+  adresu i soli. Surowe IP nie wchodzi do bazy, logu ani odpowiedzi.
+  Adres bierze `req.ip` przy `trust proxy` = 1. Kontroler nie czyta
+  `X-Forwarded-For`. Progi: `CHAT_SESSION_TURN_LIMIT` (25),
+  `CHAT_IP_TURN_LIMIT` (40 na godzinę UTC), `CHAT_IP_SESSION_LIMIT`
+  (10 na godzinę UTC). `0` i wartość ujemna blokują start. Przy
+  `DATA_STORE` pusta sól blokuje start.
+- `eva_bot.session_agent_state` trzyma intencję i otwarty slot dopasowania
+  albo wyceny. Bez treści wiadomości.
 
 ## Mastra Studio (HTTP `/mastra`)
 

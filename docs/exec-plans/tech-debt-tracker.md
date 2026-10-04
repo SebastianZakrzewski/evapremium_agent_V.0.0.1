@@ -121,9 +121,10 @@ Slice 1–4 **nie dodają** świadomego długu poza TD-003/TD-005 (Jest bez
 
 - **Slice:** intent-workflow 4; domknięcie: pamięć in-process
 - **Stan:** zamknięte (egzekucja krawędzi)
-- **Aktualnie:** `acceptIntentTransition` + `InMemoryIntentSessionState`;
-  `ChatAgent.stream(message, sessionId)`. Fallback niskiej pewności omija
-  filtr. Stan ginie przy restarcie procesu (nie w `chat_sessions`).
+- **Aktualnie:** `acceptIntentTransition` + `IntentSessionState`.
+  Bez `DATA_STORE` stan jest w procesie. Przy Supabase
+  `SupabaseIntentSessionState` zapisuje intencję, wycenę i dopasowanie
+  w `eva_bot.session_agent_state` i wczytuje je na początku tury.
 
 ## TD-011 — DuckDB jako observability na VPS (nie ClickHouse)
 

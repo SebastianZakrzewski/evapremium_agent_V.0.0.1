@@ -11,6 +11,13 @@ import { DATA_STORE, SupabaseModule } from '../supabase/supabase.module';
 import { TemplateCascadeModule } from '../templates/template-cascade.module';
 import { TemplateCascadeService } from '../templates/template-cascade.service';
 import { CHAT_AGENT } from './chat-agent.port';
+import {
+  CHAT_TURN_BUDGET,
+  InMemoryChatTurnBudget,
+  SupabaseChatTurnBudget,
+  turnBudgetLimitsFromEnv,
+  type ChatTurnBudget,
+} from './session-turn-budget';
 import { ChatController } from './chat.controller';
 import { ChatService } from './chat.service';
 import { CHAT_SESSIONS, InMemoryChatSessions } from './chat-session';
@@ -40,6 +47,7 @@ import {
   InMemoryIntentSessionState,
   type IntentSessionState,
 } from '../mastra/intents/intent-session-state';
+import { SupabaseIntentSessionState } from '../mastra/intents/supabase-intent-session-state';
 
 @Module({
   imports: [
@@ -80,10 +88,25 @@ import {
         store ? new SupabaseSessionClients(store) : new InMemorySessionClients(),
       inject: [DATA_STORE],
     },
+    {
+      provide: CHAT_TURN_BUDGET,
+      useFactory: (store: DataStore | undefined): ChatTurnBudget =>
+        store
+          ? new SupabaseChatTurnBudget(
+              store,
+              turnBudgetLimitsFromEnv(process.env, { requireSalt: true }),
+            )
+          : new InMemoryChatTurnBudget(turnBudgetLimitsFromEnv(process.env)),
+      inject: [DATA_STORE],
+    },
     ChatService,
     {
       provide: INTENT_SESSION_STATE,
-      useClass: InMemoryIntentSessionState,
+      useFactory: (store: DataStore | undefined): IntentSessionState =>
+        store
+          ? new SupabaseIntentSessionState(store)
+          : new InMemoryIntentSessionState(),
+      inject: [DATA_STORE],
     },
     {
       provide: TURN_WORKFLOWS,

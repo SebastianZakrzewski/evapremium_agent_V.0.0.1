@@ -1,6 +1,7 @@
 # Pamięć intencji sesji i filtr krawędzi
 
-Kod: `tests/api/mastra/intents/accept-intent-transition.spec.ts`
+Kod: `tests/api/mastra/intents/accept-intent-transition.spec.ts`,
+`tests/api/mastra/intents/session-agent-state.spec.ts`
 
 Logika zestawu: `acceptIntentTransition` przepuszcza kandydata tylko gdy
 krawędź jest dozwolona; `InMemoryIntentSessionState` trzyma temat rozmowy;
@@ -16,6 +17,7 @@ wymuszone `out_of_scope` (niska pewność) omija filtr.
 | memory-006 | high | Pewny out_of_scope przy FAQ nie otwiera ceny |
 | memory-007 | medium | Sesje nie dzielą stanu |
 | memory-008 | high | Niska pewność i tak → out_of_scope |
+| memory-009 | high | Stan intencji przeżywa nową instancję |
 
 ### memory-001 — Brak stanu → przyjmij kandydata
 
@@ -80,3 +82,12 @@ wymuszone `out_of_scope` (niska pewność) omija filtr.
 - **Logika:** Fallback Slice 4 nie jest blokowany grafem.
 - **Wejście:** `currentIntent: product_info`, dwa wyniki 0.1 / 0.2
 - **Wyjście:** `out_of_scope`, `toolIds: []`
+
+### memory-009 — Stan intencji przeżywa nową instancję
+
+- **Kod:** `tests/api/mastra/intents/session-agent-state.spec.ts` → `it('reloads intent after a new adapter and keeps it when fitment is cleared')`
+- **Krytyczność:** high
+- **Logika:** po restarcie procesu Nest wczytuje intencję i otwarty slot z `session_agent_state`. Czyszczenie dopasowania nie rusza intencji. Treść wiadomości nie wchodzi do wiersza.
+- **Wejście:** `pricing`, snapshot wyceny i dopasowania z brakującym rokiem; druga instancja czyści fitment
+- **Wyjście:** trzecia instancja ma `pricing` i markę z wyceny, bez fitmentu
+

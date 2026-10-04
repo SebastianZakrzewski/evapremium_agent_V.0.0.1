@@ -1,4 +1,6 @@
 import { motion } from 'motion/react';
+import { useEffect, useRef } from 'react';
+import { readCardSizeMessage } from './card-size';
 import { TypingDots } from './TypingDots';
 
 type MessageBubbleProps = {
@@ -10,6 +12,41 @@ type MessageBubbleProps = {
   showAvatar: boolean;
   cardSrc?: string;
 };
+
+function ProductCardFrame({ src }: { src: string }) {
+  const frameRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    const frame = frameRef.current;
+    if (!frame) {
+      return undefined;
+    }
+
+    const onMessage = (event: MessageEvent) => {
+      if (event.source !== frame.contentWindow) {
+        return;
+      }
+      const height = readCardSizeMessage(event.data);
+      if (height === null) {
+        return;
+      }
+      frame.style.height = `${height}px`;
+    };
+
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, [src]);
+
+  return (
+    <iframe
+      ref={frameRef}
+      className="eva-product-card"
+      src={src}
+      title="Karta produktu"
+      loading="eager"
+    />
+  );
+}
 
 export function MessageBubble({ role, text, pending, showAvatar, cardSrc }: MessageBubbleProps) {
   const fromUser = role === 'user';
@@ -32,9 +69,7 @@ export function MessageBubble({ role, text, pending, showAvatar, cardSrc }: Mess
         ) : (
           <>
             {text}
-            {cardSrc ? (
-              <iframe className="eva-product-card" src={cardSrc} title="Karta produktu" />
-            ) : null}
+            {cardSrc ? <ProductCardFrame src={cardSrc} /> : null}
             {pending ? <span className="eva-msg__caret" aria-hidden="true" /> : null}
           </>
         )}

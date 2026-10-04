@@ -121,11 +121,13 @@ jeden `evaShopAgent` (Editor włączony). `MastraChatAgent` woła
 klucz `intent` interpoluje prompt-blocki (`{{intent}}`, display conditions).
 HTTP SSE bez zmiany. Nieznane id toola = błąd testu, nie cichy drop.
 
-Sesja HTTP trzyma bieżący `ShopIntent` w `IntentSessionState` (Map w
-procesie). `prepareIntentTurn(..., { currentIntent })` po fallbacku woła
+Sesja HTTP trzyma bieżący `ShopIntent` w `IntentSessionState`. Bez
+`DATA_STORE` to mapa w procesie. Przy Supabase Nest zapisuje intencję,
+otwartą wycenę i otwarte dopasowanie w `eva_bot.session_agent_state` i
+wczytuje je na początku następnej tury, także po restarcie procesu.
+`prepareIntentTurn(..., { currentIntent })` po fallbacku woła
 `acceptIntentTransition`. Wymuszony `out_of_scope` (niska pewność / błąd
-qualify) omija filtr krawędzi. Stan nie jest w Supabase — restart API go
-zeruje.
+qualify) omija filtr krawędzi. Treść wiadomości nie wchodzi do tej tabeli.
 
 ## Poza tym projektem
 

@@ -40,6 +40,7 @@ export type BrandClassificationInput = {
 export type ModelClassificationInput = {
   customerModel: string;
   modelKeys: string[];
+  year?: number;
 };
 
 export type VehicleKeyClassifier = {
@@ -262,6 +263,7 @@ export function shortlistModelKeys(
   brandKey: string,
   customerModel: string,
   limit = MODEL_KEY_SHORTLIST_LIMIT,
+  year?: number,
 ): string[] {
   const models = [
     ...new Set(
@@ -270,9 +272,22 @@ export function shortlistModelKeys(
         .map((template) => template.modelKey),
     ),
   ];
+  const scoreFor = (key: string) => {
+    const text = modelSimilarity(key, customerModel);
+    const inYear =
+      year !== undefined &&
+      templates.some(
+        (template) =>
+          template.isActive &&
+          template.brandKey === brandKey &&
+          template.modelKey === key &&
+          matchesYear(template, year),
+      );
+    return text + (inYear ? 3_000 : 0);
+  };
   return models
     .sort((left, right) => {
-      const score = modelSimilarity(right, customerModel) - modelSimilarity(left, customerModel);
+      const score = scoreFor(right) - scoreFor(left);
       if (score !== 0) {
         return score;
       }
@@ -281,8 +296,60 @@ export function shortlistModelKeys(
     .slice(0, limit);
 }
 
+const GENERATION_FORMS: Readonly<Record<string, readonly string[]>> = {
+  '1': ['1', 'mk1'],
+  '2': ['2', 'ii', 'mk2'],
+  '3': ['3', 'iii', 'mk3'],
+  '4': ['4', 'iv', 'mk4'],
+  '5': ['5', 'mk5'],
+  '6': ['6', 'vi', 'mk6'],
+  '7': ['7', 'vii', 'mk7', 'siodemka', 'siódemka'],
+  '8': ['8', 'viii', 'mk8', 'osemka', 'ósemka'],
+  '9': ['9', 'ix', 'mk9'],
+};
+
 function compactKey(value: string): string {
-  return collapseWhitespace(value).replace(/[^a-z0-9]+/g, '');
+  return collapseWhitespace(value)
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .replace(/[^a-z0-9]+/g, '');
+}
+
+function generationDigits(value: string): Set<string> {
+  const tokens = new Set(collapseWhitespace(value).split(' ').filter((token) => token.length > 0));
+  const compact = compactKey(value);
+  const found = new Set<string>();
+  for (const [digit, forms] of Object.entries(GENERATION_FORMS)) {
+    for (const form of forms) {
+      const needle = compactKey(form);
+      if (needle.length === 0) {
+        continue;
+      }
+      const tokenHit = tokens.has(form) || tokens.has(needle);
+      const compactHit =
+        (form.startsWith('mk') || needle.length >= 5) && compact.includes(needle);
+      const digitHit =
+        needle.length === 1 && new RegExp(`(?:^|\\D)${needle}(?:\\D|$)`).test(compact);
+      if (tokenHit || compactHit || digitHit) {
+        found.add(digit);
+      }
+    }
+  }
+  return found;
+}
+
+function generationScore(candidate: string, query: string): number {
+  const left = generationDigits(candidate);
+  const right = generationDigits(query);
+  if (right.size === 0) {
+    return 0;
+  }
+  for (const digit of right) {
+    if (left.has(digit)) {
+      return 8_000;
+    }
+  }
+  return left.size > 0 ? -3_000 : 0;
 }
 
 function modelSimilarity(candidate: string, query: string): number {
@@ -311,6 +378,7 @@ function modelSimilarity(candidate: string, query: string): number {
   const distance = levenshtein(leftCompact, rightCompact);
   const span = Math.max(leftCompact.length, rightCompact.length, 1);
   score += Math.round((1 - distance / span) * 500);
+  score += generationScore(candidate, query);
   return score;
 }
 
@@ -370,7 +438,8 @@ export async function resolveClassifiedTemplate(
   classifier: VehicleKeyClassifier,
 ): Promise<TemplateCascadeResult> {
   const slots = normalizeSlots(input);
-  const bodyTypeKey = mapAliases({ bodyType: slots.bodyType }, aliases).bodyTypeKey;
+  const aliased = mapAliases(slots, aliases);
+  const bodyTypeKey = aliased.bodyTypeKey;
 
   if (!slots.brand || !slots.model) {
     if (!slots.recordKey) {
@@ -381,42 +450,70 @@ export async function resolveClassifiedTemplate(
     );
   }
 
-  const brandKeys = activeBrandKeys(templates);
-  if (brandKeys.length === 0) {
-    return { status: 'none' };
+  let brandKey = aliased.brandKey;
+  if (!brandKey) {
+    const brandKeys = activeBrandKeys(templates);
+    if (brandKeys.length === 0) {
+      return { status: 'none' };
+    }
+    const chosenBrand = await classifier.classifyBrand({
+      customerBrand: slots.brand,
+      brandKeys,
+    });
+    brandKey = chosenBrand
+      ? catalogKeyForChoice(chosenBrand, brandKeys)
+      : undefined;
   }
-  const chosenBrand = await classifier.classifyBrand({
-    customerBrand: slots.brand,
-    brandKeys,
-  });
-  const brandKey = chosenBrand
-    ? catalogKeyForChoice(chosenBrand, brandKeys)
-    : undefined;
   if (!brandKey) {
     return { status: 'none' };
   }
 
-  const modelCandidates = shortlistModelKeys(templates, brandKey, slots.model);
-  if (modelCandidates.length === 0) {
-    return { status: 'none' };
-  }
-  const chosenModels = keysOnList(
-    await classifier.classifyModel({
-      customerModel: slots.model,
-      modelKeys: modelCandidates,
-    }),
-    modelCandidates,
-  );
-  if (chosenModels.length === 0) {
-    return { status: 'none' };
+  const modelFromAlias = Boolean(aliased.modelKey);
+  let modelKeys: string[];
+  let modelCandidates: string[] = [];
+  if (aliased.modelKey) {
+    modelKeys = [aliased.modelKey];
+  } else {
+    modelCandidates = shortlistModelKeys(
+      templates,
+      brandKey,
+      slots.model,
+      MODEL_KEY_SHORTLIST_LIMIT,
+      slots.year,
+    );
+    if (modelCandidates.length === 0) {
+      return { status: 'none' };
+    }
+    modelKeys = keysOnList(
+      await classifier.classifyModel({
+        customerModel: slots.model,
+        modelKeys: modelCandidates,
+        year: slots.year,
+      }),
+      modelCandidates,
+    );
+    if (modelKeys.length === 0) {
+      return { status: 'none' };
+    }
   }
 
-  return toResult(
-    filterTemplates(
+  let matches = filterTemplates(
+    templates,
+    { brandKey, modelKeys, bodyTypeKey },
+    slots.recordKey,
+    slots.year,
+  );
+  if (
+    matches.length === 0 &&
+    !modelFromAlias &&
+    modelCandidates.length > modelKeys.length
+  ) {
+    matches = filterTemplates(
       templates,
-      { brandKey, modelKeys: chosenModels, bodyTypeKey },
+      { brandKey, modelKeys: modelCandidates, bodyTypeKey },
       slots.recordKey,
       slots.year,
-    ),
-  );
+    );
+  }
+  return toResult(matches);
 }

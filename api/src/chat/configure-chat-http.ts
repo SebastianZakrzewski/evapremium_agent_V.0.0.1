@@ -7,7 +7,9 @@ import {
 import { chatCorsOrigins } from './shop-cors';
 
 export function configureChatHttp(app: INestApplication): void {
-  app.getHttpAdapter().getInstance().set('query parser', parseMastraQueryString);
+  const expressApp = app.getHttpAdapter().getInstance();
+  expressApp.set('query parser', parseMastraQueryString);
+  expressApp.set('trust proxy', 1);
   app.enableCors({
     origin: [
       ...chatCorsOrigins(process.env.WIDGET_ORIGIN),
