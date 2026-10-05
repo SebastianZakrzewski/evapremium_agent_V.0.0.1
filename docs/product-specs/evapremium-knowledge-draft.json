@@ -181,6 +181,17 @@
           "agent_body": "Dywaniki dopasowujemy do konkretnej marki, modelu i wersji samochodu — nie są uniwersalne „na oko”. Obsługujemy bardzo szeroką bazę modeli; jeśli Twojego auta nie ma na liście, możemy pomóc przez zamówienie indywidualne."
         },
         {
+          "slug": "produkcja-indywidualna",
+          "title": "Produkcja pod auto",
+          "status": "approved",
+          "sources": ["EP", "CTX"],
+          "facts": [
+            "Każdy komplet powstaje indywidualnie pod konkretne auto.",
+            "Podstawą jest szablon dopasowany do marki, modelu i wersji, nie mata uniwersalna."
+          ],
+          "agent_body": "Tak. Każdy komplet dywaników EvaPremium powstaje indywidualnie pod konkretne auto — według szablonu dopasowanego do marki, modelu i wersji, a nie jako uniwersalna mata. Jeśli podasz markę, model i rok, sprawdzimy, czy mamy gotowy szablon."
+        },
+        {
           "slug": "pokrycie-podlogi",
           "title": "Pokrycie podłogi",
           "status": "context_only",
@@ -214,15 +225,13 @@
           "slug": "czyszczenie",
           "title": "Jak czyścić",
           "status": "approved",
-          "sources": ["EP", "CTX"],
+          "sources": ["EP"],
           "facts": [
-            "Wystarczy opłukać wodą lub przetrzeć wilgotną ściereczką.",
-            "Przy większych zabrudzeniach: delikatny detergent / miękka gąbka.",
-            "Można wytrząsnąć; mocne zabrudzenia — woda pod ciśnieniem.",
-            "Unikać agresywnej chemii.",
-            "Materiał szybko schnie."
+            "Wystarczy opłukać wodą lub przetrzeć wilgotną szmatką.",
+            "Przy większych zabrudzeniach: delikatny detergent.",
+            "Materiał EVA jest wodoodporny i szybko schnie."
           ],
-          "agent_body": "Czyszczenie jest proste: wytrząśnij dywanik, opłucz wodą lub przetrzyj wilgotną ściereczką. Przy większych zabrudzeniach użyj delikatnego detergentu. Unikaj agresywnej chemii — materiał EVA jest wodoodporny i szybko schnie."
+          "agent_body": "Dywaniki EVA są niezwykle łatwe w czyszczeniu. Wystarczy opłukać je wodą lub przetrzeć wilgotną szmatką. W przypadku większych zabrudzeń możesz użyć delikatnego detergentu. Materiał EVA jest wodoodporny i szybko schnie."
         },
         {
           "slug": "uzytkowanie-zima-lato",
@@ -393,6 +402,7 @@
     "czas-produkcji",
     "dostawa",
     "dopasowanie-model",
+    "produkcja-indywidualna",
     "3d-z-rantami",
     "3d-bez-rantow",
     "kolory",

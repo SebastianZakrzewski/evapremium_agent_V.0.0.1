@@ -1,0 +1,44 @@
+{
+  "version": "V.1",
+  "status": "implemented",
+  "implemented_at": "2026-10-05",
+  "note": "Wdrożone do eva_bot.context_nodes i context_node_embeddings na PROD. Agent wczytuje te liście po restarcie procesu. Ten plik nie jest źródłem runtime.",
+  "leaves": [
+    {
+      "slug": "otwory-mocowania",
+      "title": "Otwory pod oryginalne mocowania",
+      "parent_slug": "dopasowanie",
+      "sort_order": 42,
+      "is_active": true,
+      "body": "Tak. Dywaniki powstają indywidualnie według naszych autorskich szablonów. Szablon dla danej marki, modelu i wersji przygotowaliśmy na podstawie wcześniejszych pomiarów naszych specjalistów. W komplecie są otwory pod oryginalne mocowania z podłogi — takie, jakie są w aucie.",
+      "retrieval_text": "czy dywaniki mają otwory na oryginalne mocowania klipsy zaczepy miejsca mocowania jak w aucie fabryczne"
+    },
+    {
+      "slug": "przyczepnosc-eva",
+      "title": "Przyczepność pianki EVA",
+      "parent_slug": "material",
+      "sort_order": 25,
+      "is_active": true,
+      "body": "Nie. Pianka EVA nie jest śliska. Chropowata powierzchnia daje pewne oparcie stopie, także zimą, gdy temperatura spada i w aucie jest wilgotno. Dzięki temu dywaniki pozostają wygodne w użytkowaniu.",
+      "retrieval_text": "czy pianka EVA jest śliska przyczepność chropowata powierzchnia zima wilgoć nie ślizga się antypoślizg"
+    },
+    {
+      "slug": "mycie-karcher",
+      "title": "Mycie myjką ciśnieniową",
+      "parent_slug": "pielegnacja",
+      "sort_order": 52,
+      "is_active": true,
+      "body": "Tak. Dywaniki można myć myjką ciśnieniową, na przykład Karcherem. Pianka EVA jest odporna na chemię i środki czyszczące.",
+      "retrieval_text": "czy można myć karcherem myjka ciśnieniowa chemia środki czyszczące odporny na detergenty"
+    },
+    {
+      "slug": "zwrot-dywanikow",
+      "title": "Zwrot dywaników",
+      "parent_slug": "reklamacja",
+      "sort_order": 83,
+      "is_active": true,
+      "body": "Nie w ramach zwykłego zwrotu. Dywaniki z pianki EVA powstają na zamówienie, więc nie obejmuje ich standardowa polityka zwrotów. Nie przyjmujemy zwrotów z powodów estetycznych. Każdy klient ma gwarancję dopasowania do swojego pojazdu. Jeśli komplet albo którykolwiek dywanik nie pasuje, można zgłosić reklamację — wtedy na nasz koszt poprawiamy produkt i odsyłamy go do klienta.",
+      "retrieval_text": "czy mogę zwrócić dywaniki zwrot zamówienie na wymiar powody estetyczne gwarancja dopasowania reklamacja"
+    }
+  ]
+}
