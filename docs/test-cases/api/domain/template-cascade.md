@@ -29,6 +29,7 @@ listę kluczy z katalogu i stub w teście; filtr nadal nie ufa kluczowi spoza li
 | cascade-017 | high | Dwa klucze po trim → none |
 | cascade-018 | critical | Zdublowany wiersz tego samego auta → one |
 | cascade-019 | high | Duplikat nie chowa innego nadwozia |
+| cascade-020 | high | Spacje i wielkość liter w modelu nie dają many |
 
 ### cascade-001 — Normalizacja slotów
 
@@ -181,3 +182,11 @@ listę kluczy z katalogu i stub w teście; filtr nadal nie ufa kluczowi spoza li
 - **Logika:** zwijane są tylko kopie tego samego auta. Inne nadwozie zostaje osobnym szablonem.
 - **Wejście:** dwa wiersze Golf MK8 hatchback i jeden kombi, sloty `{ brand: 'vw', model: 'golf 8' }`
 - **Wyjście:** `status: 'many'`, id `tmpl-golf-mk8-hatch` i `tmpl-golf-mk8-wagon`
+
+### cascade-020 — Spacje i wielkość liter w modelu nie dają many
+
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('collapses model keys that differ only by spaces and letter case')`
+- **Krytyczność:** high
+- **Logika:** przed `one` albo `many` marka i model są porównywane bez białych znaków i małymi literami. Inna generacja zostaje osobnym szablonem.
+- **Wejście:** `Rav4 (XA30) 3 gen` i `Rav 4 (XA30) 3 gen`, rok 2005, SUV; osobno `Rav4 (XA20) 2 gen` z `Rav4 (XA30) 3 gen`
+- **Wyjście:** pierwsza para `one` z rekordem `rav4_xa30_3_gen`; para generacji `many`

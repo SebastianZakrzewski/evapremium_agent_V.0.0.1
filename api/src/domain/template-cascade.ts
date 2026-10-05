@@ -189,10 +189,14 @@ function filterTemplates(
   });
 }
 
+function normalizedIdentityPart(value: string): string {
+  return value.toLowerCase().replace(/\s+/g, '');
+}
+
 function vehicleIdentity(template: MatTemplate): string {
   return [
-    template.brandKey,
-    template.modelKey,
+    normalizedIdentityPart(template.brandKey),
+    normalizedIdentityPart(template.modelKey),
     template.dealerPricingCategoryKey,
     template.yearFrom ?? '',
     template.yearTo ?? '',

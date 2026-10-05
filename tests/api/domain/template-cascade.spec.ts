@@ -167,6 +167,80 @@ describe('template cascade', () => {
     });
   });
 
+  it('collapses model keys that differ only by spaces and letter case', () => {
+    const thirdGen: MatTemplate = {
+      id: 'tmpl-rav4-xa30',
+      recordKey: 'passenger_car|toyota|rav4_xa30_3_gen|2005-2012|suv|2550',
+      brandKey: 'Toyota ',
+      modelKey: 'Rav4 (XA30) 3 gen',
+      dealerPricingCategoryKey: 'passenger_car',
+      isActive: true,
+      yearFrom: 2005,
+      yearTo: 2012,
+      isOpenEnded: false,
+      bodyTypeKey: 'suv',
+      bodyType1Key: 'suv',
+      bodyType2Key: null,
+      bodyType3Key: null,
+      generation: '2005-2012',
+    };
+    const spaced: MatTemplate = {
+      ...thirdGen,
+      id: 'tmpl-rav-4-xa30',
+      recordKey: 'passenger_car|toyota|rav_4_xa30_3_gen|2005-2012|suv|2548',
+      modelKey: 'Rav 4 (XA30) 3 gen',
+    };
+    const secondGen: MatTemplate = {
+      ...thirdGen,
+      id: 'tmpl-rav4-xa20',
+      recordKey: 'passenger_car|toyota|rav4_xa20_2_gen|2000-2006|suv|2500',
+      modelKey: 'Rav4 (XA20) 2 gen',
+      yearFrom: 2000,
+      yearTo: 2006,
+      generation: '2000-2006',
+    };
+
+    const same = resolveTemplate(
+      { brand: 'toyota', year: 2005, bodyType: 'suv' },
+      [spaced, thirdGen],
+      [
+        {
+          slotKind: 'brand',
+          aliasNormalized: 'toyota',
+          canonicalKey: 'Toyota ',
+          brandKey: null,
+        },
+        {
+          slotKind: 'body_type',
+          aliasNormalized: 'suv',
+          canonicalKey: 'suv',
+          brandKey: null,
+        },
+      ],
+    );
+    const generations = resolveTemplate(
+      { brand: 'toyota', year: 2005, bodyType: 'suv' },
+      [secondGen, thirdGen],
+      [
+        {
+          slotKind: 'brand',
+          aliasNormalized: 'toyota',
+          canonicalKey: 'Toyota ',
+          brandKey: null,
+        },
+        {
+          slotKind: 'body_type',
+          aliasNormalized: 'suv',
+          canonicalKey: 'suv',
+          brandKey: null,
+        },
+      ],
+    );
+
+    expect(same).toEqual({ status: 'one', template: thirdGen });
+    expect(generations.status).toBe('many');
+  });
+
   it('keeps distinct vehicles when only one of them is duplicated', () => {
     const hatch = CASCADE_TEMPLATES.find((row) => row.id === 'tmpl-golf-mk8-hatch');
     const wagon = CASCADE_TEMPLATES.find((row) => row.id === 'tmpl-golf-mk8-wagon');
