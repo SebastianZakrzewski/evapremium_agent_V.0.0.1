@@ -149,6 +149,24 @@ describe('fitment session', () => {
     });
   });
 
+  it('reports a generation that matches none of the templates', async () => {
+    const result = await advanceFitmentCascade({
+      slots: { car_brand: 'vw', car_model: 'golf', year: 2019, generation: '4 gen' },
+      resolve,
+      aliases: CASCADE_ALIASES,
+    });
+
+    expect(result).toMatchObject({
+      status: 'suspended',
+      snapshot: {
+        missing: 'generation',
+        options: ['7 gen', '8 gen'],
+        slots: { car_brand: 'vw', car_model: 'golf', year: 2019 },
+        mismatches: [{ slot: 'generation', value: '4 gen' }],
+      },
+    });
+  });
+
   it('asks for generation when the year overlaps two ranges and keeps the model', async () => {
     const waiting = await advanceFitmentCascade({
       slots: { car_brand: 'vw', car_model: 'golf', year: 2019 },
@@ -214,19 +232,20 @@ describe('fitment session', () => {
       },
     });
   });
-  it('asks again for year when the given year matches nothing', async () => {
-    const waiting = await advanceFitmentCascade({
+  it('reports a year that matches nothing for the variant', async () => {
+    const ready = await advanceFitmentCascade({
       slots: { car_brand: 'vw', car_model: 'golf 8', year: 2005 },
       resolve,
       aliases: CASCADE_ALIASES,
     });
 
-    expect(waiting).toMatchObject({
+    expect(ready).toMatchObject({
       status: 'suspended',
       snapshot: {
         missing: 'year',
         options: ['2019+'],
         slots: { car_brand: 'vw', car_model: 'golf 8' },
+        mismatches: [{ slot: 'year', value: '2005' }],
       },
     });
   });

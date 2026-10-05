@@ -86,7 +86,19 @@ export type MatTemplate = {
   generation?: string;
 };
 
+/** Fakt klienta, którego nie ma w szablonach wskazanego wariantu. */
+export type SlotMismatch = {
+  slot: 'car_brand' | 'car_model' | 'year' | 'body_type' | 'generation';
+  value: string;
+};
+
 export type TemplateCascadeResult =
-  | { status: 'none'; bodyTypeKey?: string; droppedBrand?: true; droppedModel?: true }
+  | {
+      status: 'none';
+      mismatches?: SlotMismatch[];
+      bodyTypeKey?: string;
+      droppedBrand?: true;
+      droppedModel?: true;
+    }
   | { status: 'one'; template: MatTemplate; bodyTypeKey?: string; droppedBrand?: true; droppedModel?: true }
   | { status: 'many'; templates: MatTemplate[]; bodyTypeKey?: string; droppedBrand?: true; droppedModel?: true };

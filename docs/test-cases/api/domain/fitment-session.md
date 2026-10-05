@@ -24,6 +24,9 @@ zakres. Krótka odpowiedź uzupełnia dopytywany slot. Nowe pytanie zamyka snaps
 | fitment-011 | high | Jednoznaczny rocznik pomija generację |
 | fitment-012 | high | Odpowiedź na markę niesie model i rocznik |
 | fitment-013 | high | Odpowiedź na rok niesie nadwozie i zamyka kaskadę |
+| fitment-014 | high | Zła generacja zostawia dopasowanie na tym pytaniu |
+| fitment-015 | critical | Zły rocznik zostawia dopasowanie i każe dopytać |
+| fitment-016 | high | Rocznik poza zakresem wraca do pytania o rok |
 
 ### fitment-001 — `many` z dwoma nadwoziami zapisuje markę i model
 
@@ -120,6 +123,30 @@ zakres. Krótka odpowiedź uzupełnia dopytywany slot. Nowe pytanie zamyka snaps
 - **Logika:** przy pytaniu o rok zdanie z rokiem i nadwoziem uzupełnia oba sloty i schodzi do jednego szablonu.
 - **Wejście:** `vw` / `golf 8`, pytanie o rok, wiadomość `2019 kombi`
 - **Wyjście:** `status: ready`, szablon `tmpl-golf-mk8-wagon`
+
+### fitment-014 — Zła generacja zostawia dopasowanie na tym pytaniu
+
+- **Kod:** `tests/api/domain/fitment-session.spec.ts` → `it('reports a generation that matches none of the templates')`
+- **Krytyczność:** high
+- **Logika:** generacja spoza szablonów rocznika nie kasuje marki, modelu ani roku. Kaskada zostaje na pytaniu o generację i niesie brak podanej wartości.
+- **Wejście:** `vw` / `golf` / `2019` / generacja `4 gen`
+- **Wyjście:** `suspended`, brakuje `generation`, opcje `7 gen` i `8 gen`, sloty bez generacji, brak `generation=4 gen`
+
+### fitment-016 — Rocznik poza zakresem wraca do pytania o rok
+
+- **Kod:** `tests/api/domain/fitment-session.spec.ts` → `it('reports a year that matches nothing for the variant')`
+- **Krytyczność:** high
+- **Logika:** rok poza zakresem modelu czyści tylko ten slot. Marka i model zostają, a pytanie wraca do rocznika z zakresami katalogu.
+- **Wejście:** `vw` / `golf 8` / `2005`
+- **Wyjście:** `suspended`, brakuje `year`, opcja `2019+`, sloty `vw` / `golf 8`, brak `year=2005`
+
+### fitment-015 — Zły rocznik zostawia dopasowanie i każe dopytać
+
+- **Kod:** `tests/api/mastra/intents/prepare-intent-turn.spec.ts` → `it('tells the model when the given year is absent for the variant')`
+- **Krytyczność:** critical
+- **Logika:** nota mówi o braku rocznika i każe zapytać o niego ponownie. Workflow dopasowania zostaje otwarty na tym slocie.
+- **Wejście:** snapshot `vw` / `golf 8`, wiadomość `1990`
+- **Wyjście:** `fitment.missing = year`, sloty bez roku, nota zawiera brak rocznika 1990, `Brakuje rocznika.` i `2019+`
 
 ### fitment-006 — Narzędzie zapisuje snapshot w sesji tury
 

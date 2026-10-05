@@ -2,6 +2,8 @@ import { mapAliases, normalizeSlots } from './alias-map';
 import type {
   MappedKeys,
   MatTemplate,
+  NormalizedSlots,
+  SlotMismatch,
   TemplateCascadeInput,
   TemplateCascadeResult,
   VehicleSlotAlias,
@@ -114,7 +116,44 @@ export function toResult(
   return { status: 'many', templates: unique, ...classified };
 }
 
-/** Jednoznaczne klucze z aliasów. Bez dopasowania i bez recordKey zwraca `none`. */
+/**
+ * Rok i nadwozie, które odpadają ze szablonów już wskazanego wariantu.
+ * Pusty `identified` nie jest tu brakiem roku — to brak samego wariantu.
+ */
+export function constraintMismatches(
+  slots: NormalizedSlots,
+  identified: MatTemplate[],
+  bodyTypeKey?: string,
+): SlotMismatch[] {
+  if (identified.length === 0) {
+    return [];
+  }
+  const mismatches: SlotMismatch[] = [];
+  const yearMiss =
+    slots.year !== undefined &&
+    !identified.some((template) => matchesYear(template, slots.year as number));
+  if (yearMiss && slots.year !== undefined) {
+    mismatches.push({ slot: 'year', value: String(slots.year) });
+  }
+  if (!slots.bodyType) {
+    return mismatches;
+  }
+  const bodyPool = yearMiss
+    ? identified
+    : identified.filter(
+        (template) =>
+          slots.year === undefined || matchesYear(template, slots.year),
+      );
+  const bodyFits = Boolean(
+    bodyTypeKey && bodyPool.some((template) => matchesBodyType(template, bodyTypeKey)),
+  );
+  if (!bodyFits) {
+    mismatches.push({ slot: 'body_type', value: slots.bodyType });
+  }
+  return mismatches;
+}
+
+/** Jednoznaczne klucze z aliasów. Fakt spoza katalogu zwraca `none` z listą braków. */
 export function resolveTemplate(
   input: TemplateCascadeInput,
   templates: MatTemplate[],
@@ -130,7 +169,24 @@ export function resolveTemplate(
     return { status: 'none' };
   }
 
-  return toResult(
-    filterTemplates(templates, keys, slots.recordKey, slots.year),
+  const identified = filterTemplates(
+    templates,
+    { brandKey: keys.brandKey, modelKey: keys.modelKey },
+    slots.recordKey,
   );
+  if (slots.bodyType && !keys.bodyTypeKey) {
+    const mismatches = constraintMismatches(slots, identified, undefined);
+    if (!mismatches.some((mismatch) => mismatch.slot === 'body_type')) {
+      mismatches.push({ slot: 'body_type', value: slots.bodyType });
+    }
+    return { status: 'none', mismatches };
+  }
+  const matched = filterTemplates(templates, keys, slots.recordKey, slots.year);
+  if (matched.length === 0) {
+    const mismatches = constraintMismatches(slots, identified, keys.bodyTypeKey);
+    if (mismatches.length > 0) {
+      return { status: 'none', mismatches };
+    }
+  }
+  return toResult(matched);
 }

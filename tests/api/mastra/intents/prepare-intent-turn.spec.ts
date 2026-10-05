@@ -142,6 +142,48 @@ describe('prepareIntentTurn', () => {
     expect(turn.fitment?.missing).toBe('body_type');
   });
 
+  it('tells the model when the given year is absent for the variant', async () => {
+    const fitment: FitmentSnapshot = {
+      workflow: 'fitment_cascade',
+      step: 'waiting_for_vehicle',
+      missing: 'year',
+      slots: { car_brand: 'vw', car_model: 'golf 8' },
+    };
+    const turn = await prepareIntentTurn(
+      {
+        qualify: async () => {
+          throw new Error('should not qualify');
+        },
+      },
+      '1990',
+      {
+        fitment,
+        cascade: {
+          resolve: (input) =>
+            Promise.resolve(
+              resolveTemplate(input, CASCADE_TEMPLATES, CASCADE_ALIASES),
+            ),
+          listAliases: () => CASCADE_ALIASES,
+        },
+      },
+    );
+
+    expect(turn.clearFitment).toBeUndefined();
+    expect(turn.fitment?.missing).toBe('year');
+    expect(turn.fitment?.slots).toEqual({ car_brand: 'vw', car_model: 'golf 8' });
+    expect(turn.execution).toEqual({
+      kind: 'workflow',
+      workflow: 'fitment_cascade',
+    });
+    expect(turn.executionNote).toContain(
+      'Rocznik 1990 nie występuje dla tego wariantu.',
+    );
+    expect(turn.executionNote).toContain('Nie podstawiaj innego auta.');
+    expect(turn.executionNote).toContain('Brakuje rocznika.');
+    expect(turn.executionNote).toContain('2019+');
+    expect(turn.executionNote).not.toContain('C-klasa');
+  });
+
   it('resumes a saved fitment with the body reply and does not requalify', async () => {
     const fitment: FitmentSnapshot = {
       workflow: 'fitment_cascade',

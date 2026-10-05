@@ -423,7 +423,11 @@ describe('classified template cascade', () => {
       },
     );
 
-    expect(result).toEqual({ status: 'none', droppedBrand: true });
+    expect(result).toEqual({
+      status: 'none',
+      droppedBrand: true,
+      mismatches: [{ slot: 'car_brand', value: 'nieznana' }],
+    });
   });
 
   it('keeps every generation the classifier returns', async () => {
@@ -531,6 +535,77 @@ describe('classified template cascade', () => {
     expect(seenYear).toBe(2015);
   });
 
+  it('reports a year outside the chosen model instead of a nearby model', async () => {
+    const cla: MatTemplate = {
+      id: 'tmpl-cla',
+      recordKey: 'cla',
+      brandKey: 'Mercedes-Benz',
+      modelKey: 'CLA 1 gen (C117)',
+      dealerPricingCategoryKey: 'passenger_car',
+      isActive: true,
+      yearFrom: 2013,
+      yearTo: 2019,
+      isOpenEnded: false,
+      bodyTypeKey: 'sedan',
+      bodyType1Key: 'sedan',
+      bodyType2Key: null,
+      bodyType3Key: null,
+      generation: '2013-2019',
+    };
+    const cClass: MatTemplate = {
+      ...cla,
+      id: 'tmpl-c-class',
+      recordKey: 'c-class',
+      modelKey: 'C-klasa 3 gen (W204)',
+      yearFrom: 2006,
+      yearTo: 2015,
+      generation: '2006-2015',
+    };
+
+    const result = await resolveClassifiedTemplate(
+      { brand: 'mercedes', model: 'cla', year: 2012 },
+      [cla, cClass],
+      [],
+      classifying('Mercedes-Benz', ['CLA 1 gen (C117)']),
+    );
+
+    expect(result).toEqual({
+      status: 'none',
+      mismatches: [{ slot: 'year', value: '2012' }],
+    });
+  });
+
+  it('reports a body type that is not on the variant', () => {
+    expect(
+      resolveTemplate(
+        { brand: 'vw', model: 'golf 8', bodyType: 'sedan', year: 1990 },
+        CASCADE_TEMPLATES,
+        CASCADE_ALIASES,
+      ),
+    ).toEqual({
+      status: 'none',
+      mismatches: [
+        { slot: 'year', value: '1990' },
+        { slot: 'body_type', value: 'sedan' },
+      ],
+    });
+  });
+
+  it('reports a model the classifier cannot place', async () => {
+    const result = await resolveClassifiedTemplate(
+      { brand: 'vw', model: 'panda' },
+      CASCADE_TEMPLATES,
+      CASCADE_ALIASES,
+      classifying('Volkswagen', []),
+    );
+
+    expect(result).toEqual({
+      status: 'none',
+      droppedModel: true,
+      mismatches: [{ slot: 'car_model', value: 'panda' }],
+    });
+  });
+
   it('retries the shortlist when the classified generation misses the year', async () => {
     const result = await resolveClassifiedTemplate(
       { brand: 'vw', model: 'golf', year: 2015 },
@@ -567,7 +642,11 @@ describe('classified template cascade', () => {
       classifying(' Citroen', ['C4']),
     );
 
-    expect(result).toEqual({ status: 'none' });
+    expect(result).toEqual({
+      status: 'none',
+      droppedBrand: true,
+      mismatches: [{ slot: 'car_brand', value: 'citroen' }],
+    });
   });
 });
 

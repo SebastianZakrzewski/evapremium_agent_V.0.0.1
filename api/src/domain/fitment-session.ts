@@ -12,6 +12,7 @@ import {
   mapAliases,
   normalizeSlots,
   type MatTemplate,
+  type SlotMismatch,
   type TemplateCascadeInput,
   type TemplateCascadeResult,
   type VehicleSlotAlias,
@@ -25,6 +26,7 @@ export type FitmentSnapshot = {
   missing: VehicleSlotKey;
   slots: RouterEntities;
   options?: string[];
+  mismatches?: SlotMismatch[];
 };
 
 export type FitmentCascadePort = {
@@ -83,6 +85,9 @@ export async function advanceFitmentCascade(input: {
     return waiting('car_brand', slots);
   }
   if (result.status === 'none') {
+    if (result.mismatches && result.mismatches.length > 0) {
+      return holdAtMismatch(slots, result.mismatches, input.resolve);
+    }
     const recovered = await recoverEmpty(slots, input.resolve);
     if (recovered) {
       return recovered;
@@ -100,7 +105,13 @@ export async function advanceFitmentCascade(input: {
     input.classifyGeneration,
   );
   if (narrowed.kind === 'ask') {
-    return waiting('generation', clearSlot(slots, 'generation'), narrowed.options);
+    const rejected = slots.generation ?? '';
+    return waiting(
+      'generation',
+      clearSlot(slots, 'generation'),
+      narrowed.options,
+      [{ slot: 'generation', value: rejected }],
+    );
   }
   if (narrowed.kind === 'one') {
     return { status: 'ready', result: { status: 'one', template: narrowed.template } };
@@ -168,6 +179,53 @@ async function classifyGenerationAnswer(
   }
   slots.generation = chosen;
   return narrowByGeneration(templates, chosen);
+}
+
+const SLOT_ORDER: VehicleSlotKey[] = [
+  'car_brand',
+  'car_model',
+  'year',
+  'generation',
+  'body_type',
+];
+
+/** Zostawia wcześniejsze sloty i pyta ponownie o pierwszy fakt spoza katalogu. */
+async function holdAtMismatch(
+  slots: RouterEntities,
+  mismatches: SlotMismatch[],
+  resolve: FitmentCascadePort['resolve'],
+): Promise<FitmentCascadeAdvance> {
+  const checkpoint = SLOT_ORDER.find((slot) =>
+    mismatches.some((mismatch) => mismatch.slot === slot),
+  );
+  if (!checkpoint) {
+    return { status: 'ready', result: { status: 'none', mismatches } };
+  }
+  const checkpointIndex = SLOT_ORDER.indexOf(checkpoint);
+  let kept = slots;
+  for (const slot of SLOT_ORDER.slice(checkpointIndex)) {
+    if (mismatches.some((mismatch) => mismatch.slot === slot)) {
+      kept = clearSlot(kept, slot);
+    }
+  }
+  const retry = await resolve(cascadeInput(kept));
+  return waiting(checkpoint, kept, optionsFor(checkpoint, templatesOf(retry)), mismatches);
+}
+
+function optionsFor(slot: VehicleSlotKey, templates: MatTemplate[]): string[] {
+  if (slot === 'year') {
+    return yearOptions(templates);
+  }
+  if (slot === 'body_type') {
+    return bodyOptions(templates);
+  }
+  if (slot === 'generation') {
+    return generationOptions(templates);
+  }
+  if (slot === 'car_model') {
+    return unique(templates.map((template) => template.modelKey));
+  }
+  return unique(templates.map((template) => template.brandKey));
 }
 
 async function recoverEmpty(
@@ -375,6 +433,7 @@ function waiting(
   missing: VehicleSlotKey,
   slots: RouterEntities,
   options?: string[],
+  mismatches?: SlotMismatch[],
 ): FitmentCascadeAdvance {
   return {
     status: 'suspended',
@@ -384,6 +443,7 @@ function waiting(
       missing,
       slots,
       options: options && options.length > 0 ? options : undefined,
+      mismatches: mismatches && mismatches.length > 0 ? mismatches : undefined,
     },
   };
 }

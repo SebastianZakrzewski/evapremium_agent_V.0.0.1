@@ -1,10 +1,11 @@
-import { mapAliases, normalizeSlots } from './alias-map';
+import { collapseWhitespace, mapAliases, normalizeSlots } from './alias-map';
 import { activeBrandKeys, shortlistModelKeys } from './model-shortlist';
-import { filterTemplates, toResult } from './template-match';
+import { constraintMismatches, filterTemplates, toResult } from './template-match';
 import {
   MODEL_KEY_SHORTLIST_LIMIT,
   type MatTemplate,
   type NormalizedSlots,
+  type SlotMismatch,
   type TemplateCascadeInput,
   type TemplateCascadeResult,
   type VehicleKeyClassifier,
@@ -143,8 +144,8 @@ export async function resolveClassifiedTemplate(
     classifier,
     dropped,
   );
-  if (brand === 'reject') {
-    return { status: 'none' };
+  if (brand === 'reject' || (!brand && slots.brand)) {
+    return absent(slots.brand, 'car_brand', true);
   }
   const brandKey = brand;
 
@@ -157,6 +158,10 @@ export async function resolveClassifiedTemplate(
     dropped,
   );
   const { modelKeys, modelCandidates, modelFromAlias } = models;
+
+  if (slots.model && !modelKeys) {
+    return absent(slots.model, 'car_model', false, true);
+  }
 
   if (!brandKey && !modelKeys && !slots.recordKey && !bodyTypeKey) {
     return toResult([], undefined, dropped);
@@ -176,29 +181,108 @@ export async function resolveClassifiedTemplate(
       classifier,
     );
   }
+  const familyKeys = modelFamilyKeys(
+    modelKeys,
+    modelCandidates,
+    slots.model,
+    modelFromAlias,
+  );
+  if (slots.bodyType && !bodyTypeKey) {
+    const mismatches = constraintMismatches(
+      slots,
+      templatesFor(templates, brandKey, familyKeys, slots.recordKey),
+      undefined,
+    );
+    if (!mismatches.some((mismatch) => mismatch.slot === 'body_type')) {
+      mismatches.push({ slot: 'body_type', value: slots.bodyType });
+    }
+    return { status: 'none', mismatches };
+  }
   let matches = filterTemplates(
     candidates,
     { bodyTypeKey },
     slots.recordKey,
     slots.year,
   );
-  if (
-    matches.length === 0 &&
-    !modelFromAlias &&
-    modelCandidates.length > (modelKeys?.length ?? 0) &&
-    brandKey
-  ) {
+  if (matches.length === 0 && familyKeys.length > (modelKeys?.length ?? 0)) {
     matches = filterTemplates(
       templates,
-      { brandKey, modelKeys: modelCandidates, bodyTypeKey },
+      { brandKey, modelKeys: familyKeys, bodyTypeKey },
       slots.recordKey,
       slots.year,
     );
+  }
+  if (matches.length === 0) {
+    const mismatches = constraintMismatches(
+      slots,
+      templatesFor(templates, brandKey, familyKeys, slots.recordKey),
+      bodyTypeKey,
+    );
+    if (mismatches.length > 0) {
+      return { status: 'none', mismatches };
+    }
   }
   return toResult(
     matches,
     slots.bodyType && !aliased.bodyTypeKey ? bodyTypeKey : undefined,
     dropped,
+  );
+}
+
+function absent(
+  value: string | undefined,
+  slot: SlotMismatch['slot'],
+  droppedBrand: boolean,
+  droppedModel = false,
+): TemplateCascadeResult {
+  return {
+    status: 'none',
+    ...(droppedBrand ? { droppedBrand: true as const } : {}),
+    ...(droppedModel ? { droppedModel: true as const } : {}),
+    ...(value ? { mismatches: [{ slot, value }] } : {}),
+  };
+}
+
+/** Inne generacje tego samego modelu. Obce modele z shortlisty nie wchodzą. */
+function modelFamilyKeys(
+  modelKeys: string[] | undefined,
+  modelCandidates: string[],
+  customerModel: string | undefined,
+  modelFromAlias: boolean,
+): string[] {
+  const family = [...(modelKeys ?? [])];
+  if (modelFromAlias || !customerModel) {
+    return family;
+  }
+  for (const key of modelCandidates) {
+    if (!family.includes(key) && modelKeyCoversCustomer(key, customerModel)) {
+      family.push(key);
+    }
+  }
+  return family;
+}
+
+function modelKeyCoversCustomer(modelKey: string, customerModel: string): boolean {
+  const key = collapseWhitespace(modelKey);
+  const tokens = collapseWhitespace(customerModel)
+    .split(' ')
+    .filter((token) => token.length > 0);
+  return tokens.length > 0 && tokens.every((token) => key.includes(token));
+}
+
+function templatesFor(
+  templates: MatTemplate[],
+  brandKey: string | undefined,
+  modelKeys: string[],
+  recordKey?: string,
+): MatTemplate[] {
+  if (modelKeys.length === 0 && !recordKey) {
+    return [];
+  }
+  return filterTemplates(
+    templates,
+    { brandKey, ...(modelKeys.length > 0 ? { modelKeys } : {}) },
+    recordKey,
   );
 }
 

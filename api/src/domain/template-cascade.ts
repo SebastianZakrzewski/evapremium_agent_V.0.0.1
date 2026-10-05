@@ -14,6 +14,7 @@ export {
   type ModelClassificationInput,
   type NormalizedSlots,
   type SlotKind,
+  type SlotMismatch,
   type TemplateCascadeInput,
   type TemplateCascadeResult,
   type VehicleKeyClassifier,

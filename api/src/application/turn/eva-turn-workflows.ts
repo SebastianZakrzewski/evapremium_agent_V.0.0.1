@@ -22,6 +22,7 @@ import {
   isSlotReply,
   type QuoteWorkflowSnapshot,
 } from '../../domain/quote-vehicle';
+import type { SlotMismatch } from '../../domain/template-cascade';
 import { verifiedProductFromTemplate } from '../../domain/verified-product';
 import {
   assembleTurnInstructions,
@@ -272,6 +273,30 @@ function advanceSlots(
   }).slots;
 }
 
+function absenceFact(mismatches: SlotMismatch[] | undefined): string {
+  const lines = (mismatches ?? []).map(mismatchSentence);
+  if (lines.length === 0) {
+    return 'Kaskada: none. Nie ma szablonu dla tego auta. Powiedz klientowi o braku. Nie wołaj resolve-template.';
+  }
+  return `Kaskada: none. ${lines.join(' ')} Powiedz klientowi o tym braku. Nie podstawiaj innego auta. Nie wołaj resolve-template.`;
+}
+
+function mismatchSentence(mismatch: SlotMismatch): string {
+  if (mismatch.slot === 'year') {
+    return `Rocznik ${mismatch.value} nie występuje dla tego wariantu.`;
+  }
+  if (mismatch.slot === 'body_type') {
+    return `Typ nadwozia ${mismatch.value} nie występuje dla tego wariantu.`;
+  }
+  if (mismatch.slot === 'generation') {
+    return `Generacja ${mismatch.value} nie występuje dla tego wariantu.`;
+  }
+  if (mismatch.slot === 'car_model') {
+    return `Model ${mismatch.value} nie występuje w katalogu.`;
+  }
+  return `Marka ${mismatch.value} nie występuje w katalogu.`;
+}
+
 function verifiedProductFromCascade(advance: FitmentCascadeAdvance) {
   if (advance.status !== 'ready' || advance.result.status !== 'one') {
     return undefined;
@@ -284,11 +309,14 @@ function cascadeFact(advance: FitmentCascadeAdvance): string {
     const options = advance.snapshot.options?.length
       ? ` Do wyboru: ${advance.snapshot.options.join(', ')}.`
       : '';
-    return `Brakuje ${missingSlotLabel(advance.snapshot.missing)}.${options}${knownVehicleFact(advance.snapshot.slots)} Zapytaj tylko o brakujące. Nie wołaj resolve-template.`;
+    const absence = advance.snapshot.mismatches?.length
+      ? `${advance.snapshot.mismatches.map(mismatchSentence).join(' ')} Nie podstawiaj innego auta. `
+      : '';
+    return `${absence}Brakuje ${missingSlotLabel(advance.snapshot.missing)}.${options}${knownVehicleFact(advance.snapshot.slots)} Zapytaj tylko o brakujące. Nie wołaj resolve-template.`;
   }
   const result = advance.result;
   if (result.status === 'none') {
-    return 'Kaskada: none. Nie ma szablonu dla tego auta. Nie wołaj resolve-template.';
+    return absenceFact(result.mismatches);
   }
   if (result.status === 'one') {
     const template = result.template;

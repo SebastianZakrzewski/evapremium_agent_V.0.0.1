@@ -30,6 +30,9 @@ listę kluczy z katalogu i stub w teście; filtr nadal nie ufa kluczowi spoza li
 | cascade-018 | critical | Zdublowany wiersz tego samego auta → one |
 | cascade-019 | high | Duplikat nie chowa innego nadwozia |
 | cascade-020 | high | Spacje i wielkość liter w modelu nie dają many |
+| cascade-021 | critical | Rok spoza wariantu nie podmienia modelu |
+| cascade-022 | high | Rok i nadwozie spoza wariantu wracają jako braki |
+| cascade-023 | high | Model spoza listy klasyfikatora → brak modelu |
 
 ### cascade-001 — Normalizacja slotów
 
@@ -163,9 +166,9 @@ listę kluczy z katalogu i stub w teście; filtr nadal nie ufa kluczowi spoza li
 
 - **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('returns none when trim matches two brand keys')`
 - **Krytyczność:** high
-- **Logika:** dwa klucze, które po obcięciu spacji są tym samym napisem, nie są wybierane.
+- **Logika:** dwa klucze, które po obcięciu spacji są tym samym napisem, nie są wybierane. Marka klienta wraca jako brak.
 - **Wejście:** `Citroen` i `Citroen `, stub marki ` Citroen`
-- **Wyjście:** `{ status: 'none' }`
+- **Wyjście:** `{ status: 'none', droppedBrand: true, mismatches: [{ slot: 'car_brand', value: 'citroen' }] }`
 
 ### cascade-018 — Zdublowany wiersz tego samego auta → one
 
@@ -190,3 +193,27 @@ listę kluczy z katalogu i stub w teście; filtr nadal nie ufa kluczowi spoza li
 - **Logika:** przed `one` albo `many` marka i model są porównywane bez białych znaków i małymi literami. Inna generacja zostaje osobnym szablonem.
 - **Wejście:** `Rav4 (XA30) 3 gen` i `Rav 4 (XA30) 3 gen`, rok 2005, SUV; osobno `Rav4 (XA20) 2 gen` z `Rav4 (XA30) 3 gen`
 - **Wyjście:** pierwsza para `one` z rekordem `rav4_xa30_3_gen`; para generacji `many`
+
+### cascade-021 — Rok spoza wariantu nie podmienia modelu
+
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('reports a year outside the chosen model instead of a nearby model')`
+- **Krytyczność:** critical
+- **Logika:** rok, którego nie ma w wybranym modelu, nie otwiera shortlisty na inny model z tego samego rocznika.
+- **Wejście:** `cla` / `2012` przy szablonach CLA 2013–2019 i C-klasy 2006–2015; klasyfikator zwraca tylko CLA
+- **Wyjście:** `{ status: 'none', mismatches: [{ slot: 'year', value: '2012' }] }`
+
+### cascade-022 — Rok i nadwozie spoza wariantu wracają jako braki
+
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('reports a body type that is not on the variant')`
+- **Krytyczność:** high
+- **Logika:** każdy podany fakt, którego nie ma na szablonach wariantu, wraca osobno. Rok poza zakresem i nadwozie bez aliasu nie znikają z wyniku.
+- **Wejście:** `{ brand: 'vw', model: 'golf 8', bodyType: 'sedan', year: 1990 }`
+- **Wyjście:** `none` z brakami `year=1990` i `body_type=sedan`
+
+### cascade-023 — Model spoza listy klasyfikatora → brak modelu
+
+- **Kod:** `tests/api/domain/template-cascade.spec.ts` → `it('reports a model the classifier cannot place')`
+- **Krytyczność:** high
+- **Logika:** pusta lista kluczy modelu nie zostawia wszystkich szablonów marki.
+- **Wejście:** `{ brand: 'vw', model: 'panda' }`, klasyfikator modelu zwraca `[]`
+- **Wyjście:** `{ status: 'none', droppedModel: true, mismatches: [{ slot: 'car_model', value: 'panda' }] }`
