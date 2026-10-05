@@ -1,3 +1,4 @@
+import type { ZodType } from 'zod';
 import type {
   BodyClassificationInput,
   BrandClassificationInput,
@@ -5,12 +6,7 @@ import type {
   ModelClassificationInput,
   VehicleKeyClassifier,
 } from '../../domain/template-cascade';
-import {
-  createBodyKeyClassifierAgent,
-  createBrandKeyClassifierAgent,
-  createGenerationKeyClassifierAgent,
-  createModelKeyClassifierAgent,
-} from './create-vehicle-key-classifier-agents';
+import { createVehicleKeyClassifierAgent } from './create-vehicle-key-classifier-agents';
 import {
   bodyClassificationMessage,
   brandClassificationMessage,
@@ -24,12 +20,12 @@ import {
   modelClassificationSchema,
 } from './schema';
 
-type StructuredGenerate<TSchema> = {
+type StructuredGenerate = {
   generate: (
     message: string,
     options: {
       structuredOutput: {
-        schema: TSchema;
+        schema: ZodType;
         errorStrategy: 'strict';
       };
     },
@@ -37,15 +33,10 @@ type StructuredGenerate<TSchema> = {
 };
 
 export class MastraVehicleKeyClassifier implements VehicleKeyClassifier {
-  constructor(
-    private readonly brandAgent: StructuredGenerate<typeof brandClassificationSchema>,
-    private readonly modelAgent: StructuredGenerate<typeof modelClassificationSchema>,
-    private readonly bodyAgent: StructuredGenerate<typeof bodyClassificationSchema>,
-    private readonly generationAgent: StructuredGenerate<typeof generationClassificationSchema>,
-  ) {}
+  constructor(private readonly agent: StructuredGenerate) {}
 
   async classifyBrand(input: BrandClassificationInput): Promise<string | null> {
-    const result = await this.brandAgent.generate(
+    const result = await this.agent.generate(
       brandClassificationMessage(input.customerBrand, input.brandKeys),
       {
         structuredOutput: {
@@ -58,7 +49,7 @@ export class MastraVehicleKeyClassifier implements VehicleKeyClassifier {
   }
 
   async classifyModel(input: ModelClassificationInput): Promise<string[]> {
-    const result = await this.modelAgent.generate(
+    const result = await this.agent.generate(
       modelClassificationMessage(input.customerModel, input.modelKeys, input.year),
       {
         structuredOutput: {
@@ -71,7 +62,7 @@ export class MastraVehicleKeyClassifier implements VehicleKeyClassifier {
   }
 
   async classifyBody(input: BodyClassificationInput): Promise<string | null> {
-    const result = await this.bodyAgent.generate(
+    const result = await this.agent.generate(
       bodyClassificationMessage(input.customerBody, input.bodyKeys),
       {
         structuredOutput: {
@@ -84,7 +75,7 @@ export class MastraVehicleKeyClassifier implements VehicleKeyClassifier {
   }
 
   async classifyGeneration(input: GenerationClassificationInput): Promise<string | null> {
-    const result = await this.generationAgent.generate(
+    const result = await this.agent.generate(
       generationClassificationMessage(input.customerGeneration, input.generationKeys),
       {
         structuredOutput: {
@@ -101,10 +92,5 @@ export function vehicleKeyClassifierFromEnv(): MastraVehicleKeyClassifier | null
   if (!process.env.DEEPSEEK_API_KEY?.trim()) {
     return null;
   }
-  return new MastraVehicleKeyClassifier(
-    createBrandKeyClassifierAgent(),
-    createModelKeyClassifierAgent(),
-    createBodyKeyClassifierAgent(),
-    createGenerationKeyClassifierAgent(),
-  );
+  return new MastraVehicleKeyClassifier(createVehicleKeyClassifierAgent());
 }

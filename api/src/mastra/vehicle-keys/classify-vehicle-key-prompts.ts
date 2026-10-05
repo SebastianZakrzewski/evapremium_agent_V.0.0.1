@@ -1,4 +1,8 @@
-export const BRAND_KEY_CLASSIFIER_INSTRUCTIONS = `Wybierasz jedną markę z listy kandydatów dla słów klienta. Lista przychodzi w wiadomości. Oddajesz wyłącznie brandKey z tej listy.
+export const VEHICLE_KEY_CLASSIFIER_INSTRUCTIONS = `Klasyfikujesz jedno pole katalogu według zadania w wiadomości.
+
+Klucz przepisujesz dokładnie z listy kandydatów w tej wiadomości. Nie układasz własnego napisu. Nie dodajesz zdania do klienta. Cała odpowiedź to obiekt zgodny ze schematem tego wywołania.`;
+
+const BRAND_KEY_CLASSIFIER_INSTRUCTIONS = `Wybierasz jedną markę z listy kandydatów dla słów klienta. Lista kandydatów jest niżej. Oddajesz wyłącznie brandKey z tej listy.
 
 Klucz musi być napisany tak samo jak na liście. Literówka, skrót i polska odmiana liczą się tylko wtedy, gdy ta marka jest na liście. Nie układasz własnego napisu.
 
@@ -32,7 +36,7 @@ Na liście nie ma Fiata.
 
 Prawdziwa lista ma marki z katalogu szablonów, nie cały opis auta. Ignoruj model, nadwozie i rok, nawet gdy klient je dopisał.`;
 
-export const MODEL_KEY_CLASSIFIER_INSTRUCTIONS = `Wybierasz modele z listy kandydatów dla słów klienta. Marka jest już wybrana. Lista przychodzi w wiadomości. Oddajesz wyłącznie modelKeys z tej listy.
+const MODEL_KEY_CLASSIFIER_INSTRUCTIONS = `Wybierasz modele z listy kandydatów dla słów klienta. Marka jest już wybrana. Lista kandydatów jest niżej. Oddajesz wyłącznie modelKeys z tej listy.
 
 Każdy klucz musi być napisany tak samo jak na liście. Nie układasz własnego napisu i nie doklejasz generacji, której na liście nie ma.
 
@@ -73,7 +77,7 @@ Na liście nie ma Pandy.
 
 Lista kandydatów w prawdziwym wywołaniu jest krótka i należy do już wybranej marki. Ignoruj nadwozie i rok, nawet gdy klient je dopisał.`;
 
-export const BODY_KEY_CLASSIFIER_INSTRUCTIONS = `Wybierasz jeden typ nadwozia z listy kandydatów dla słów klienta. Lista przychodzi w wiadomości. Oddajesz wyłącznie bodyTypeKey z tej listy.
+const BODY_KEY_CLASSIFIER_INSTRUCTIONS = `Wybierasz jeden typ nadwozia z listy kandydatów dla słów klienta. Lista kandydatów jest niżej. Oddajesz wyłącznie bodyTypeKey z tej listy.
 
 Klucz musi być napisany tak samo jak na liście. Synonim, polska nazwa i literówka liczą się tylko wtedy, gdy ten typ jest na liście. Nie układasz własnego napisu.
 
@@ -101,7 +105,7 @@ Input: nadwozie klienta kabriolet. Kandydaci: hatchback, wagon.
 Na liście nie ma kabrioletu.
 {"bodyTypeKey":null}`;
 
-export const GENERATION_KEY_CLASSIFIER_INSTRUCTIONS = `Wybierasz jedną generację z listy kandydatów dla słów klienta. Lista przychodzi w wiadomości. Oddajesz wyłącznie generationKey z tej listy.
+const GENERATION_KEY_CLASSIFIER_INSTRUCTIONS = `Wybierasz jedną generację z listy kandydatów dla słów klienta. Lista kandydatów jest niżej. Oddajesz wyłącznie generationKey z tej listy.
 
 Klucz musi być napisany tak samo jak na liście. Nie układasz własnego napisu.
 
@@ -129,11 +133,18 @@ Input: generacja klienta ósma. Kandydaci: 7 gen, 8 gen.
 Ósma jest 8 gen z listy.
 {"generationKey":"8 gen"}`;
 
+function withTask(task: string, body: string): string {
+  return `${task}\n\n${body}`;
+}
+
 export function brandClassificationMessage(
   customerBrand: string,
   brandKeys: string[],
 ): string {
-  return `marka klienta: ${customerBrand}\nkandydaci:\n${brandKeys.map((key) => `- ${key}`).join('\n')}`;
+  return withTask(
+    BRAND_KEY_CLASSIFIER_INSTRUCTIONS,
+    `marka klienta: ${customerBrand}\nkandydaci:\n${brandKeys.map((key) => `- ${key}`).join('\n')}`,
+  );
 }
 
 export function modelClassificationMessage(
@@ -142,16 +153,25 @@ export function modelClassificationMessage(
   year?: number,
 ): string {
   const yearLine = typeof year === 'number' ? `\nrok klienta: ${year}` : '';
-  return `model klienta: ${customerModel}${yearLine}\nkandydaci:\n${modelKeys.map((key) => `- ${key}`).join('\n')}`;
+  return withTask(
+    MODEL_KEY_CLASSIFIER_INSTRUCTIONS,
+    `model klienta: ${customerModel}${yearLine}\nkandydaci:\n${modelKeys.map((key) => `- ${key}`).join('\n')}`,
+  );
 }
 
 export function bodyClassificationMessage(customerBody: string, bodyKeys: string[]): string {
-  return `nadwozie klienta: ${customerBody}\nkandydaci:\n${bodyKeys.map((key) => `- ${key}`).join('\n')}`;
+  return withTask(
+    BODY_KEY_CLASSIFIER_INSTRUCTIONS,
+    `nadwozie klienta: ${customerBody}\nkandydaci:\n${bodyKeys.map((key) => `- ${key}`).join('\n')}`,
+  );
 }
 
 export function generationClassificationMessage(
   customerGeneration: string,
   generationKeys: string[],
 ): string {
-  return `generacja klienta: ${customerGeneration}\nkandydaci:\n${generationKeys.map((key) => `- ${key}`).join('\n')}`;
+  return withTask(
+    GENERATION_KEY_CLASSIFIER_INSTRUCTIONS,
+    `generacja klienta: ${customerGeneration}\nkandydaci:\n${generationKeys.map((key) => `- ${key}`).join('\n')}`,
+  );
 }

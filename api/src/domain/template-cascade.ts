@@ -81,9 +81,9 @@ export type MatTemplate = {
 };
 
 export type TemplateCascadeResult =
-  | { status: 'none'; bodyTypeKey?: string }
-  | { status: 'one'; template: MatTemplate; bodyTypeKey?: string }
-  | { status: 'many'; templates: MatTemplate[]; bodyTypeKey?: string };
+  | { status: 'none'; bodyTypeKey?: string; droppedBrand?: true; droppedModel?: true }
+  | { status: 'one'; template: MatTemplate; bodyTypeKey?: string; droppedBrand?: true; droppedModel?: true }
+  | { status: 'many'; templates: MatTemplate[]; bodyTypeKey?: string; droppedBrand?: true; droppedModel?: true };
 
 function collapseWhitespace(value: string): string {
   return value.trim().toLowerCase().replace(/\s+/g, ' ');
@@ -232,10 +232,18 @@ function collapseDuplicateTemplates(matches: MatTemplate[]): MatTemplate[] {
   return [...byIdentity.values()];
 }
 
-function toResult(matches: MatTemplate[], bodyTypeKey?: string): TemplateCascadeResult {
+function toResult(
+  matches: MatTemplate[],
+  bodyTypeKey?: string,
+  dropped?: { droppedBrand?: true; droppedModel?: true },
+): TemplateCascadeResult {
   const unique = collapseDuplicateTemplates(matches);
   const first = unique[0];
-  const classified = bodyTypeKey ? { bodyTypeKey } : {};
+  const classified = {
+    ...(bodyTypeKey ? { bodyTypeKey } : {}),
+    ...(dropped?.droppedBrand ? { droppedBrand: true as const } : {}),
+    ...(dropped?.droppedModel ? { droppedModel: true as const } : {}),
+  };
   if (!first) {
     return { status: 'none', ...classified };
   }
@@ -457,61 +465,70 @@ export async function resolveClassifiedTemplate(
   const slots = normalizeSlots(input);
   const aliased = mapAliases(slots, aliases);
   let bodyTypeKey = aliased.bodyTypeKey;
-
-  if (!slots.brand || !slots.model) {
-    if (!slots.recordKey) {
-      return { status: 'none' };
-    }
-    return toResult(
-      filterTemplates(templates, { bodyTypeKey }, slots.recordKey, slots.year),
-    );
-  }
+  const dropped: { droppedBrand?: true; droppedModel?: true } = {};
 
   let brandKey = aliased.brandKey;
-  if (!brandKey) {
+  if (slots.brand && !brandKey) {
     const brandKeys = activeBrandKeys(templates);
-    if (brandKeys.length === 0) {
-      return { status: 'none' };
-    }
-    const chosenBrand = await classifier.classifyBrand({
-      customerBrand: slots.brand,
-      brandKeys,
-    });
-    brandKey = chosenBrand
+    const chosenBrand =
+      brandKeys.length === 0
+        ? null
+        : await classifier.classifyBrand({
+            customerBrand: slots.brand,
+            brandKeys,
+          });
+    const resolvedBrand = chosenBrand
       ? catalogKeyForChoice(chosenBrand, brandKeys)
       : undefined;
-  }
-  if (!brandKey) {
-    return { status: 'none' };
+    if (chosenBrand && !resolvedBrand) {
+      return { status: 'none' };
+    }
+    brandKey = resolvedBrand;
+    if (!brandKey) {
+      dropped.droppedBrand = true;
+    }
   }
 
   const modelFromAlias = Boolean(aliased.modelKey);
-  let modelKeys: string[];
+  let modelKeys: string[] | undefined;
   let modelCandidates: string[] = [];
   if (aliased.modelKey) {
     modelKeys = [aliased.modelKey];
-  } else {
-    modelCandidates = shortlistModelKeys(
-      templates,
-      brandKey,
-      slots.model,
-      MODEL_KEY_SHORTLIST_LIMIT,
-      slots.year,
-    );
+  } else if (slots.model) {
+    modelCandidates = brandKey
+      ? shortlistModelKeys(
+          templates,
+          brandKey,
+          slots.model,
+          MODEL_KEY_SHORTLIST_LIMIT,
+          slots.year,
+        )
+      : shortlistModelKeysAnyBrand(
+          templates,
+          slots.model,
+          MODEL_KEY_SHORTLIST_LIMIT,
+          slots.year,
+        );
     if (modelCandidates.length === 0) {
-      return { status: 'none' };
+      dropped.droppedModel = true;
+    } else {
+      modelKeys = keysOnList(
+        await classifier.classifyModel({
+          customerModel: slots.model,
+          modelKeys: modelCandidates,
+          year: slots.year,
+        }),
+        modelCandidates,
+      );
+      if (modelKeys.length === 0) {
+        dropped.droppedModel = true;
+        modelKeys = undefined;
+      }
     }
-    modelKeys = keysOnList(
-      await classifier.classifyModel({
-        customerModel: slots.model,
-        modelKeys: modelCandidates,
-        year: slots.year,
-      }),
-      modelCandidates,
-    );
-    if (modelKeys.length === 0) {
-      return { status: 'none' };
-    }
+  }
+
+  if (!brandKey && !modelKeys && !slots.recordKey && !bodyTypeKey) {
+    return toResult([], undefined, dropped);
   }
 
   const candidates = filterTemplates(
@@ -524,7 +541,7 @@ export async function resolveClassifiedTemplate(
     bodyTypeKey = await resolveBodyTypeKey(
       slots.bodyType,
       undefined,
-      candidates,
+      candidates.length > 0 ? candidates : templates.filter((template) => template.isActive),
       classifier,
     );
   }
@@ -537,7 +554,8 @@ export async function resolveClassifiedTemplate(
   if (
     matches.length === 0 &&
     !modelFromAlias &&
-    modelCandidates.length > modelKeys.length
+    modelCandidates.length > (modelKeys?.length ?? 0) &&
+    brandKey
   ) {
     matches = filterTemplates(
       templates,
@@ -549,7 +567,25 @@ export async function resolveClassifiedTemplate(
   return toResult(
     matches,
     slots.bodyType && !aliased.bodyTypeKey ? bodyTypeKey : undefined,
+    dropped,
   );
+}
+
+function shortlistModelKeysAnyBrand(
+  templates: MatTemplate[],
+  customerModel: string,
+  limit: number,
+  year?: number,
+): string[] {
+  const merged: string[] = [];
+  for (const brandKey of activeBrandKeys(templates)) {
+    for (const key of shortlistModelKeys(templates, brandKey, customerModel, limit, year)) {
+      if (!merged.includes(key)) {
+        merged.push(key);
+      }
+    }
+  }
+  return merged.slice(0, limit);
 }
 
 async function resolveBodyTypeKey(

@@ -230,4 +230,113 @@ describe('fitment session', () => {
       },
     });
   });
+
+  it('asks for the year after the opening sentence already named the car', async () => {
+    const rav4 = {
+      id: 'tmpl-rav4',
+      recordKey: 'rav4',
+      brandKey: 'Toyota',
+      modelKey: 'RAV4',
+      dealerPricingCategoryKey: 'passenger_car',
+      isActive: true,
+      yearFrom: 2018,
+      yearTo: 2024,
+      isOpenEnded: false,
+      bodyTypeKey: 'suv',
+      bodyType1Key: 'suv',
+      bodyType2Key: null,
+      bodyType3Key: null,
+    };
+    const waiting = await advanceFitmentCascade({
+      slots: {},
+      message: 'dywaniki do Toyota RAV4',
+      resolve: (input) =>
+        Promise.resolve(
+          resolveTemplate(
+            input,
+            [rav4, { ...rav4, id: 'tmpl-rav4-older', yearFrom: 2013, yearTo: 2018 }],
+            [
+              ...CASCADE_ALIASES,
+              {
+                slotKind: 'brand',
+                aliasNormalized: 'toyota',
+                canonicalKey: 'Toyota',
+                brandKey: null,
+              },
+              {
+                slotKind: 'model',
+                aliasNormalized: 'rav4',
+                canonicalKey: 'RAV4',
+                brandKey: 'Toyota',
+              },
+            ],
+          ),
+        ),
+      aliases: [
+        ...CASCADE_ALIASES,
+        {
+          slotKind: 'brand',
+          aliasNormalized: 'toyota',
+          canonicalKey: 'Toyota',
+          brandKey: null,
+        },
+        {
+          slotKind: 'model',
+          aliasNormalized: 'rav4',
+          canonicalKey: 'RAV4',
+          brandKey: 'Toyota',
+        },
+      ],
+    });
+
+    expect(waiting).toMatchObject({
+      status: 'suspended',
+      snapshot: {
+        missing: 'year',
+        slots: { car_brand: 'Toyota', car_model: 'RAV4' },
+      },
+    });
+  });
+
+  it('keeps the model when two templates share the year and generation', async () => {
+    const shared = {
+      dealerPricingCategoryKey: 'passenger_car',
+      isActive: true,
+      yearFrom: 2007,
+      yearTo: 2015,
+      isOpenEnded: false,
+      bodyTypeKey: 'wagon',
+      bodyType1Key: 'wagon',
+      bodyType2Key: null,
+      bodyType3Key: null,
+      generation: '4 gen',
+    };
+    const templates = [
+      {
+        ...shared,
+        id: 'tmpl-a4-allroad',
+        recordKey: 'a4-allroad',
+        brandKey: 'Audi',
+        modelKey: 'A4 Allroad(B8) 4 gen',
+      },
+      {
+        ...shared,
+        id: 'tmpl-a4-polift',
+        recordKey: 'a4-polift',
+        brandKey: 'Audi',
+        modelKey: 'A4(B8) polift 4 gen',
+      },
+    ];
+    const waiting = await advanceFitmentCascade({
+      slots: { car_brand: 'audi', car_model: 'a4', year: 2012 },
+      resolve: () =>
+        Promise.resolve({ status: 'many', templates }),
+      aliases: CASCADE_ALIASES,
+    });
+
+    expect(waiting).toMatchObject({
+      status: 'ready',
+      result: { status: 'many' },
+    });
+  });
 });

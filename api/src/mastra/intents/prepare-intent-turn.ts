@@ -112,6 +112,7 @@ export async function prepareIntentTurn(
     remembered.turn,
     options ?? {},
     remembered.resolved,
+    message,
   );
   const withContact = attachContactCollection(continued, {
     message,

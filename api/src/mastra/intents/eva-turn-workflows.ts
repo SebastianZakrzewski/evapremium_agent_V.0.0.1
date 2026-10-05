@@ -40,8 +40,8 @@ export function evaTurnWorkflows(
     resume(message, context) {
       return resumeOpenWorkflow(message, context, cascade ?? context.cascade);
     },
-    continueTurn(turn, context, resolved) {
-      return continueWorkflow(turn, cascade ?? context.cascade, resolved);
+    continueTurn(turn, context, resolved, message) {
+      return continueWorkflow(turn, cascade ?? context.cascade, resolved, message);
     },
   };
 }
@@ -131,10 +131,11 @@ async function continueWorkflow(
   turn: PreparedTurn,
   cascade: FitmentCascadePort | undefined,
   resolved: boolean,
+  message?: string,
 ): Promise<PreparedTurn> {
   let next = turn;
   if (!resolved && isFitmentWorkflow(next)) {
-    next = await advanceFitmentTurn(next, cascade);
+    next = await advanceFitmentTurn(next, cascade, message);
   }
   return rememberPartialFitment(next);
 }
@@ -149,33 +150,35 @@ function isFitmentWorkflow(turn: PreparedTurn): boolean {
 async function advanceFitmentTurn(
   turn: PreparedTurn,
   cascade: FitmentCascadePort | undefined,
+  message?: string,
 ): Promise<PreparedTurn> {
   if (cascade === undefined) {
-    const missing = advanceVehicleSlots({ slots: turn.entities }).missing;
-    if (missing !== undefined) {
+    const collected = advanceVehicleSlots({ slots: turn.entities, message });
+    if (collected.missing !== undefined) {
       return {
         ...turn,
+        entities: collected.slots,
         fitment: {
           workflow: FITMENT_CASCADE_WORKFLOW,
           step: 'waiting_for_vehicle',
-          missing,
-          slots: turn.entities,
+          missing: collected.missing,
+          slots: collected.slots,
         },
       };
     }
     return turn;
   }
   const slots = turn.entities;
+  const advance = await advanceFitmentCascade({
+    slots,
+    message,
+    resolve: (input) => cascade.resolve(input),
+    aliases: cascade.listAliases(),
+    classifyGeneration: cascade.classifyGeneration,
+  });
   return {
-    ...turnFromCascade(
-      await advanceFitmentCascade({
-        slots,
-        resolve: (input) => cascade.resolve(input),
-        aliases: cascade.listAliases(),
-        classifyGeneration: cascade.classifyGeneration,
-      }),
-    ),
-    collectedSlots: slots,
+    ...turnFromCascade(advance),
+    collectedSlots: advance.status === 'suspended' ? advance.snapshot.slots : slots,
   };
 }
 

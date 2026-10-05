@@ -331,6 +331,63 @@ describe('quote vehicle workflow', () => {
     expect(notAReply.slots).toEqual({ car_brand: 'Toyota' });
   });
 
+  it('fills brand and model from a mats sentence', () => {
+    const collected = advanceVehicleSlots({
+      slots: {},
+      message: 'dywaniki do Toyota RAV4',
+      fillMissingFromMessage: false,
+      aliases: [
+        {
+          slotKind: 'brand',
+          aliasNormalized: 'toyota',
+          canonicalKey: 'Toyota',
+          brandKey: null,
+        },
+        {
+          slotKind: 'model',
+          aliasNormalized: 'rav4',
+          canonicalKey: 'RAV4',
+          brandKey: 'Toyota',
+        },
+      ],
+    });
+
+    expect(collected.slots).toEqual({
+      car_brand: 'Toyota',
+      car_model: 'RAV4',
+    });
+    expect(collected.missing).toBe('year');
+  });
+
+  it('stores rav4 as the model when the brand question has no brand alias', () => {
+    const collected = advanceVehicleSlots({
+      slots: {},
+      message: 'rav4 2021',
+      asked: 'car_brand',
+      aliases: [
+        {
+          slotKind: 'brand',
+          aliasNormalized: 'toyota',
+          canonicalKey: 'Toyota',
+          brandKey: null,
+        },
+        {
+          slotKind: 'model',
+          aliasNormalized: 'rav4',
+          canonicalKey: 'RAV4',
+          brandKey: 'Toyota',
+        },
+      ],
+    });
+
+    expect(collected.slots).toEqual({
+      car_model: 'rav4',
+      year: 2021,
+    });
+    expect(collected.slots.car_brand).toBeUndefined();
+    expect(collected.missing).toBe('car_brand');
+  });
+
   it('keeps the body given in the same reply as the year', () => {
     const collected = advanceVehicleSlots({
       slots: { car_brand: 'Toyota', car_model: 'RAV4' },

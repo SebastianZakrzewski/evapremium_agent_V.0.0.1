@@ -367,24 +367,63 @@ describe('classified template cascade', () => {
     });
   });
 
-  it('returns none when brand is missing and does not ask the classifier', async () => {
-    const classifier: VehicleKeyClassifier = {
-      classifyBrand: async () => {
-        throw new Error('brand classifier should not run');
+  it('resolves a model alias when the brand text is still empty', async () => {
+    let brandCalls = 0;
+    let modelCalls = 0;
+    const result = await resolveClassifiedTemplate(
+      { model: 'golf 8' },
+      CASCADE_TEMPLATES,
+      CASCADE_ALIASES,
+      {
+        classifyBrand: async () => {
+          brandCalls += 1;
+          return null;
+        },
+        classifyModel: async () => {
+          modelCalls += 1;
+          return [];
+        },
       },
-      classifyModel: async () => {
-        throw new Error('model classifier should not run');
-      },
-    };
+    );
 
-    await expect(
-      resolveClassifiedTemplate(
-        { model: 'golf 8' },
-        CASCADE_TEMPLATES,
-        CASCADE_ALIASES,
-        classifier,
-      ),
-    ).resolves.toEqual({ status: 'none' });
+    expect(brandCalls).toBe(0);
+    expect(modelCalls).toBe(0);
+    expect(result.status).toBe('many');
+  });
+
+  it('classifies a brand when the model text is still empty', async () => {
+    let brandCalls = 0;
+    const result = await resolveClassifiedTemplate(
+      { brand: 'Volwagen' },
+      CASCADE_TEMPLATES,
+      CASCADE_ALIASES,
+      {
+        classifyBrand: async () => {
+          brandCalls += 1;
+          return 'Volkswagen';
+        },
+        classifyModel: async () => {
+          throw new Error('model classifier should not run');
+        },
+      },
+    );
+
+    expect(brandCalls).toBe(1);
+    expect(result.status).toBe('many');
+  });
+
+  it('drops a brand the classifier cannot place on a catalog key', async () => {
+    const result = await resolveClassifiedTemplate(
+      { brand: 'nieznana' },
+      CASCADE_TEMPLATES,
+      CASCADE_ALIASES,
+      {
+        classifyBrand: async () => null,
+        classifyModel: async () => [],
+      },
+    );
+
+    expect(result).toEqual({ status: 'none', droppedBrand: true });
   });
 
   it('keeps every generation the classifier returns', async () => {

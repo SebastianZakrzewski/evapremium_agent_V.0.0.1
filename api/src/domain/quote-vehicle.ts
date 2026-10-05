@@ -32,6 +32,21 @@ const SLOT_ORDER: readonly VehicleSlotKey[] = [
 
 const BODY_ALIASES = ['hatchback', 'hatch', 'kombi', 'wagon', 'sedan', 'limuzyna', 'liftback', 'suv', 'coupe', 'cabrio', 'van'] as const;
 
+const OFFER_WORDS = new Set([
+  'dywaniki',
+  'dywanik',
+  'dywanikow',
+  'do',
+  'na',
+  'czy',
+  'macie',
+  'dla',
+  'pod',
+]);
+
+const GENERATION_REPLY =
+  /\b(\d+\s*gen(?:eracj\w*)?|pierwsz\w+|drug\w+|trzeci\w+|trzecia|czwart\w+|piat\w+|piąt\w+|szost\w+|szóst\w+|siodm\w+|siódm\w+|osm\w+|ósm\w+|dziewiat\w+|dziewiąt\w+)\b/iu;
+
 function filled(entities: RouterEntities): RouterEntities {
   const next: RouterEntities = {};
   if (entities.car_brand?.trim()) {
@@ -175,6 +190,31 @@ function applyReply(
   message: string,
   aliases?: VehicleSlotAlias[],
 ): void {
+  const peeled = peelMessage(entities, message, aliases, missing);
+  if (!peeled.rest) {
+    return;
+  }
+  if (missing === 'generation') {
+    if (!entities.generation) {
+      entities.generation = peeled.rest;
+    }
+    return;
+  }
+  if (!entities.car_brand && !peeled.modelAliasHit && missing === 'car_brand') {
+    entities.car_brand = peeled.rest;
+    return;
+  }
+  if (!entities.car_model && (entities.car_brand || peeled.modelAliasHit)) {
+    entities.car_model = peeled.rest;
+  }
+}
+
+function peelMessage(
+  entities: RouterEntities,
+  message: string,
+  aliases: VehicleSlotAlias[] | undefined,
+  missing?: VehicleSlotKey,
+): { rest: string; modelAliasHit: boolean } {
   let rest = message.replace(/[,.;:()]+/gu, ' ');
   const year = readYear(rest);
   if (year !== undefined) {
@@ -191,21 +231,24 @@ function applyReply(
     rest = stripWord(rest, exactBody.token);
   }
   rest = collapse(rest);
-  if (!rest) {
-    return;
-  }
-
   if (!entities.car_brand) {
-    const taken = takeBrand(rest, aliases);
-    if (taken.brand) {
-      entities.car_brand = taken.brand;
+    const taken = takeAlias(rest, brandAliases(aliases));
+    if (taken.hit) {
+      entities.car_brand = taken.hit;
       rest = taken.rest;
-    } else if (missing === 'car_brand') {
-      entities.car_brand = rest;
-      return;
     }
   } else {
     rest = stripStoredBrand(rest, entities.car_brand, aliases);
+  }
+  rest = collapse(rest);
+  let modelAliasHit = false;
+  if (rest && !entities.car_model) {
+    const taken = takeAlias(rest, modelAliases(aliases, entities.car_brand));
+    if (taken.hit) {
+      entities.car_model = taken.hit;
+      rest = taken.rest;
+      modelAliasHit = true;
+    }
   }
   rest = collapse(rest);
   if (rest && entities.body_type === undefined && missing !== 'generation') {
@@ -215,18 +258,15 @@ function applyReply(
       rest = collapse(stripWord(rest, fuzzyBody.token));
     }
   }
-  if (!rest) {
-    return;
-  }
-  if (missing === 'generation') {
-    if (!entities.generation) {
-      entities.generation = rest;
+  if (rest && !entities.generation) {
+    const generation = rest.match(GENERATION_REPLY);
+    if (generation?.[0]) {
+      entities.generation = collapse(generation[0]);
+      rest = stripWord(rest, generation[0]);
     }
-    return;
   }
-  if (!entities.car_model) {
-    entities.car_model = rest;
-  }
+  rest = dropOfferWords(rest);
+  return { rest, modelAliasHit };
 }
 
 function collapse(value: string): string {
@@ -238,23 +278,63 @@ function stripWord(value: string, token: string): string {
 }
 
 function brandAliases(aliases: VehicleSlotAlias[] | undefined): string[] {
+  return aliasLabels(aliases, 'brand');
+}
+
+function modelAliases(
+  aliases: VehicleSlotAlias[] | undefined,
+  brand: string | undefined,
+): string[] {
+  const normalizedBrand = brand?.trim().toLowerCase().replace(/\s+/g, ' ');
+  const allowedBrands = new Set<string>();
+  if (normalizedBrand) {
+    allowedBrands.add(normalizedBrand);
+    for (const row of aliases ?? []) {
+      if (row.slotKind !== 'brand') {
+        continue;
+      }
+      const alias = row.aliasNormalized.trim().toLowerCase().replace(/\s+/g, ' ');
+      const canonical = row.canonicalKey.trim().toLowerCase().replace(/\s+/g, ' ');
+      if (alias === normalizedBrand || canonical === normalizedBrand) {
+        allowedBrands.add(alias);
+        allowedBrands.add(canonical);
+      }
+    }
+  }
   return [
     ...new Set(
       (aliases ?? [])
-        .filter((row) => row.slotKind === 'brand')
+        .filter((row) => row.slotKind === 'model')
+        .filter((row) => {
+          if (!row.brandKey || allowedBrands.size === 0) {
+            return true;
+          }
+          return allowedBrands.has(row.brandKey.trim().toLowerCase().replace(/\s+/g, ' '));
+        })
         .map((row) => row.aliasNormalized.trim().toLowerCase().replace(/\s+/g, ' '))
         .filter((alias) => alias.length > 0),
     ),
   ].sort((left, right) => right.length - left.length);
 }
 
-function takeBrand(
-  rest: string,
+function aliasLabels(
   aliases: VehicleSlotAlias[] | undefined,
-): { brand?: string; rest: string } {
+  slotKind: VehicleSlotAlias['slotKind'],
+): string[] {
+  return [
+    ...new Set(
+      (aliases ?? [])
+        .filter((row) => row.slotKind === slotKind)
+        .map((row) => row.aliasNormalized.trim().toLowerCase().replace(/\s+/g, ' '))
+        .filter((alias) => alias.length > 0),
+    ),
+  ].sort((left, right) => right.length - left.length);
+}
+
+function takeAlias(rest: string, aliases: string[]): { hit?: string; rest: string } {
   const words = collapse(rest).split(' ').filter((word) => word.length > 0);
   const normalized = words.map((word) => word.toLowerCase());
-  for (const alias of brandAliases(aliases)) {
+  for (const alias of aliases) {
     const aliasWords = alias.split(' ');
     for (let start = 0; start + aliasWords.length <= normalized.length; start += 1) {
       const matches = aliasWords.every((word, index) => normalized[start + index] === word);
@@ -262,7 +342,7 @@ function takeBrand(
         continue;
       }
       return {
-        brand: words.slice(start, start + aliasWords.length).join(' '),
+        hit: words.slice(start, start + aliasWords.length).join(' '),
         rest: words
           .slice(0, start)
           .concat(words.slice(start + aliasWords.length))
@@ -271,6 +351,22 @@ function takeBrand(
     }
   }
   return { rest: words.join(' ') };
+}
+
+function dropOfferWords(value: string): string {
+  return collapse(
+    collapse(value)
+      .split(' ')
+      .filter((word) => !OFFER_WORDS.has(foldOfferWord(word)))
+      .join(' '),
+  );
+}
+
+function foldOfferWord(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '');
 }
 
 function stripStoredBrand(
@@ -327,17 +423,39 @@ function matchExactBody(
   return { alias: inside.alias, token: inside.label };
 }
 
+function splitGluedBrand(
+  entities: RouterEntities,
+  message: string,
+  aliases?: VehicleSlotAlias[],
+): void {
+  if (!entities.car_brand || entities.car_model) {
+    return;
+  }
+  const probe: RouterEntities = {};
+  const peeled = peelMessage(probe, message, aliases);
+  if (peeled.rest && probe.car_brand && !probe.car_model) {
+    probe.car_model = peeled.rest;
+  }
+  if (!probe.car_brand || !probe.car_model) {
+    return;
+  }
+  const stored = collapse(entities.car_brand).toLowerCase();
+  const peeledBrand = collapse(probe.car_brand).toLowerCase();
+  if (stored !== peeledBrand && stored.includes(peeledBrand)) {
+    entities.car_brand = probe.car_brand;
+    entities.car_model = probe.car_model;
+  }
+}
+
 function harvest(
   entities: RouterEntities,
   message: string,
   aliases?: VehicleSlotAlias[],
 ): void {
-  const parsed = readVehicleReply(message, aliases);
-  if (entities.year === undefined && parsed.year !== undefined) {
-    entities.year = parsed.year;
-  }
-  if (entities.body_type === undefined && parsed.body !== undefined) {
-    entities.body_type = parsed.body;
+  const hadBrand = Boolean(entities.car_brand);
+  const peeled = peelMessage(entities, message, aliases);
+  if (!hadBrand && entities.car_brand && peeled.rest && !entities.car_model) {
+    entities.car_model = peeled.rest;
   }
 }
 
@@ -351,6 +469,7 @@ export function advanceVehicleSlots(input: {
 }): { slots: RouterEntities; missing?: VehicleSlotKey } {
   const slots = filled(input.slots);
   if (input.message !== undefined) {
+    splitGluedBrand(slots, input.message, input.aliases);
     const fillMissing = input.fillMissingFromMessage !== false;
     if (fillMissing && isSlotReply(input.message)) {
       const missing = input.asked ?? firstMissing(slots);

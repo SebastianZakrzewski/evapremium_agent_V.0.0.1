@@ -28,5 +28,6 @@ export type TurnWorkflows = {
     turn: PreparedTurn,
     context: TurnWorkflowContext,
     resolved: boolean,
+    message?: string,
   ): Promise<PreparedTurn>;
 };

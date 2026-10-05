@@ -53,18 +53,28 @@ export async function advanceFitmentCascade(input: {
     asked: input.message !== undefined ? input.asked : undefined,
   });
   const slots = { ...collected.slots };
-  if (!slots.car_brand) {
+  if (!hasVehicleFact(slots)) {
     return waiting('car_brand', slots);
-  }
-  if (!slots.car_model) {
-    return waiting('car_model', slots);
   }
 
   const result = await input.resolve(cascadeInput(slots));
+  if (result.droppedBrand) {
+    delete slots.car_brand;
+  }
+  if (result.droppedModel) {
+    delete slots.car_model;
+  }
   if (result.bodyTypeKey) {
     slots.body_type = result.bodyTypeKey;
   } else if (unmatchedBody(slots, aliases)) {
     delete slots.body_type;
+  }
+  const resolvedTemplates = templatesOf(result);
+  if (resolvedTemplates.length > 0) {
+    fillUniqueCatalogKeys(slots, resolvedTemplates);
+  }
+  if (!slots.car_brand && !slots.car_model) {
+    return waiting('car_brand', slots);
   }
   if (result.status === 'none') {
     const recovered = await recoverEmpty(slots, input.resolve);
@@ -97,7 +107,28 @@ export async function advanceFitmentCascade(input: {
       result: { status: 'many', templates: narrowed.templates },
     };
   }
-  return waiting(question.missing, clearSlot(slots, question.missing), question.options);
+  return waiting(question.missing, slots, question.options);
+}
+
+function hasVehicleFact(slots: RouterEntities): boolean {
+  return (
+    Boolean(slots.car_brand) ||
+    Boolean(slots.car_model) ||
+    typeof slots.year === 'number' ||
+    Boolean(slots.body_type) ||
+    Boolean(slots.generation)
+  );
+}
+
+function fillUniqueCatalogKeys(slots: RouterEntities, templates: MatTemplate[]): void {
+  const brands = unique(templates.map((template) => template.brandKey));
+  const models = unique(templates.map((template) => template.modelKey));
+  if (!slots.car_brand && brands.length === 1) {
+    slots.car_brand = brands[0];
+  }
+  if (!slots.car_model && models.length === 1) {
+    slots.car_model = models[0];
+  }
 }
 
 function cascadeInput(slots: RouterEntities): TemplateCascadeInput {
@@ -170,27 +201,25 @@ function nextQuestion(
   templates: MatTemplate[],
   slots: RouterEntities,
 ): { missing: VehicleSlotKey; options: string[] } | undefined {
+  const brands = unique(templates.map((template) => template.brandKey));
   const models = unique(templates.map((template) => template.modelKey));
   const bodies = bodyOptions(templates);
   const years = yearOptions(templates);
   const generations = generationOptions(templates);
-  if (models.length > 1 && slots.year === undefined && years.length > 1) {
+  if (!slots.car_brand && brands.length > 1) {
+    return { missing: 'car_brand', options: brands };
+  }
+  if (!slots.car_model && models.length > 1) {
+    return { missing: 'car_model', options: models };
+  }
+  if (slots.year === undefined && years.length > 1) {
     return { missing: 'year', options: years };
   }
   if (typeof slots.year === 'number' && generations.length > 1 && !slots.generation) {
     return { missing: 'generation', options: generations };
   }
-  if (bodies.length > 1 && !slots.body_type) {
+  if (!slots.body_type && bodies.length > 1) {
     return { missing: 'body_type', options: bodies };
-  }
-  if (models.length > 1 && !slots.generation) {
-    return { missing: 'car_model', options: models };
-  }
-  if (bodies.length > 1) {
-    return { missing: 'body_type', options: bodies };
-  }
-  if (years.length > 1 && slots.year === undefined) {
-    return { missing: 'year', options: years };
   }
   return undefined;
 }
