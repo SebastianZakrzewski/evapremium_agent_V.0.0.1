@@ -3,7 +3,6 @@ import type { ShopTools } from '../../chat/shop-tools';
 import { createCollectContactTool } from './collect-contact';
 import { createLookupLeafTool } from './lookup-leaf';
 import { createQuotePriceTool } from './quote-price';
-import { createQuoteVehicleTool } from './quote-vehicle';
 import { createResolveTemplateTool } from './resolve-template';
 import { createSearchLeavesTool } from './search-leaves';
 import type { ShopToolCatalog } from './types';
@@ -15,7 +14,6 @@ export function createShopToolCatalog(
   return {
     'resolve-template': createResolveTemplateTool(tools, events),
     'quote-price': createQuotePriceTool(tools, events),
-    'quote-vehicle': createQuoteVehicleTool(tools, events),
     'collect-contact': createCollectContactTool(tools, events),
     'lookup-leaf': createLookupLeafTool(tools, events),
     'search-leaves': createSearchLeavesTool(tools, events),

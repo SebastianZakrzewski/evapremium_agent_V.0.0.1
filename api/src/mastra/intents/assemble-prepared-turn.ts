@@ -154,9 +154,6 @@ function executionNoteFor(
   execution: ExecutionChoice,
   entities: RouterEntities,
 ): string | undefined {
-  if (execution.kind === 'tool' && execution.tool === 'quote-vehicle') {
-    return `Wykonanie: wywołaj quote-vehicle z brand="${entities.car_brand ?? ''}", model="${entities.car_model ?? ''}", year=${entities.year ?? ''}, bodyType="${entities.body_type ?? ''}".`;
-  }
   if (execution.kind === 'tool') {
     return `Wykonanie: wywołaj ${execution.tool}.`;
   }
@@ -169,7 +166,7 @@ function executionNoteFor(
       advanced.status === 'suspended'
         ? MISSING_LABEL[advanced.missing]
         : 'danych auta';
-    return `Brakuje ${missing}. Zapytaj o to. Nie wołaj quote-vehicle.`;
+    return `Brakuje ${missing}. Zapytaj o to.`;
   }
   if (execution.kind === 'clarify') {
     return 'Dopytaj, o co chodzi. Nie wołaj narzędzi sklepu.';

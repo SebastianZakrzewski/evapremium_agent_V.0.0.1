@@ -62,7 +62,11 @@ describe('intent session memory', () => {
     );
     state.set(sessionId, second.intent);
     expect(second.intent).toBe('pricing');
-    expect(second.toolIds).toEqual(['quote-vehicle', 'collect-contact']);
+    expect(second.execution).toEqual({
+      kind: 'workflow',
+      workflow: 'fitment_cascade',
+    });
+    expect(second.toolIds).toEqual([]);
   });
 
   it('keeps product_info tools when qualify proposes out_of_scope', async () => {

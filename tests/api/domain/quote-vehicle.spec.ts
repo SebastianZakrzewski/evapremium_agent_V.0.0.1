@@ -85,7 +85,7 @@ describe('quote vehicle workflow', () => {
     });
   });
 
-  it('resumes the open workflow without a new qualification', async () => {
+  it('resumes fitment for a price question without a new qualification', async () => {
     const calls: string[] = [];
     const qualifier: IntentQualifier = {
       qualify: (message) => {
@@ -94,35 +94,23 @@ describe('quote vehicle workflow', () => {
       },
     };
     const first = await prepareIntentTurn(qualifier, 'Ile kosztują dywaniki?');
-    expect(first.execution.kind).toBe('workflow');
+    expect(first.execution).toEqual({
+      kind: 'workflow',
+      workflow: 'fitment_cascade',
+    });
+    expect(first.fitment?.missing).toBe('car_brand');
     expect(calls).toEqual(['Ile kosztują dywaniki?']);
 
     const second = await prepareIntentTurn(qualifier, 'Volkswagen', {
-      quoteWorkflow: first.quoteWorkflow,
+      fitment: first.fitment,
     });
     expect(calls).toEqual(['Ile kosztują dywaniki?']);
-    expect(second.execution.kind).toBe('workflow');
-    expect(second.quoteWorkflow?.entities.car_brand).toBe('Volkswagen');
-
-    const third = await prepareIntentTurn(qualifier, 'Golf 8', {
-      quoteWorkflow: second.quoteWorkflow,
+    expect(second.execution).toEqual({
+      kind: 'workflow',
+      workflow: 'fitment_cascade',
     });
-    expect(calls).toEqual(['Ile kosztują dywaniki?']);
-    expect(third.execution.kind).toBe('workflow');
-
-    const fourth = await prepareIntentTurn(qualifier, '2019', {
-      quoteWorkflow: third.quoteWorkflow,
-    });
-    expect(fourth.execution.kind).toBe('workflow');
-    expect(fourth.quoteWorkflow?.entities.year).toBe(2019);
-
-    const fifth = await prepareIntentTurn(qualifier, 'kombi', {
-      quoteWorkflow: fourth.quoteWorkflow,
-    });
-    expect(calls).toEqual(['Ile kosztują dywaniki?']);
-    expect(fifth.execution.kind).toBe('tool');
-    expect(fifth.toolIds).toEqual(['quote-vehicle', 'collect-contact']);
-    expect(fifth.quoteWorkflow).toBeUndefined();
+    expect(second.fitment?.slots.car_brand).toBe('Volkswagen');
+    expect(second.quoteWorkflow).toBeUndefined();
   });
 
   it('drops the workflow when the next message is a new question', async () => {

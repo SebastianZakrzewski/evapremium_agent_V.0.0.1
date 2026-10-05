@@ -56,7 +56,7 @@ describe('IntentFallback', () => {
     const turn = await prepareIntentTurn(qualifier, 'Ile kosztują dywaniki?');
 
     expect(turn.intent).toBe('pricing');
-    expect(turn.toolIds).toEqual(['quote-vehicle', 'collect-contact']);
+    expect(turn.toolIds).toEqual(['collect-contact']);
   });
 
   it('maps a missing profile to out_of_scope with no shop tools', () => {

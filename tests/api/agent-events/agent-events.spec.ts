@@ -120,29 +120,6 @@ describe('agent domain events', () => {
     ]);
   });
 
-  it('records quote_issued from quote-vehicle only when the composition quotes', async () => {
-    const events = new InMemoryAgentEvents();
-    const tools = shopTools(events);
-
-    await runWithTurnSession('session-quote-vehicle', async () => {
-      await tools.quoteVehicle({
-        brand: 'vw',
-        model: 'golf 8',
-        bodyType: 'hatchback',
-        variantKey: 'komplet-5szt',
-      });
-      await tools.quoteVehicle({ brand: 'vw', model: 'golf 8' });
-    });
-
-    expect(events.list()).toEqual([
-      expect.objectContaining({
-        sessionId: 'session-quote-vehicle',
-        type: 'quote_issued',
-        payload: { amount: 599, currency: 'PLN' },
-      }),
-    ]);
-  });
-
   it('records context_hit and context_miss without leaf body', async () => {
     const events = new InMemoryAgentEvents();
     const tools = shopTools(events);
@@ -267,7 +244,7 @@ describe('agent domain events', () => {
           sub_intent: 'indicative_quote',
           mode: 'action',
           execution: 'workflow',
-          workflow: 'quote_vehicle',
+          workflow: 'fitment_cascade',
         },
       }),
       expect.objectContaining({

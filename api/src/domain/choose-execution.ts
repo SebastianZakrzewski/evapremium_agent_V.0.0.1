@@ -46,13 +46,16 @@ export function chooseExecution(input: {
     return { kind: 'workflow', workflow: FITMENT_CASCADE_WORKFLOW };
   }
 
+  if (input.config.slug === 'indicative_quote' && input.mode === 'action') {
+    return { kind: 'workflow', workflow: FITMENT_CASCADE_WORKFLOW };
+  }
+
   if (input.mode === 'knowledge') {
     return {
       kind: 'knowledge',
       tools: input.config.allowedTools.filter(
         (tool) =>
           tool !== 'quote-price' &&
-          tool !== 'quote-vehicle' &&
           tool !== 'collect-contact' &&
           tool !== 'resolve-template',
       ),

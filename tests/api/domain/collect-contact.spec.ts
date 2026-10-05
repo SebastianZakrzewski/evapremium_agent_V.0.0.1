@@ -62,17 +62,21 @@ describe('collect contact', () => {
     });
   });
 
-  it('does not treat a vehicle reply as a name while the quote workflow is open', async () => {
+  it('does not treat a vehicle reply as a name while fitment is open', async () => {
     const qualifier = new StubIntentQualifier();
     const first = await prepareIntentTurn(qualifier, 'Ile kosztują dywaniki?');
+    expect(first.execution).toEqual({
+      kind: 'workflow',
+      workflow: 'fitment_cascade',
+    });
     expect(first.contactWorkflow?.missing).toBe('given_name');
     expect(first.toolIds).toEqual([]);
 
     const second = await prepareIntentTurn(qualifier, 'Volkswagen', {
-      quoteWorkflow: first.quoteWorkflow,
+      fitment: first.fitment,
       contactWorkflow: first.contactWorkflow,
     });
-    expect(second.quoteWorkflow?.entities.car_brand).toBe('Volkswagen');
+    expect(second.fitment?.slots.car_brand).toBe('Volkswagen');
     expect(second.contactWorkflow?.missing).toBe('given_name');
     expect(second.contactWorkflow?.slots.givenName).toBeUndefined();
   });

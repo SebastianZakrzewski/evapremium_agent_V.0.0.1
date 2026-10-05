@@ -25,7 +25,6 @@ export type SubIntentSlug = (typeof SUB_INTENT_SLUGS)[number];
 export const CATALOG_TOOL_IDS = [
   'resolve-template',
   'quote-price',
-  'quote-vehicle',
   'collect-contact',
   'lookup-leaf',
   'search-leaves',
@@ -148,11 +147,10 @@ export const SUB_INTENT_CATALOG: readonly SubIntentConfig[] = [
     negativeExamples: ['Jaki jest termin dostawy?', 'Jakie macie kolory?'],
     relatedBranches: [],
     allowedModes: ['knowledge', 'action'],
-    allowedTools: ['quote-vehicle', 'collect-contact'],
-    relatedWorkflows: ['quote_vehicle'],
-    directTool: 'quote-vehicle',
+    allowedTools: ['collect-contact'],
+    relatedWorkflows: ['fitment_cascade'],
     requiredInputs: ['car_brand', 'car_model', 'year', 'body_type'],
-    fallbackWorkflow: 'quote_vehicle',
+    fallbackWorkflow: 'fitment_cascade',
   },
   {
     slug: 'complaint_info',

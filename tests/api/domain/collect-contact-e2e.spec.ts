@@ -71,6 +71,9 @@ class QuoteContactSimulation {
   async say(sessionId: string, message: string): Promise<{
     intent: string;
     toolIds: string[];
+    execution: string;
+    workflow?: string;
+    fitmentMissing?: string;
     tool?: ToolResult;
     stored?: { givenName?: string; phone?: string; email?: string };
   }> {
@@ -107,6 +110,12 @@ class QuoteContactSimulation {
     return {
       intent: prepared.intent,
       toolIds: [...prepared.toolIds],
+      execution: prepared.execution.kind,
+      workflow:
+        prepared.execution.kind === 'workflow'
+          ? prepared.execution.workflow
+          : undefined,
+      fitmentMissing: prepared.fitment?.missing,
       tool,
       stored: row && {
         givenName: row.data.givenName,
@@ -145,49 +154,26 @@ class QuoteContactSimulation {
 }
 
 describe('collect-contact conversation simulation', () => {
-  it('collects a name and phone across a quote, then keeps an optional email', async () => {
+  it('opens fitment for a price question and does not call collect-contact', async () => {
     const sim = new QuoteContactSimulation();
     const session = 'quote-then-contact';
 
     const ask = await sim.say(session, 'Ile kosztują dywaniki?');
     const brand = await sim.say(session, 'Volkswagen');
-    const model = await sim.say(session, 'Golf 8');
-    const year = await sim.say(session, '2019');
-    const body = await sim.say(session, 'kombi');
-    const name = await sim.say(session, 'Anna');
-    const phone = await sim.say(session, '500 600 700');
-    const email = await sim.say(session, 'anna@example.com');
 
+    expect(ask.intent).toBe('pricing');
+    expect(ask.execution).toBe('workflow');
+    expect(ask.workflow).toBe('fitment_cascade');
+    expect(ask.fitmentMissing).toBe('car_brand');
+    expect(ask.toolIds).not.toContain('collect-contact');
     expect(ask.tool).toBeUndefined();
+    expect(brand.workflow).toBe('fitment_cascade');
+    expect(brand.fitmentMissing).toBe('car_model');
     expect(brand.tool).toBeUndefined();
-    expect(model.tool).toBeUndefined();
-    expect(year.tool).toBeUndefined();
-    expect(body.tool).toMatchObject({ status: 'waiting', missing: 'given_name' });
-    expect(name.tool).toMatchObject({
-      status: 'waiting',
-      missing: 'phone',
-      givenName: 'Anna',
-    });
-    expect(phone.tool).toEqual({
-      status: 'saved',
-      givenName: 'Anna',
-      phone: '500600700',
-    });
-    expect(email.tool).toEqual({
-      status: 'saved',
-      givenName: 'Anna',
-      phone: '500600700',
-      email: 'anna@example.com',
-    });
-    expect(email.stored).toEqual({
-      givenName: 'Anna',
-      phone: '500600700',
-      email: 'anna@example.com',
-    });
-    expect(sim.calls).toEqual([session, session, session, session]);
+    expect(sim.calls).toEqual([]);
   });
 
-  it('saves name, phone and email from one priced sentence', async () => {
+  it('remembers contact written in a price sentence without a quote tool', async () => {
     const sim = new QuoteContactSimulation();
     const turn = await sim.say(
       'one-sentence',
@@ -195,14 +181,10 @@ describe('collect-contact conversation simulation', () => {
     );
 
     expect(turn.intent).toBe('pricing');
-    expect(turn.toolIds).toEqual(['quote-vehicle', 'collect-contact']);
-    expect(turn.tool).toEqual({
-      status: 'saved',
-      givenName: 'Anna',
-      phone: '500600700',
-      email: 'anna@example.com',
-    });
-    expect(turn.stored).toEqual(turn.tool && {
+    expect(turn.workflow).toBe('fitment_cascade');
+    expect(turn.toolIds).not.toContain('collect-contact');
+    expect(turn.tool).toBeUndefined();
+    expect(turn.stored).toEqual({
       givenName: 'Anna',
       phone: '500600700',
       email: 'anna@example.com',
@@ -237,11 +219,8 @@ describe('collect-contact conversation simulation', () => {
       'Ile kosztują dywaniki Volkswagen Golf 8 kombi 2020?',
     );
 
-    expect(again.tool).toEqual({
-      status: 'saved',
-      givenName: 'Anna',
-      phone: '500600700',
-    });
+    expect(again.workflow).toBe('fitment_cascade');
+    expect(again.tool).toBeUndefined();
     expect(again.stored).toEqual({
       givenName: 'Anna',
       phone: '500600700',

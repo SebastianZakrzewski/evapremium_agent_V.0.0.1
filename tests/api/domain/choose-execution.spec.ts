@@ -17,7 +17,7 @@ describe('chooseExecution', () => {
     ).toEqual({ kind: 'knowledge', tools: [] });
   });
 
-  it('points at quote-vehicle when brand and model are present', () => {
+  it('starts fitment_cascade for a quote action with a complete car', () => {
     expect(
       chooseExecution({
         mode: 'action',
@@ -29,21 +29,17 @@ describe('chooseExecution', () => {
         },
         config: quote,
       }),
-    ).toEqual({
-      kind: 'tool',
-      tool: 'quote-vehicle',
-      tools: ['quote-vehicle', 'collect-contact'],
-    });
+    ).toEqual({ kind: 'workflow', workflow: 'fitment_cascade' });
   });
 
-  it('starts quote_vehicle when the action is missing a slot', () => {
+  it('starts fitment_cascade when the quote action is missing a slot', () => {
     expect(
       chooseExecution({
         mode: 'action',
         entities: { car_model: 'Golf 8' },
         config: quote,
       }),
-    ).toEqual({ kind: 'workflow', workflow: 'quote_vehicle' });
+    ).toEqual({ kind: 'workflow', workflow: 'fitment_cascade' });
   });
 
   it('starts fitment_cascade when a knowledge question already names the car', () => {

@@ -18,7 +18,6 @@ import { StubIntentQualifier } from '@api/mastra/intents/stub-intent-qualifier';
 const shopCatalog = {
   'resolve-template': { id: 'resolve-template' },
   'quote-price': { id: 'quote-price' },
-  'quote-vehicle': { id: 'quote-vehicle' },
   'collect-contact': { id: 'collect-contact' },
   'lookup-leaf': { id: 'lookup-leaf' },
   'search-leaves': { id: 'search-leaves' },
@@ -27,36 +26,37 @@ const shopCatalog = {
 describe('prepareIntentTurn', () => {
   const qualifier = new StubIntentQualifier();
 
-  it('gives a complete pricing turn the quote-vehicle tool', async () => {
+  it('starts fitment for a pricing question that already names the car', async () => {
     const turn = await prepareIntentTurn(
       qualifier,
       'Ile kosztują dywaniki Volkswagen Golf 8 kombi 2019?',
     );
-    const tools = selectTurnTools(shopCatalog, turn.toolIds);
 
     expect(turn.intent).toBe('pricing');
     expect(turn.execution).toEqual({
-      kind: 'tool',
-      tool: 'quote-vehicle',
-      tools: ['quote-vehicle', 'collect-contact'],
+      kind: 'workflow',
+      workflow: 'fitment_cascade',
     });
-    expect(Object.keys(tools)).toEqual(['quote-vehicle', 'collect-contact']);
-    expect(profileAllowsTool(turn.toolIds, 'quote-vehicle')).toBe(true);
-    expect(turn.instructions).toContain('Wykonanie: wywołaj quote-vehicle');
-    expect(turn.instructions).toContain('year=2019');
-    expect(turn.instructions).toContain('bodyType="kombi"');
+    expect(turn.toolIds).toEqual([]);
+    expect(turn.quoteWorkflow).toBeUndefined();
+    expect(profileAllowsTool(turn.toolIds, 'collect-contact')).toBe(false);
   });
 
-  it('holds quote tools until the vehicle workflow has both slots', async () => {
+  it('opens fitment when a price question names only the model', async () => {
     const turn = await prepareIntentTurn(
       qualifier,
       'Ile kosztują dywaniki do Golfa 8?',
     );
 
     expect(turn.intent).toBe('pricing');
-    expect(turn.execution.kind).toBe('workflow');
+    expect(turn.execution).toEqual({
+      kind: 'workflow',
+      workflow: 'fitment_cascade',
+    });
     expect(turn.toolIds).toEqual([]);
-    expect(turn.quoteWorkflow?.step).toBe('waiting_for_vehicle');
+    expect(turn.quoteWorkflow).toBeUndefined();
+    expect(turn.fitment?.missing).toBe('car_brand');
+    expect(turn.fitment?.slots.car_model).toBe('Golf 8');
     expect(turn.instructions).toContain('Brakuje marki auta');
   });
 

@@ -12,7 +12,6 @@ import { profileOrOutOfScope } from '@api/mastra/intents/intent-fallback';
 const catalog = {
   'resolve-template': { id: 'resolve-template' },
   'quote-price': { id: 'quote-price' },
-  'quote-vehicle': { id: 'quote-vehicle' },
   'collect-contact': { id: 'collect-contact' },
   'lookup-leaf': { id: 'lookup-leaf' },
   'search-leaves': { id: 'search-leaves' },
@@ -40,7 +39,7 @@ describe('eva turn request context', () => {
       assembleTurnInstructions(profile),
     );
     expect(Object.keys(toolsForRequestContext(catalog, ctx)).sort()).toEqual(
-      ['collect-contact', 'quote-vehicle'],
+      ['collect-contact'],
     );
   });
 
@@ -102,7 +101,7 @@ describe('eva turn request context', () => {
     ctx.set(MASTRA_IS_STUDIO_KEY, true);
 
     expect(Object.keys(toolsForRequestContext(catalog, ctx)).sort()).toEqual(
-      ['collect-contact', 'quote-vehicle'],
+      ['collect-contact'],
     );
   });
 });

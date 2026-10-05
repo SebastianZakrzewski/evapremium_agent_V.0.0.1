@@ -94,7 +94,7 @@ describe('prepareIntentTurn logging', () => {
       subIntent: 'indicative_quote',
       mode: 'action',
       execution: 'workflow',
-      executionTarget: 'quote_vehicle',
+      executionTarget: 'fitment_cascade',
       tools: turn.toolIds,
       forcedOutOfScope: false,
     });

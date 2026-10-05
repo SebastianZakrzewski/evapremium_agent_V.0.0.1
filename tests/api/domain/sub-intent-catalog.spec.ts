@@ -21,17 +21,17 @@ describe('sub-intent catalog', () => {
     }
   });
 
-  it('sends an incomplete indicative quote to the vehicle workflow', () => {
+  it('sends an indicative quote action to the fitment workflow', () => {
     const quote = subIntentBySlug('indicative_quote');
-    expect(quote?.directTool).toBe('quote-vehicle');
-    expect(quote?.allowedTools).toEqual(['quote-vehicle', 'collect-contact']);
+    expect(quote?.directTool).toBeUndefined();
+    expect(quote?.allowedTools).toEqual(['collect-contact']);
     expect(quote?.requiredInputs).toEqual([
       'car_brand',
       'car_model',
       'year',
       'body_type',
     ]);
-    expect(quote?.fallbackWorkflow).toBe('quote_vehicle');
+    expect(quote?.fallbackWorkflow).toBe('fitment_cascade');
     expect(quote?.allowedModes).toEqual(['knowledge', 'action']);
   });
 });

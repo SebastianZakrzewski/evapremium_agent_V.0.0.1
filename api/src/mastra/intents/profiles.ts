@@ -71,8 +71,8 @@ export class PricingIntentProfile implements IntentProfile {
   readonly context =
     'Wycena orientacyjna z pricing_matrix po jednoznacznym szablonie i wariancie kategorii.';
   readonly instructions =
-    'Wycena to quote-vehicle i collect-contact. Kwota tylko z wyniku quoted. Przy many, need_variant albo mat_type_required dopytaj. Przy none i missing_matrix_row nie wymyślaj ceny. Wycena nie jest ofertą wiążącą. collect-contact zbiera imię i telefon; e-mail jest opcjonalny.';
-  readonly tools: ShopToolId[] = ['quote-vehicle', 'collect-contact'];
+    'Pytanie o cenę uruchamia dopasowanie auta. Bez kwoty, dopóki kaskada nie wskaże jednego szablonu. collect-contact zbiera imię i telefon; e-mail jest opcjonalny.';
+  readonly tools: ShopToolId[] = ['collect-contact'];
   readonly execution = defaultExecution;
   readonly permissions = shopPermissions([
     'quote_price',
