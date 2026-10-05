@@ -76,6 +76,71 @@ describe('fitment session', () => {
     });
   });
 
+  it('asks for generation when the year overlaps two ranges and keeps the model', async () => {
+    const waiting = await advanceFitmentCascade({
+      slots: { car_brand: 'vw', car_model: 'golf', year: 2019 },
+      resolve,
+      aliases: CASCADE_ALIASES,
+    });
+
+    expect(waiting).toMatchObject({
+      status: 'suspended',
+      snapshot: {
+        missing: 'generation',
+        options: ['7 gen', '8 gen'],
+        slots: { car_brand: 'vw', car_model: 'golf', year: 2019 },
+      },
+    });
+  });
+
+  it('keeps the model when the generation reply is an ordinal', async () => {
+    const waiting = await advanceFitmentCascade({
+      slots: { car_brand: 'vw', car_model: 'golf', year: 2019 },
+      resolve,
+      aliases: CASCADE_ALIASES,
+    });
+    expect(waiting.status).toBe('suspended');
+    if (waiting.status !== 'suspended') {
+      return;
+    }
+
+    const bodies = await advanceFitmentCascade({
+      slots: waiting.snapshot.slots,
+      message: 'siódma',
+      asked: waiting.snapshot.missing,
+      resolve,
+      aliases: CASCADE_ALIASES,
+    });
+
+    expect(bodies).toMatchObject({
+      status: 'suspended',
+      snapshot: {
+        missing: 'body_type',
+        slots: {
+          car_brand: 'vw',
+          car_model: 'golf',
+          year: 2019,
+          generation: 'siódma',
+        },
+      },
+    });
+  });
+
+  it('skips generation when the year matches a single range', async () => {
+    const waiting = await advanceFitmentCascade({
+      slots: { car_brand: 'vw', car_model: 'golf', year: 2021 },
+      resolve,
+      aliases: CASCADE_ALIASES,
+    });
+
+    expect(waiting).toMatchObject({
+      status: 'suspended',
+      snapshot: {
+        missing: 'body_type',
+        slots: { car_brand: 'vw', car_model: 'golf', year: 2021 },
+      },
+    });
+  });
   it('asks again for year when the given year matches nothing', async () => {
     const waiting = await advanceFitmentCascade({
       slots: { car_brand: 'vw', car_model: 'golf 8', year: 2005 },

@@ -11,6 +11,7 @@ const slotsSchema = z.object({
   car_model: z.string().optional(),
   year: z.number().optional(),
   body_type: z.string().optional(),
+  generation: z.string().optional(),
 });
 
 const cascadeInputSchema = z.object({
@@ -20,7 +21,7 @@ const cascadeInputSchema = z.object({
 const suspendSchema = z.object({
   workflow: z.literal(FITMENT_CASCADE_WORKFLOW),
   step: z.literal('waiting_for_vehicle'),
-  missing: z.enum(['car_brand', 'car_model', 'year', 'body_type']),
+  missing: z.enum(['car_brand', 'car_model', 'year', 'body_type', 'generation']),
   slots: slotsSchema,
   options: z.array(z.string()).optional(),
 });
@@ -39,7 +40,7 @@ export function createFitmentCascadeWorkflow(cascade: FitmentCascadePort) {
   const step = createStep({
     id: 'resolve-cascade',
     description:
-      'Zbiera markę, model, rok i typ nadwozia, potem filtruje szablony.',
+      'Zbiera markę, model, rok i typ nadwozia. Generację dopytuje tylko, gdy rocznik wpada w więcej niż jeden zakres.',
     inputSchema: cascadeInputSchema,
     outputSchema: readySchema,
     resumeSchema,

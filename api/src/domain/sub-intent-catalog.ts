@@ -37,6 +37,7 @@ export type RouterEntities = {
   car_model?: string;
   year?: number;
   body_type?: string;
+  generation?: string;
 };
 
 export type EntityKey = keyof RouterEntities;

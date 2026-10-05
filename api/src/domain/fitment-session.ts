@@ -70,9 +70,20 @@ export async function advanceFitmentCascade(input: {
     return { status: 'ready', result };
   }
 
-  const question = nextQuestion(result.templates, slots);
+  const narrowed = narrowByGeneration(result.templates, slots.generation);
+  if (narrowed.kind === 'ask') {
+    return waiting('generation', clearSlot(slots, 'generation'), narrowed.options);
+  }
+  if (narrowed.kind === 'one') {
+    return { status: 'ready', result: { status: 'one', template: narrowed.template } };
+  }
+
+  const question = nextQuestion(narrowed.templates, slots);
   if (!question) {
-    return { status: 'ready', result };
+    return {
+      status: 'ready',
+      result: { status: 'many', templates: narrowed.templates },
+    };
   }
   return waiting(question.missing, clearSlot(slots, question.missing), question.options);
 }
@@ -143,13 +154,17 @@ function nextQuestion(
   const models = unique(templates.map((template) => template.modelKey));
   const bodies = bodyOptions(templates);
   const years = yearOptions(templates);
+  const generations = generationOptions(templates);
   if (models.length > 1 && slots.year === undefined && years.length > 1) {
     return { missing: 'year', options: years };
+  }
+  if (typeof slots.year === 'number' && generations.length > 1 && !slots.generation) {
+    return { missing: 'generation', options: generations };
   }
   if (bodies.length > 1 && !slots.body_type) {
     return { missing: 'body_type', options: bodies };
   }
-  if (models.length > 1) {
+  if (models.length > 1 && !slots.generation) {
     return { missing: 'car_model', options: models };
   }
   if (bodies.length > 1) {
@@ -181,6 +196,107 @@ function bodyOptions(templates: MatTemplate[]): string[] {
 
 function yearOptions(templates: MatTemplate[]): string[] {
   return unique(templates.map(yearLabel));
+}
+
+type GenerationNarrowing =
+  | { kind: 'many'; templates: MatTemplate[] }
+  | { kind: 'one'; template: MatTemplate }
+  | { kind: 'ask'; options: string[] };
+
+function narrowByGeneration(
+  templates: MatTemplate[],
+  generation: string | undefined,
+): GenerationNarrowing {
+  if (!generation?.trim()) {
+    return { kind: 'many', templates };
+  }
+  const matched = templates.filter((template) =>
+    matchesGeneration(template, generation),
+  );
+  const first = matched[0];
+  if (!first) {
+    return { kind: 'ask', options: generationOptions(templates) };
+  }
+  if (matched.length === 1) {
+    return { kind: 'one', template: first };
+  }
+  return { kind: 'many', templates: matched };
+}
+
+const GENERATION_WORDS: Record<string, string> = {
+  pierwsza: '1',
+  pierwszy: '1',
+  druga: '2',
+  drugi: '2',
+  ii: '2',
+  trzecia: '3',
+  trzeci: '3',
+  iii: '3',
+  czwarta: '4',
+  czwarty: '4',
+  piata: '5',
+  piaty: '5',
+  szosta: '6',
+  szosty: '6',
+  siodma: '7',
+  siodmy: '7',
+  osma: '8',
+  osmy: '8',
+  dziewiata: '9',
+  dziewiaty: '9',
+};
+
+function foldGeneration(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .replace(/\s+/g, ' ');
+}
+
+function generationNumber(value: string): string | undefined {
+  const folded = foldGeneration(value);
+  const marked = folded.match(/(\d+)\s*gen\b/u);
+  if (marked?.[1]) {
+    return marked[1];
+  }
+  for (const token of folded.split(' ')) {
+    const word = GENERATION_WORDS[token];
+    if (word) {
+      return word;
+    }
+  }
+  if (/^\d+$/u.test(folded)) {
+    return folded;
+  }
+  return undefined;
+}
+
+function generationLabel(template: MatTemplate): string {
+  const marked = template.modelKey.match(/(\d+)\s*gen\b/iu);
+  if (marked?.[1]) {
+    return `${marked[1]} gen`;
+  }
+  const column = template.generation?.trim();
+  if (column) {
+    return column;
+  }
+  return template.modelKey.trim();
+}
+
+function generationOptions(templates: MatTemplate[]): string[] {
+  return unique(templates.map(generationLabel));
+}
+
+function matchesGeneration(template: MatTemplate, answer: string): boolean {
+  const label = generationLabel(template);
+  if (foldGeneration(label) === foldGeneration(answer)) {
+    return true;
+  }
+  const answerNumber = generationNumber(answer);
+  const labelNumber = generationNumber(label);
+  return answerNumber !== undefined && answerNumber === labelNumber;
 }
 
 function yearLabel(template: MatTemplate): string {

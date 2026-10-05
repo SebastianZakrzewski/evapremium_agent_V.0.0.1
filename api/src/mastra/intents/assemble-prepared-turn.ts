@@ -55,6 +55,7 @@ const MISSING_LABEL: Record<VehicleSlotKey, string> = {
   car_model: 'modelu auta',
   year: 'rocznika',
   body_type: 'typu nadwozia',
+  generation: 'generacji',
 };
 
 export function missingSlotLabel(key: VehicleSlotKey): string {
@@ -87,6 +88,9 @@ export function knownVehicleFact(slots: RouterEntities): string {
   }
   if (slots.body_type) {
     parts.push(`nadwozie=${slots.body_type}`);
+  }
+  if (slots.generation) {
+    parts.push(`generacja=${slots.generation}`);
   }
   return parts.length > 0 ? ` Znane: ${parts.join(', ')}.` : '';
 }

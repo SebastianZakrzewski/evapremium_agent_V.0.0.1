@@ -9,7 +9,7 @@ export type QuoteWorkflowSnapshot = {
   entities: RouterEntities;
 };
 
-export type VehicleSlotKey = 'car_brand' | 'car_model' | 'year' | 'body_type';
+export type VehicleSlotKey = 'car_brand' | 'car_model' | 'year' | 'body_type' | 'generation';
 
 export type QuoteVehicleAdvance =
   | {
@@ -45,6 +45,9 @@ function filled(entities: RouterEntities): RouterEntities {
   }
   if (entities.body_type?.trim()) {
     next.body_type = entities.body_type.trim();
+  }
+  if (entities.generation?.trim()) {
+    next.generation = entities.generation.trim();
   }
   return next;
 }

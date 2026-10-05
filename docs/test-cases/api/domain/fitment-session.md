@@ -6,7 +6,8 @@ Zapis ze sklepu: `tests/api/agent-events/agent-events.spec.ts`
 
 Logika zestawu: dopasowanie filtruje od marki i modelu. Pyta o rok albo
 nadwozie tylko wtedy, gdy te pola jeszcze rozdzielają szablony albo wyzerowały
-wynik. Krótka odpowiedź uzupełnia dopytywany slot. Nowe pytanie zamyka snapshot.
+wynik. Generację pyta tylko wtedy, gdy podany rocznik wpada w więcej niż jeden
+zakres. Krótka odpowiedź uzupełnia dopytywany slot. Nowe pytanie zamyka snapshot.
 
 | id | Krytyczność | Tytuł |
 | --- | --- | --- |
@@ -19,6 +20,8 @@ wynik. Krótka odpowiedź uzupełnia dopytywany slot. Nowe pytanie zamyka snapsh
 | fitment-009 | high | Pytanie z autem otwiera kaskadę i trzyma markę na rocznik |
 | fitment-005 | medium | Nowe pytanie czyści snapshot |
 | fitment-006 | high | Narzędzie zapisuje snapshot w sesji tury |
+| fitment-010 | high | Nakładające się roczniki pytają o generację i zostawiają model |
+| fitment-011 | high | Jednoznaczny rocznik pomija generację |
 
 ### fitment-001 — `many` z dwoma nadwoziami zapisuje markę i model
 
@@ -83,6 +86,22 @@ wynik. Krótka odpowiedź uzupełnia dopytywany slot. Nowe pytanie zamyka snapsh
 - **Logika:** pytanie zamyka czekanie na nadwozie.
 - **Wejście:** snapshot Golfa, wiadomość `Jakie macie kolory?`
 - **Wyjście:** `clearFitment: true`
+
+### fitment-010 — Nakładające się roczniki pytają o generację i zostawiają model
+
+- **Kod:** `tests/api/domain/fitment-session.spec.ts` → `it('asks for generation when the year overlaps two ranges and keeps the model')`, `it('keeps the model when the generation reply is an ordinal')`
+- **Krytyczność:** high
+- **Logika:** rok 2019 jest i w Golfie VII, i w Golfie VIII. Workflow pyta o generację, nie podmienia modelu. „siódma” zostawia model i przechodzi do nadwozia.
+- **Wejście:** `vw` / `golf` / `2019`, potem `siódma`
+- **Wyjście:** brakuje `generation`, opcje `7 gen` i `8 gen`, sloty z modelem `golf` i rokiem `2019`; po odpowiedzi brakuje `body_type`
+
+### fitment-011 — Jednoznaczny rocznik pomija generację
+
+- **Kod:** `tests/api/domain/fitment-session.spec.ts` → `it('skips generation when the year matches a single range')`
+- **Krytyczność:** high
+- **Logika:** rok 2021 mieści się tylko w Golfie VIII, więc pytanie dotyczy nadwozia.
+- **Wejście:** `vw` / `golf` / `2021`
+- **Wyjście:** brakuje `body_type`, brak pola generacji
 
 ### fitment-006 — Narzędzie zapisuje snapshot w sesji tury
 
