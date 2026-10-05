@@ -1,5 +1,5 @@
 import type { AgentEventSink } from '../../agent-events/agent-event';
-import type { ShopTools } from '../../chat/shop-tools';
+import type { ShopTools } from '../../application/shop-tools';
 import { createCollectContactTool } from './collect-contact';
 import { createLookupLeafTool } from './lookup-leaf';
 import { createQuotePriceTool } from './quote-price';

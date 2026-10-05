@@ -1,4 +1,9 @@
 import { FITMENT_CASCADE_WORKFLOW } from './fitment-session';
+
+/**
+ * Wybór wykonania tury: wiedza, jeden tool albo workflow.
+ * Wycena w trybie akcji idzie w kaskadę fitmentu, nie w `quote_vehicle`.
+ */
 import type {
   CatalogToolId,
   RouterEntities,
@@ -30,6 +35,7 @@ function inputPresent(entities: RouterEntities, key: keyof RouterEntities): bool
   return typeof value === 'string' && value.trim() !== '';
 }
 
+/** Akcja `indicative_quote` zwraca `fitment_cascade`, nie `quote_vehicle`. */
 export function chooseExecution(input: {
   mode: TurnMode;
   entities: RouterEntities;

@@ -1,16 +1,11 @@
 import { z } from 'zod';
 import {
+  CATALOG_TOOL_IDS,
   SUB_INTENT_SLUGS,
   TURN_MODES,
 } from '../../domain/sub-intent-catalog';
 
-export const SHOP_TOOL_IDS = [
-  'resolve-template',
-  'quote-price',
-  'collect-contact',
-  'lookup-leaf',
-  'search-leaves',
-] as const;
+export const SHOP_TOOL_IDS = CATALOG_TOOL_IDS;
 
 export type ShopToolId = (typeof SHOP_TOOL_IDS)[number];
 

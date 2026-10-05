@@ -7,12 +7,10 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { LeadModule } from './lead/lead.module';
 import { mastraHttpModules } from './mastra/mastra-http.module';
 import { PricingModule } from './pricing/pricing.module';
-import { TemplateCascadeModule } from './templates/template-cascade.module';
 
 @Module({
   imports: [
     SentryModule.forRoot(),
-    TemplateCascadeModule,
     PricingModule,
     ContextTreeModule,
     ChatModule,

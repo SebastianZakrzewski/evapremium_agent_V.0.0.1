@@ -8,6 +8,7 @@ import { PricingModule } from '../pricing/pricing.module';
 import { PricingService } from '../pricing/pricing.service';
 import type { DataStore } from '../supabase/data-store';
 import { DATA_STORE, SupabaseModule } from '../supabase/supabase.module';
+import { vehicleKeyClassifierFromEnv } from '../mastra/vehicle-keys/mastra-vehicle-key-classifier';
 import { TemplateCascadeModule } from '../templates/template-cascade.module';
 import { TemplateCascadeService } from '../templates/template-cascade.service';
 import { CHAT_AGENT } from './chat-agent.port';
@@ -28,7 +29,7 @@ import {
   type SessionClients,
 } from './session-clients';
 import { MastraChatAgent } from './mastra-chat.agent';
-import { ShopTools } from './shop-tools';
+import { ShopTools } from '../application/shop-tools';
 import { StubChatAgent } from './stub-chat.agent';
 import { SupabaseChatSessions } from './supabase-chat-sessions';
 import type { Mastra } from '@mastra/core';
@@ -36,12 +37,12 @@ import { createEvaMastra } from '../mastra/create-eva-mastra';
 import { EVA_SHOP_AGENT_KEY } from '../mastra/create-eva-mastra-agent';
 import { EVA_MASTRA } from '../mastra/eva-mastra.token';
 import { createEvaQualifierAgent } from '../mastra/intents/create-eva-qualifier-agent';
-import { evaTurnWorkflows } from '../mastra/intents/eva-turn-workflows';
+import { evaTurnWorkflows } from '../application/turn/eva-turn-workflows';
 import { MastraIntentQualifier } from '../mastra/intents/mastra-intent-qualifier';
 import {
   TURN_WORKFLOWS,
   type TurnWorkflows,
-} from '../mastra/intents/turn-workflows';
+} from '../application/turn/turn-workflows';
 import {
   INTENT_SESSION_STATE,
   InMemoryIntentSessionState,
@@ -52,7 +53,7 @@ import { SupabaseIntentSessionState } from '../mastra/intents/supabase-intent-se
 @Module({
   imports: [
     AgentEventsModule,
-    TemplateCascadeModule,
+    TemplateCascadeModule.register(vehicleKeyClassifierFromEnv()),
     PricingModule,
     ContextTreeModule,
     SupabaseModule,

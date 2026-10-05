@@ -2,7 +2,7 @@ import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import type { AgentEventSink } from '../../agent-events/agent-event';
 import { executeShopTool } from '../../agent-events/execute-shop-tool';
-import type { ShopTools } from '../../chat/shop-tools';
+import type { ShopTools } from '../../application/shop-tools';
 
 export function createQuotePriceTool(
   tools: ShopTools,

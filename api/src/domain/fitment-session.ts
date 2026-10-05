@@ -1,3 +1,8 @@
+/**
+ * Kaskada dopasowania: dopytuje brakujące sloty auta i woła resolver szablonów.
+ * Wynik `one` zamyka workflow; `many` i `none` zostawiają pytanie o kolejny slot.
+ */
+
 import {
   advanceVehicleSlots,
   type VehicleSlotKey,
@@ -37,6 +42,7 @@ export type FitmentMemory = {
   setFitment(sessionId: string, snapshot: FitmentSnapshot | undefined): void;
 };
 
+/** Posuwa kaskadę o jedną wiadomość. Port `resolve` pochodzi z Nest, nie z modelu. */
 export async function advanceFitmentCascade(input: {
   slots: RouterEntities;
   message?: string;

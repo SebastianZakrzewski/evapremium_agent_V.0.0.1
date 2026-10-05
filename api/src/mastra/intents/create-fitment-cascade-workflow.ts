@@ -36,6 +36,7 @@ const readySchema = z.object({
   recordKey: z.string().optional(),
 });
 
+/** Skorupa Studio nad `advanceFitmentCascade`. Tura HTTP idzie przez `evaTurnWorkflows`. */
 export function createFitmentCascadeWorkflow(cascade: FitmentCascadePort) {
   const step = createStep({
     id: 'resolve-cascade',

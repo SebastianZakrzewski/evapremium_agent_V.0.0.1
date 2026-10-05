@@ -57,6 +57,16 @@ i prompt-bloki, zostawiając moduły Nest. Nazwy `createEvaMastra` /
 
 Moduły produktu zostają osobno: `TemplateCascadeModule`, `PricingModule`,
 `ContextTreeModule`, `LeadModule`. Cena, szablon i liść FAQ wychodzą stamtąd.
+`TemplateCascadeModule` dostaje gotowy port klasyfikatora kluczy z `ChatModule`
+i sam nie składa agenta Mastry.
+
+Katalogi `api/src` czytane od reguły do krawędzi:
+
+- `domain/` — czyste decyzje. Auto w `domain/vehicle/`, kaskada w `domain/cascade/`, kontakt w `domain/contact/`, zbiory ewaluacji FAQ w `domain/knowledge/eval/`. Stare ścieżki (`quote-vehicle`, `template-cascade`, `collect-contact`) tylko re-eksportują.
+- `application/` — polityka jednej tury (`application/turn/`) i fasada tooli sklepu (`application/shop-tools.ts`). Tu są polskie notatki wykonania. Mastra importuje tę warstwę, nie `chat/`.
+- `mastra/` — agenci, `createTool`, kwalifikator, Studio. `mastra/intents/prepare-intent-turn.ts` i workflow tury to cienkie re-eksporty `application/turn/`.
+- `chat/` — HTTP, SSE, budżet tur, sesje. Budżet: port w `turn-budget.ts`, pamięć i Supabase obok.
+- `dashboard/` — odczyt doby, znaczników sesji i logu kontenera w osobnych plikach; `dashboard-read.ts` je zbiera.
 
 Kod w jednym gicie, pakiety `api`, `widget` i `dashboard`. Deploy nadal
 rozdzielony: Nest na Hetznerze; widget i dashboard jako **osobne** originy

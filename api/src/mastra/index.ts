@@ -1,4 +1,4 @@
-import { ShopTools } from '../chat/shop-tools';
+import { ShopTools } from '../application/shop-tools';
 import { ContextTreeResolver } from '../context-tree/context-tree.resolver';
 import { CONTEXT_TREE_NODES } from '../context-tree/in-memory/context-tree-fixture';
 import { InMemoryContextNodeCatalog } from '../context-tree/in-memory/in-memory-context-node-catalog';

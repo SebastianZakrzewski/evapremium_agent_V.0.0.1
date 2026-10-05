@@ -1,3 +1,5 @@
+/** Buduje zdanie dla czatu. Slotami kontaktu rządzi API (`collect-contact`), nie ten plik. */
+
 export type ContactFormValues = {
   givenName: string;
   phone: string;

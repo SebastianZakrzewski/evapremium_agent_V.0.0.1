@@ -1,3 +1,8 @@
+/**
+ * Katalog pod-intencji routera: dozwolone tryby, toole i workflow.
+ * Lista tooli sklepu (`CATALOG_TOOL_IDS`) jest jedynym źródłem identyfikatorów.
+ */
+
 export const TURN_MODES = ['knowledge', 'action', 'ambiguous'] as const;
 
 export type TurnMode = (typeof TURN_MODES)[number];
@@ -171,6 +176,16 @@ export const SUB_INTENT_CATALOG: readonly SubIntentConfig[] = [
     requiredInputs: [],
   },
 ];
+
+/** Pod-intencje tylko informacyjne: bez akcji i bez workflow auta. */
+export const FAQ_SUB_INTENTS: ReadonlySet<string> = new Set(
+  SUB_INTENT_CATALOG.filter(
+    (row) =>
+      row.allowedModes.length === 1 &&
+      row.allowedModes[0] === 'knowledge' &&
+      row.relatedWorkflows.length === 0,
+  ).map((row) => row.slug),
+);
 
 const bySlug = new Map(SUB_INTENT_CATALOG.map((row) => [row.slug, row]));
 

@@ -8,7 +8,7 @@ import { MastraEditor } from '@mastra/editor';
 import { LibSQLStore } from '@mastra/libsql';
 import { MastraStorageExporter, Observability, SamplingStrategyType } from '@mastra/observability';
 import type { AgentEventSink } from '../agent-events/agent-event';
-import type { ShopTools } from '../chat/shop-tools';
+import type { ShopTools } from '../application/shop-tools';
 import {
   createEvaMastraAgent,
   EVA_SHOP_AGENT_KEY,

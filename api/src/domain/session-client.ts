@@ -1,6 +1,6 @@
 import type { ContactSlots } from './collect-contact';
 import type { FitmentSnapshot } from './fitment-session';
-import type { RouterEntities } from './sub-intent-catalog';
+import { FAQ_SUB_INTENTS, type RouterEntities } from './sub-intent-catalog';
 import type { VehicleSlotKey } from './quote-vehicle';
 
 export type CascadeStatus = 'suspended' | 'one' | 'many' | 'none';
@@ -200,13 +200,6 @@ export class SessionClient {
     return lines.length > 0 ? lines.join(' ') : undefined;
   }
 }
-
-const FAQ_SUB_INTENTS = new Set([
-  'available_colors',
-  'material',
-  'delivery_info',
-  'complaint_info',
-]);
 
 export function contextNeedForTurn(turn: {
   intent?: string;

@@ -3,7 +3,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { InMemoryAgentEvents } from '../../agent-events/in-memory-agent-events';
 import { MastraChatAgent } from '../../chat/mastra-chat.agent';
-import { ShopTools } from '../../chat/shop-tools';
+import { ShopTools } from '../../application/shop-tools';
 import { ContextTreeResolver } from '../../context-tree/context-tree.resolver';
 import { OpenAiTextEmbedder } from '../../context-tree/embeddings/openai-text-embedder';
 import { InMemoryContextLeafVectors } from '../../context-tree/in-memory/in-memory-context-leaf-vectors';
