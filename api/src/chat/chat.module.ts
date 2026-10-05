@@ -123,6 +123,8 @@ import { SupabaseIntentSessionState } from '../mastra/intents/supabase-intent-se
         evaTurnWorkflows({
           resolve: (input) => templates.resolve(input),
           listAliases: () => templates.listAliases(),
+          classifyGeneration: (customerGeneration, generationKeys) =>
+            templates.classifyGeneration(customerGeneration, generationKeys),
         }),
       inject: [TemplateCascadeService],
     },

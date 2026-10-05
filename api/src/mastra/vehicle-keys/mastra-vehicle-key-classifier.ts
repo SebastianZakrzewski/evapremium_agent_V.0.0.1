@@ -1,18 +1,26 @@
 import type {
+  BodyClassificationInput,
   BrandClassificationInput,
+  GenerationClassificationInput,
   ModelClassificationInput,
   VehicleKeyClassifier,
 } from '../../domain/template-cascade';
 import {
+  createBodyKeyClassifierAgent,
   createBrandKeyClassifierAgent,
+  createGenerationKeyClassifierAgent,
   createModelKeyClassifierAgent,
 } from './create-vehicle-key-classifier-agents';
 import {
+  bodyClassificationMessage,
   brandClassificationMessage,
+  generationClassificationMessage,
   modelClassificationMessage,
 } from './classify-vehicle-key-prompts';
 import {
+  bodyClassificationSchema,
   brandClassificationSchema,
+  generationClassificationSchema,
   modelClassificationSchema,
 } from './schema';
 
@@ -32,6 +40,8 @@ export class MastraVehicleKeyClassifier implements VehicleKeyClassifier {
   constructor(
     private readonly brandAgent: StructuredGenerate<typeof brandClassificationSchema>,
     private readonly modelAgent: StructuredGenerate<typeof modelClassificationSchema>,
+    private readonly bodyAgent: StructuredGenerate<typeof bodyClassificationSchema>,
+    private readonly generationAgent: StructuredGenerate<typeof generationClassificationSchema>,
   ) {}
 
   async classifyBrand(input: BrandClassificationInput): Promise<string | null> {
@@ -59,6 +69,32 @@ export class MastraVehicleKeyClassifier implements VehicleKeyClassifier {
     );
     return modelClassificationSchema.parse(result.object).modelKeys;
   }
+
+  async classifyBody(input: BodyClassificationInput): Promise<string | null> {
+    const result = await this.bodyAgent.generate(
+      bodyClassificationMessage(input.customerBody, input.bodyKeys),
+      {
+        structuredOutput: {
+          schema: bodyClassificationSchema,
+          errorStrategy: 'strict',
+        },
+      },
+    );
+    return bodyClassificationSchema.parse(result.object).bodyTypeKey;
+  }
+
+  async classifyGeneration(input: GenerationClassificationInput): Promise<string | null> {
+    const result = await this.generationAgent.generate(
+      generationClassificationMessage(input.customerGeneration, input.generationKeys),
+      {
+        structuredOutput: {
+          schema: generationClassificationSchema,
+          errorStrategy: 'strict',
+        },
+      },
+    );
+    return generationClassificationSchema.parse(result.object).generationKey;
+  }
 }
 
 export function vehicleKeyClassifierFromEnv(): MastraVehicleKeyClassifier | null {
@@ -68,5 +104,7 @@ export function vehicleKeyClassifierFromEnv(): MastraVehicleKeyClassifier | null
   return new MastraVehicleKeyClassifier(
     createBrandKeyClassifierAgent(),
     createModelKeyClassifierAgent(),
+    createBodyKeyClassifierAgent(),
+    createGenerationKeyClassifierAgent(),
   );
 }

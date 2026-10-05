@@ -175,38 +175,156 @@ function applyReply(
   message: string,
   aliases?: VehicleSlotAlias[],
 ): void {
-  const parsed = readVehicleReply(message, aliases);
-  if (missing === 'year') {
-    if (parsed.year !== undefined) {
-      entities.year = parsed.year;
+  let rest = message.replace(/[,.;:()]+/gu, ' ');
+  const year = readYear(rest);
+  if (year !== undefined) {
+    rest = stripWord(rest, String(year));
+    if (entities.year === undefined) {
+      entities.year = year;
     }
-    if (parsed.body !== undefined && entities.body_type === undefined) {
-      entities.body_type = parsed.body;
+  }
+  rest = rest.replace(/\b(?:19|20)\d{2}\b/gu, ' ');
+  rest = rest.replace(/\b(rok|rocznik)\b/giu, ' ');
+  const exactBody = matchExactBody(rest, aliases);
+  if (exactBody && entities.body_type === undefined) {
+    entities.body_type = exactBody.alias;
+    rest = stripWord(rest, exactBody.token);
+  }
+  rest = collapse(rest);
+  if (!rest) {
+    return;
+  }
+
+  if (!entities.car_brand) {
+    const taken = takeBrand(rest, aliases);
+    if (taken.brand) {
+      entities.car_brand = taken.brand;
+      rest = taken.rest;
+    } else if (missing === 'car_brand') {
+      entities.car_brand = rest;
+      return;
+    }
+  } else {
+    rest = stripStoredBrand(rest, entities.car_brand, aliases);
+  }
+  rest = collapse(rest);
+  if (rest && entities.body_type === undefined && missing !== 'generation') {
+    const fuzzyBody = matchBodyType(rest, aliases);
+    if (fuzzyBody) {
+      entities.body_type = fuzzyBody.alias;
+      rest = collapse(stripWord(rest, fuzzyBody.token));
+    }
+  }
+  if (!rest) {
+    return;
+  }
+  if (missing === 'generation') {
+    if (!entities.generation) {
+      entities.generation = rest;
     }
     return;
   }
-  if (missing === 'body_type') {
-    if (parsed.body !== undefined) {
-      entities.body_type = parsed.body;
+  if (!entities.car_model) {
+    entities.car_model = rest;
+  }
+}
+
+function collapse(value: string): string {
+  return value.replace(/\s+/g, ' ').trim();
+}
+
+function stripWord(value: string, token: string): string {
+  return value.replace(new RegExp(`\\b${escapeRegExp(token)}\\b`, 'iu'), ' ');
+}
+
+function brandAliases(aliases: VehicleSlotAlias[] | undefined): string[] {
+  return [
+    ...new Set(
+      (aliases ?? [])
+        .filter((row) => row.slotKind === 'brand')
+        .map((row) => row.aliasNormalized.trim().toLowerCase().replace(/\s+/g, ' '))
+        .filter((alias) => alias.length > 0),
+    ),
+  ].sort((left, right) => right.length - left.length);
+}
+
+function takeBrand(
+  rest: string,
+  aliases: VehicleSlotAlias[] | undefined,
+): { brand?: string; rest: string } {
+  const words = collapse(rest).split(' ').filter((word) => word.length > 0);
+  const normalized = words.map((word) => word.toLowerCase());
+  for (const alias of brandAliases(aliases)) {
+    const aliasWords = alias.split(' ');
+    for (let start = 0; start + aliasWords.length <= normalized.length; start += 1) {
+      const matches = aliasWords.every((word, index) => normalized[start + index] === word);
+      if (!matches) {
+        continue;
+      }
+      return {
+        brand: words.slice(start, start + aliasWords.length).join(' '),
+        rest: words
+          .slice(0, start)
+          .concat(words.slice(start + aliasWords.length))
+          .join(' '),
+      };
     }
-    if (parsed.year !== undefined && entities.year === undefined) {
-      entities.year = parsed.year;
+  }
+  return { rest: words.join(' ') };
+}
+
+function stripStoredBrand(
+  rest: string,
+  brand: string,
+  aliases: VehicleSlotAlias[] | undefined,
+): string {
+  const normalizedBrand = brand.trim().toLowerCase().replace(/\s+/g, ' ');
+  const forms = new Set<string>([normalizedBrand]);
+  for (const row of aliases ?? []) {
+    if (row.slotKind !== 'brand') {
+      continue;
     }
-    return;
+    const alias = row.aliasNormalized.trim().toLowerCase().replace(/\s+/g, ' ');
+    const canonical = row.canonicalKey.trim().toLowerCase().replace(/\s+/g, ' ');
+    if (alias === normalizedBrand || canonical === normalizedBrand) {
+      forms.add(alias);
+      forms.add(canonical);
+    }
   }
-  if (parsed.year !== undefined && entities.year === undefined) {
-    entities.year = parsed.year;
+  const words = collapse(rest).split(' ').filter((word) => word.length > 0);
+  const normalized = words.map((word) => word.toLowerCase());
+  const sorted = [...forms].filter((form) => form.length > 0).sort((left, right) => right.length - left.length);
+  for (const form of sorted) {
+    const aliasWords = form.split(' ');
+    for (let start = 0; start + aliasWords.length <= normalized.length; start += 1) {
+      const matches = aliasWords.every((word, index) => normalized[start + index] === word);
+      if (!matches) {
+        continue;
+      }
+      return words
+        .slice(0, start)
+        .concat(words.slice(start + aliasWords.length))
+        .join(' ');
+    }
   }
-  if (parsed.body !== undefined && entities.body_type === undefined) {
-    entities.body_type = parsed.body;
+  return words.join(' ');
+}
+
+function matchExactBody(
+  text: string,
+  aliases?: VehicleSlotAlias[],
+): { alias: string; token: string } | undefined {
+  const normalized = text.trim().toLowerCase().replace(/\s+/g, ' ');
+  if (normalized.length === 0) {
+    return undefined;
   }
-  if (parsed.rest) {
-    entities[missing] = parsed.rest;
-    return;
+  const inside = bodyForms(aliases)
+    .filter((form) => new RegExp(`\\b${escapeRegExp(form.label)}\\b`, 'iu').test(normalized))
+    .sort((left, right) => right.label.length - left.label.length)[0];
+  if (!inside) {
+    return undefined;
   }
-  if (parsed.year === undefined && parsed.body === undefined) {
-    entities[missing] = message.trim();
-  }
+  return { alias: inside.alias, token: inside.label };
 }
 
 function harvest(
@@ -291,10 +409,12 @@ export function isSlotReply(message: string): boolean {
 export function advanceQuoteVehicle(input: {
   entities: RouterEntities;
   message?: string;
+  aliases?: VehicleSlotAlias[];
 }): QuoteVehicleAdvance {
   const collected = advanceVehicleSlots({
     slots: input.entities,
     message: input.message,
+    aliases: input.aliases,
   });
   const entities = collected.slots;
   const missing = collected.missing;

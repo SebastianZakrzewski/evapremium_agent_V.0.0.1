@@ -27,4 +27,11 @@ export class TemplateCascadeResolver {
   listAliases(): VehicleSlotAlias[] {
     return this.aliases.list();
   }
+
+  classifyGeneration(customerGeneration: string, generationKeys: string[]): Promise<string | null> {
+    if (!this.classifier?.classifyGeneration) {
+      return Promise.resolve(null);
+    }
+    return this.classifier.classifyGeneration({ customerGeneration, generationKeys });
+  }
 }

@@ -73,6 +73,62 @@ Na liście nie ma Pandy.
 
 Lista kandydatów w prawdziwym wywołaniu jest krótka i należy do już wybranej marki. Ignoruj nadwozie i rok, nawet gdy klient je dopisał.`;
 
+export const BODY_KEY_CLASSIFIER_INSTRUCTIONS = `Wybierasz jeden typ nadwozia z listy kandydatów dla słów klienta. Lista przychodzi w wiadomości. Oddajesz wyłącznie bodyTypeKey z tej listy.
+
+Klucz musi być napisany tak samo jak na liście. Synonim, polska nazwa i literówka liczą się tylko wtedy, gdy ten typ jest na liście. Nie układasz własnego napisu.
+
+# Steps
+
+1. Porównaj nadwozie klienta z kandydatami.
+2. Gdy jedno jest tym samym typem, wybierz je. Na przykład SUV i crossover to ten sam typ, gdy na liście jest suv.
+3. Gdy żaden nie pasuje, bodyTypeKey jest null.
+
+Najpierw porównaj. bodyTypeKey jest wnioskiem i stoi na końcu odpowiedzi.
+
+# Output Format
+
+Cała odpowiedź to jeden obiekt JSON, bez tekstu przed nim i po nim.
+
+- bodyTypeKey: string równy jednemu kandydatowi, albo null.
+
+# Examples
+
+Input: nadwozie klienta SUV. Kandydaci: hatchback, wagon, suv.
+SUV jest typem suv z listy.
+{"bodyTypeKey":"suv"}
+
+Input: nadwozie klienta kabriolet. Kandydaci: hatchback, wagon.
+Na liście nie ma kabrioletu.
+{"bodyTypeKey":null}`;
+
+export const GENERATION_KEY_CLASSIFIER_INSTRUCTIONS = `Wybierasz jedną generację z listy kandydatów dla słów klienta. Lista przychodzi w wiadomości. Oddajesz wyłącznie generationKey z tej listy.
+
+Klucz musi być napisany tak samo jak na liście. Nie układasz własnego napisu.
+
+# Steps
+
+1. Porównaj słowa klienta z kandydatami.
+2. Cyfra, zapis rzymski i słowa w rodzaju „po lifcie” albo „przed liftem” wskazują kandydata, który to samo mówi.
+3. Gdy żaden nie pasuje, generationKey jest null.
+
+Najpierw porównaj. generationKey jest wnioskiem i stoi na końcu odpowiedzi.
+
+# Output Format
+
+Cała odpowiedź to jeden obiekt JSON, bez tekstu przed nim i po nim.
+
+- generationKey: string równy jednemu kandydatowi, albo null.
+
+# Examples
+
+Input: generacja klienta po lifcie. Kandydaci: 7 gen, 8 gen.
+Po lifcie nie rozstrzyga między 7 gen a 8 gen.
+{"generationKey":null}
+
+Input: generacja klienta ósma. Kandydaci: 7 gen, 8 gen.
+Ósma jest 8 gen z listy.
+{"generationKey":"8 gen"}`;
+
 export function brandClassificationMessage(
   customerBrand: string,
   brandKeys: string[],
@@ -87,4 +143,15 @@ export function modelClassificationMessage(
 ): string {
   const yearLine = typeof year === 'number' ? `\nrok klienta: ${year}` : '';
   return `model klienta: ${customerModel}${yearLine}\nkandydaci:\n${modelKeys.map((key) => `- ${key}`).join('\n')}`;
+}
+
+export function bodyClassificationMessage(customerBody: string, bodyKeys: string[]): string {
+  return `nadwozie klienta: ${customerBody}\nkandydaci:\n${bodyKeys.map((key) => `- ${key}`).join('\n')}`;
+}
+
+export function generationClassificationMessage(
+  customerGeneration: string,
+  generationKeys: string[],
+): string {
+  return `generacja klienta: ${customerGeneration}\nkandydaci:\n${generationKeys.map((key) => `- ${key}`).join('\n')}`;
 }

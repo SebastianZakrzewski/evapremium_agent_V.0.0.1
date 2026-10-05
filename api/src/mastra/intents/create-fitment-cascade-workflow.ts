@@ -51,6 +51,7 @@ export function createFitmentCascadeWorkflow(cascade: FitmentCascadePort) {
         message: resumeData?.message,
         resolve: (input) => cascade.resolve(input),
         aliases: cascade.listAliases(),
+        classifyGeneration: cascade.classifyGeneration,
       });
       if (decision.status === 'suspended') {
         return suspend(decision.snapshot);

@@ -50,6 +50,10 @@ export class ShopTools {
     return this.templates.listAliases();
   }
 
+  classifyGeneration(customerGeneration: string, generationKeys: string[]) {
+    return this.templates.classifyGeneration(customerGeneration, generationKeys);
+  }
+
   quotePrice(input: QuotePriceInput): QuotePriceResult {
     const result = this.pricing.quote(input);
     if (result.status === 'quoted') {

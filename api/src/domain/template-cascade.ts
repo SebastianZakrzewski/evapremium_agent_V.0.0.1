@@ -43,9 +43,21 @@ export type ModelClassificationInput = {
   year?: number;
 };
 
+export type BodyClassificationInput = {
+  customerBody: string;
+  bodyKeys: string[];
+};
+
+export type GenerationClassificationInput = {
+  customerGeneration: string;
+  generationKeys: string[];
+};
+
 export type VehicleKeyClassifier = {
   classifyBrand(input: BrandClassificationInput): Promise<string | null>;
   classifyModel(input: ModelClassificationInput): Promise<string[]>;
+  classifyBody?(input: BodyClassificationInput): Promise<string | null>;
+  classifyGeneration?(input: GenerationClassificationInput): Promise<string | null>;
 };
 
 export type MatTemplate = {
@@ -69,9 +81,9 @@ export type MatTemplate = {
 };
 
 export type TemplateCascadeResult =
-  | { status: 'none' }
-  | { status: 'one'; template: MatTemplate }
-  | { status: 'many'; templates: MatTemplate[] };
+  | { status: 'none'; bodyTypeKey?: string }
+  | { status: 'one'; template: MatTemplate; bodyTypeKey?: string }
+  | { status: 'many'; templates: MatTemplate[]; bodyTypeKey?: string };
 
 function collapseWhitespace(value: string): string {
   return value.trim().toLowerCase().replace(/\s+/g, ' ');
@@ -220,16 +232,17 @@ function collapseDuplicateTemplates(matches: MatTemplate[]): MatTemplate[] {
   return [...byIdentity.values()];
 }
 
-function toResult(matches: MatTemplate[]): TemplateCascadeResult {
+function toResult(matches: MatTemplate[], bodyTypeKey?: string): TemplateCascadeResult {
   const unique = collapseDuplicateTemplates(matches);
   const first = unique[0];
+  const classified = bodyTypeKey ? { bodyTypeKey } : {};
   if (!first) {
-    return { status: 'none' };
+    return { status: 'none', ...classified };
   }
   if (unique.length === 1) {
-    return { status: 'one', template: first };
+    return { status: 'one', template: first, ...classified };
   }
-  return { status: 'many', templates: unique };
+  return { status: 'many', templates: unique, ...classified };
 }
 
 export function resolveTemplate(
@@ -443,7 +456,7 @@ export async function resolveClassifiedTemplate(
 ): Promise<TemplateCascadeResult> {
   const slots = normalizeSlots(input);
   const aliased = mapAliases(slots, aliases);
-  const bodyTypeKey = aliased.bodyTypeKey;
+  let bodyTypeKey = aliased.bodyTypeKey;
 
   if (!slots.brand || !slots.model) {
     if (!slots.recordKey) {
@@ -501,9 +514,23 @@ export async function resolveClassifiedTemplate(
     }
   }
 
-  let matches = filterTemplates(
+  const candidates = filterTemplates(
     templates,
-    { brandKey, modelKeys, bodyTypeKey },
+    { brandKey, modelKeys },
+    slots.recordKey,
+    slots.year,
+  );
+  if (slots.bodyType && !aliased.bodyTypeKey) {
+    bodyTypeKey = await resolveBodyTypeKey(
+      slots.bodyType,
+      undefined,
+      candidates,
+      classifier,
+    );
+  }
+  let matches = filterTemplates(
+    candidates,
+    { bodyTypeKey },
     slots.recordKey,
     slots.year,
   );
@@ -519,5 +546,51 @@ export async function resolveClassifiedTemplate(
       slots.year,
     );
   }
-  return toResult(matches);
+  return toResult(
+    matches,
+    slots.bodyType && !aliased.bodyTypeKey ? bodyTypeKey : undefined,
+  );
+}
+
+async function resolveBodyTypeKey(
+  customerBody: string | undefined,
+  aliasKey: string | undefined,
+  templates: MatTemplate[],
+  classifier: VehicleKeyClassifier,
+): Promise<string | undefined> {
+  if (!customerBody) {
+    return undefined;
+  }
+  if (aliasKey) {
+    return aliasKey;
+  }
+  if (!classifier.classifyBody) {
+    return undefined;
+  }
+  const bodyKeys = uniqueBodyKeys(templates);
+  if (bodyKeys.length === 0) {
+    return undefined;
+  }
+  const chosen = await classifier.classifyBody({
+    customerBody,
+    bodyKeys,
+  });
+  return chosen ? catalogKeyForChoice(chosen, bodyKeys) : undefined;
+}
+
+function uniqueBodyKeys(templates: MatTemplate[]): string[] {
+  const keys = new Set<string>();
+  for (const template of templates) {
+    for (const key of [
+      template.bodyTypeKey,
+      template.bodyType1Key,
+      template.bodyType2Key,
+      template.bodyType3Key,
+    ]) {
+      if (key) {
+        keys.add(key);
+      }
+    }
+  }
+  return [...keys];
 }

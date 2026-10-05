@@ -291,6 +291,54 @@ describe('classified template cascade', () => {
     });
   });
 
+  it('classifies a body the alias table does not know', async () => {
+    let calls = 0;
+    const result = await resolveClassifiedTemplate(
+      { brand: 'vw', model: 'golf 8', bodyType: 'suv' },
+      CASCADE_TEMPLATES,
+      CASCADE_ALIASES,
+      {
+        classifyBrand: async () => null,
+        classifyModel: async () => [],
+        classifyBody: async () => {
+          calls += 1;
+          return 'hatchback';
+        },
+      },
+    );
+
+    expect(calls).toBe(1);
+    expect(result).toMatchObject({
+      status: 'one',
+      bodyTypeKey: 'hatchback',
+      template: { id: 'tmpl-golf-mk8-hatch' },
+    });
+  });
+
+  it('does not classify a body that already has an alias', async () => {
+    let calls = 0;
+    const result = await resolveClassifiedTemplate(
+      { brand: 'vw', model: 'golf 8', bodyType: 'kombi' },
+      CASCADE_TEMPLATES,
+      CASCADE_ALIASES,
+      {
+        classifyBrand: async () => null,
+        classifyModel: async () => [],
+        classifyBody: async () => {
+          calls += 1;
+          return 'hatchback';
+        },
+      },
+    );
+
+    expect(calls).toBe(0);
+    expect(result).toMatchObject({
+      status: 'one',
+      template: { id: 'tmpl-golf-mk8-wagon' },
+    });
+    expect(result.bodyTypeKey).toBeUndefined();
+  });
+
   it('narrows classified keys with the body alias', async () => {
     const result = await resolveClassifiedTemplate(
       { brand: 'Volwagen', model: 'golf 8', bodyType: 'kombi' },

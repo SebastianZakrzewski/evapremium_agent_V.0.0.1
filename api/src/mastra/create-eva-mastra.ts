@@ -115,6 +115,8 @@ export function createEvaMastra(
       fitmentCascadeWorkflow: createFitmentCascadeWorkflow({
         resolve: (input) => tools.resolveTemplate(input),
         listAliases: () => tools.listVehicleAliases(),
+        classifyGeneration: (customerGeneration, generationKeys) =>
+          tools.classifyGeneration(customerGeneration, generationKeys),
       }),
     },
   });

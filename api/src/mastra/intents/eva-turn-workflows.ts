@@ -67,7 +67,7 @@ async function resumeOpenWorkflow(
   if (context.quoteWorkflow !== undefined) {
     return {
       turn: holdContactWorkflow(
-        resumeQuoteTurn(context.quoteWorkflow, message),
+        resumeQuoteTurn(context.quoteWorkflow, message, cascade),
         context.contactWorkflow,
       ),
       candidateIntent: 'pricing',
@@ -172,6 +172,7 @@ async function advanceFitmentTurn(
         slots,
         resolve: (input) => cascade.resolve(input),
         aliases: cascade.listAliases(),
+        classifyGeneration: cascade.classifyGeneration,
       }),
     ),
     collectedSlots: slots,
@@ -208,10 +209,12 @@ function partialFitment(turn: PreparedTurn): FitmentSnapshot | undefined {
 function resumeQuoteTurn(
   snapshot: QuoteWorkflowSnapshot,
   message: string,
+  cascade?: FitmentCascadePort,
 ): PreparedTurn {
   const advanced = advanceQuoteVehicle({
     entities: snapshot.entities,
     message,
+    aliases: cascade?.listAliases(),
   });
   const entities =
     advanced.status === 'ready' ? advanced.entities : advanced.snapshot.entities;
@@ -248,6 +251,7 @@ async function resumeFitmentTurn(
     asked: snapshot.missing,
     resolve: (input) => cascade.resolve(input),
     aliases: cascade.listAliases(),
+    classifyGeneration: cascade.classifyGeneration,
   });
   return {
     ...turnFromCascade(advance),

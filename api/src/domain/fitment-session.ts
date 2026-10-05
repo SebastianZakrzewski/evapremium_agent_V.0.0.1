@@ -25,6 +25,7 @@ export type FitmentSnapshot = {
 export type FitmentCascadePort = {
   resolve(input: TemplateCascadeInput): Promise<TemplateCascadeResult>;
   listAliases(): VehicleSlotAlias[];
+  classifyGeneration?(customerGeneration: string, generationKeys: string[]): Promise<string | null>;
 };
 
 export type FitmentCascadeAdvance =
@@ -42,6 +43,7 @@ export async function advanceFitmentCascade(input: {
   asked?: VehicleSlotKey;
   resolve: FitmentCascadePort['resolve'];
   aliases?: VehicleSlotAlias[];
+  classifyGeneration?: FitmentCascadePort['classifyGeneration'];
 }): Promise<FitmentCascadeAdvance> {
   const aliases = input.aliases ?? [];
   const collected = advanceVehicleSlots({
@@ -50,7 +52,7 @@ export async function advanceFitmentCascade(input: {
     aliases,
     asked: input.message !== undefined ? input.asked : undefined,
   });
-  const slots = recognizedSlots(collected.slots, aliases);
+  const slots = { ...collected.slots };
   if (!slots.car_brand) {
     return waiting('car_brand', slots);
   }
@@ -59,6 +61,11 @@ export async function advanceFitmentCascade(input: {
   }
 
   const result = await input.resolve(cascadeInput(slots));
+  if (result.bodyTypeKey) {
+    slots.body_type = result.bodyTypeKey;
+  } else if (unmatchedBody(slots, aliases)) {
+    delete slots.body_type;
+  }
   if (result.status === 'none') {
     const recovered = await recoverEmpty(slots, input.resolve);
     if (recovered) {
@@ -70,7 +77,12 @@ export async function advanceFitmentCascade(input: {
     return { status: 'ready', result };
   }
 
-  const narrowed = narrowByGeneration(result.templates, slots.generation);
+  const narrowed = await classifyGenerationAnswer(
+    narrowByGeneration(result.templates, slots.generation),
+    result.templates,
+    slots,
+    input.classifyGeneration,
+  );
   if (narrowed.kind === 'ask') {
     return waiting('generation', clearSlot(slots, 'generation'), narrowed.options);
   }
@@ -97,21 +109,28 @@ function cascadeInput(slots: RouterEntities): TemplateCascadeInput {
   };
 }
 
-function recognizedSlots(
-  slots: RouterEntities,
-  aliases: VehicleSlotAlias[],
-): RouterEntities {
+function unmatchedBody(slots: RouterEntities, aliases: VehicleSlotAlias[]): boolean {
   if (!slots.body_type || aliases.length === 0) {
-    return slots;
+    return false;
   }
-  const mapped = mapAliases(
-    normalizeSlots({ bodyType: slots.body_type }),
-    aliases,
-  );
-  if (mapped.bodyTypeKey) {
-    return slots;
+  return !mapAliases(normalizeSlots({ bodyType: slots.body_type }), aliases).bodyTypeKey;
+}
+
+async function classifyGenerationAnswer(
+  narrowed: GenerationNarrowing,
+  templates: MatTemplate[],
+  slots: RouterEntities,
+  classifyGeneration: FitmentCascadePort['classifyGeneration'],
+): Promise<GenerationNarrowing> {
+  if (narrowed.kind !== 'ask' || !slots.generation || !classifyGeneration) {
+    return narrowed;
   }
-  return clearSlot(slots, 'body_type');
+  const chosen = await classifyGeneration(slots.generation, narrowed.options);
+  if (!chosen || !narrowed.options.includes(chosen)) {
+    return narrowed;
+  }
+  slots.generation = chosen;
+  return narrowByGeneration(templates, chosen);
 }
 
 async function recoverEmpty(

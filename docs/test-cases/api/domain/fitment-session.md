@@ -22,6 +22,8 @@ zakres. Krótka odpowiedź uzupełnia dopytywany slot. Nowe pytanie zamyka snaps
 | fitment-006 | high | Narzędzie zapisuje snapshot w sesji tury |
 | fitment-010 | high | Nakładające się roczniki pytają o generację i zostawiają model |
 | fitment-011 | high | Jednoznaczny rocznik pomija generację |
+| fitment-012 | high | Odpowiedź na markę niesie model i rocznik |
+| fitment-013 | high | Odpowiedź na rok niesie nadwozie i zamyka kaskadę |
 
 ### fitment-001 — `many` z dwoma nadwoziami zapisuje markę i model
 
@@ -102,6 +104,22 @@ zakres. Krótka odpowiedź uzupełnia dopytywany slot. Nowe pytanie zamyka snaps
 - **Logika:** rok 2021 mieści się tylko w Golfie VIII, więc pytanie dotyczy nadwozia.
 - **Wejście:** `vw` / `golf` / `2021`
 - **Wyjście:** brakuje `body_type`, brak pola generacji
+
+### fitment-012 — Odpowiedź na markę niesie model i rocznik
+
+- **Kod:** `tests/api/domain/fitment-session.spec.ts` → `it('takes brand, model and year from the reply that was asked as a brand')`
+- **Krytyczność:** high
+- **Logika:** krótka odpowiedź na markę rozcina znany alias marki i zostawia resztę jako model. Rocznik z tego samego zdania nie wraca do marki.
+- **Wejście:** brak slotów, pytanie o `car_brand`, wiadomość `vw golf 8 2019`
+- **Wyjście:** sloty `vw` / `golf 8` / `2019`, brakuje `body_type`
+
+### fitment-013 — Odpowiedź na rok niesie nadwozie i zamyka kaskadę
+
+- **Kod:** `tests/api/domain/fitment-session.spec.ts` → `it('resolves the body given together with the year it asked for')`
+- **Krytyczność:** high
+- **Logika:** przy pytaniu o rok zdanie z rokiem i nadwoziem uzupełnia oba sloty i schodzi do jednego szablonu.
+- **Wejście:** `vw` / `golf 8`, pytanie o rok, wiadomość `2019 kombi`
+- **Wyjście:** `status: ready`, szablon `tmpl-golf-mk8-wagon`
 
 ### fitment-006 — Narzędzie zapisuje snapshot w sesji tury
 
