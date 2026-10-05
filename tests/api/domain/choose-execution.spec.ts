@@ -89,6 +89,24 @@ describe('chooseExecution', () => {
     ).toEqual({ kind: 'workflow', workflow: 'fitment_cascade' });
   });
 
+  it('calls collect-contact for a contact request', () => {
+    const contact = subIntentBySlug('contact_request');
+    if (contact === undefined) {
+      throw new Error('contact_request is required');
+    }
+    expect(
+      chooseExecution({
+        mode: 'action',
+        entities: {},
+        config: contact,
+      }),
+    ).toEqual({
+      kind: 'tool',
+      tool: 'collect-contact',
+      tools: ['collect-contact'],
+    });
+  });
+
   it('clarifies an ambiguous mode without tools', () => {
     const colors = subIntentBySlug('available_colors');
     if (colors === undefined) {

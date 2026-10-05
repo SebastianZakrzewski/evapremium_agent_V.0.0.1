@@ -220,6 +220,16 @@ export function assembledTurn(
   };
 }
 
+function collectsContact(turn: PreparedTurn): boolean {
+  if (turn.mode !== 'action') {
+    return false;
+  }
+  if (turn.subIntent === 'contact_request') {
+    return true;
+  }
+  return turn.intent === 'pricing' && turn.subIntent === 'indicative_quote';
+}
+
 export function attachContactCollection(
   turn: PreparedTurn,
   input: {
@@ -228,11 +238,7 @@ export function attachContactCollection(
     open?: ContactWorkflowSnapshot;
   },
 ): PreparedTurn {
-  if (
-    turn.intent !== 'pricing' ||
-    turn.subIntent !== 'indicative_quote' ||
-    turn.mode !== 'action'
-  ) {
+  if (!collectsContact(turn)) {
     return turn;
   }
   const knownReady = Boolean(input.known?.givenName && input.known.phone);

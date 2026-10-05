@@ -7,10 +7,19 @@ import type {
 import type { IntentQualifier } from './intent-qualifier';
 import type { QualifyResult, ShopIntent } from './schema';
 
+function isContactRequest(text: string): boolean {
+  return /prosz[eę] o kontakt|pro[sś]b[ae] o kontakt|oddzwo[nń]|zostawi[cć] (sw[oó]j )?(kontakt|numer)|chc[eę] zosta[cć] numer|chc[eę] (si[eę] )?(z wami )?skontaktowa[cć]|zadzwo[nń](cie| do mnie)/.test(
+    text,
+  );
+}
+
 function matchIntent(message: string): ShopIntent {
   const text = message.toLowerCase();
   if (/ile koszt|wycen|\bcen/.test(text)) {
     return 'pricing';
+  }
+  if (isContactRequest(text)) {
+    return 'after_sales';
   }
   if (/dostaw|termin|wyślecie|wyslecie/.test(text)) {
     return 'delivery';
@@ -63,6 +72,9 @@ function matchSubIntent(
     return 'delivery_info';
   }
   if (intent === 'after_sales') {
+    if (isContactRequest(text)) {
+      return 'contact_request';
+    }
     return /reklamac/.test(text) ? 'complaint_info' : null;
   }
   if (intent === 'product_info') {
@@ -92,6 +104,9 @@ function matchMode(
     if (/jak\s+(się\s+|sie\s+)?licz|skąd cena|skad cena|co wpływa/.test(text)) {
       return 'knowledge';
     }
+    return 'action';
+  }
+  if (subIntent === 'contact_request') {
     return 'action';
   }
   if (

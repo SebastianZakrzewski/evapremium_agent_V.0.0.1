@@ -12,7 +12,7 @@ export function createCollectContactTool(
   return createTool({
     id: COLLECT_CONTACT_TOOL,
     description:
-      'Uruchamia zbieranie kontaktu przy wycenie. Wymagane imię i numer telefonu. E-mail opcjonalny. Zapisuje podane pola w profilu sesji. Puste wywołanie zaczyna proces i zwraca waiting.',
+      'Uruchamia zbieranie kontaktu przy wycenie albo przy prośbie o kontakt. Wymagane imię i numer telefonu. E-mail opcjonalny. Zapisuje podane pola w profilu sesji. Puste wywołanie zaczyna proces i zwraca waiting.',
     inputSchema: z.object({
       givenName: z.string().optional(),
       phone: z.string().optional(),

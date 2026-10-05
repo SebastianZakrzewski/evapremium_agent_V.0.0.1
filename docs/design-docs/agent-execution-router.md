@@ -40,7 +40,7 @@ Obiekt, nie sam string: `slug`, `name`, `description`, `parentIntent`,
 `allowedTransitions` zostaje strażnikiem grubej intencji sesji.
 
 Pierwsze slugi: `available_colors`, `material`, `fitment`, `delivery_info`,
-`indicative_quote`, `complaint_info`.
+`indicative_quote`, `complaint_info`, `contact_request`.
 
 ## Execution router
 

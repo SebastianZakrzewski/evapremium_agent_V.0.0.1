@@ -7,16 +7,16 @@ bez slotów ma workflow, nie tool zamówienia.
 
 | id | Krytyczność | Tytuł |
 | --- | --- | --- |
-| subintent-001 | high | Sześć slugów i rodzice |
+| subintent-001 | high | Slugi i rodzice |
 | subintent-002 | high | Wycena wymaga marki i modelu |
 
-### subintent-001 — Sześć slugów i rodzice
+### subintent-001 — Slugi i rodzice
 
-- **Kod:** `tests/api/domain/sub-intent-catalog.spec.ts` → `it('keeps six shop sub-intents under the current parent intents')`
+- **Kod:** `tests/api/domain/sub-intent-catalog.spec.ts` → `it('keeps shop sub-intents under the current parent intents')`
 - **Krytyczność:** high
 - **Logika:** Katalog nie wprowadza zamówień ani konta. Każdy slug ma opis i rodzica z czterech intencji sklepu.
 - **Wejście:** `SUB_INTENT_CATALOG`
-- **Wyjście:** slugi `available_colors`, `material`, `fitment`, `delivery_info`, `indicative_quote`, `complaint_info`
+- **Wyjście:** slugi `available_colors`, `material`, `fitment`, `delivery_info`, `indicative_quote`, `complaint_info`, `contact_request`
 
 ### subintent-002 — Wycena wymaga marki i modelu
 

@@ -17,7 +17,7 @@ export function createEvaQualifierAgent(): Agent {
 
 # Output Format
 
-Sam obiekt, bez tekstu obok. intent: product_info, pricing, delivery, after_sales, out_of_scope. sub_intent: available_colors, material, fitment, delivery_info, indicative_quote, complaint_info albo null. mode: knowledge (pytanie o fakt), action (prośba o wycenę lub dopasowanie), ambiguous. entities: car_brand, car_model, year, body_type. year to liczba rocznika. body_type to typ nadwozia, na przykład kombi, hatchback albo SUV. Puste pole encji pomijasz. confidence to liczba od 0 do 1.
+Sam obiekt, bez tekstu obok. intent: product_info, pricing, delivery, after_sales, out_of_scope. sub_intent: available_colors, material, fitment, delivery_info, indicative_quote, complaint_info, contact_request albo null. mode: knowledge (pytanie o fakt), action (prośba o wycenę, dopasowanie albo kontakt), ambiguous. entities: car_brand, car_model, year, body_type. year to liczba rocznika. body_type to typ nadwozia, na przykład kombi, hatchback albo SUV. Puste pole encji pomijasz. confidence to liczba od 0 do 1.
 
 # Examples
 
@@ -33,9 +33,13 @@ Input: Ile kosztują dywaniki?
 Pytanie o cenę, bez auta.
 {"intent":"pricing","sub_intent":"indicative_quote","mode":"action","entities":{},"confidence":0.9}
 
+Input: Proszę o kontakt
+Prośba o oddzwonienie albo zostawienie numeru, nie pytanie o telefon sklepu.
+{"intent":"after_sales","sub_intent":"contact_request","mode":"action","entities":{},"confidence":0.9}
+
 # Notes
 
-Powitanie → product_info, sub_intent null. Ile kosztują → pricing, indicative_quote, action. Jak liczona jest cena → pricing, knowledge. Dostawa → delivery, delivery_info, knowledge. Kolory oferty → product_info, available_colors, knowledge. Z czego są dywaniki → product_info, material, knowledge. Reklamacja jako pytanie → after_sales, complaint_info, knowledge. Czy macie, posiadacie albo czy pasują dywaniki do auta → product_info, fitment, action. Sama marka nie wymusza car_model. Jak dobieracie dywaniki, bez auta → product_info, fitment, knowledge. Kurs walut, konto, płatność → out_of_scope.`,
+Powitanie → product_info, sub_intent null. Ile kosztują → pricing, indicative_quote, action. Jak liczona jest cena → pricing, knowledge. Dostawa → delivery, delivery_info, knowledge. Kolory oferty → product_info, available_colors, knowledge. Z czego są dywaniki → product_info, material, knowledge. Reklamacja jako pytanie → after_sales, complaint_info, knowledge. Proszę o kontakt, oddzwońcie albo chcę zostawić numer → after_sales, contact_request, action. Jaki macie numer albo jak się skontaktować → nie jest contact_request. Czy macie, posiadacie albo czy pasują dywaniki do auta → product_info, fitment, action. Sama marka nie wymusza car_model. Jak dobieracie dywaniki, bez auta → product_info, fitment, knowledge. Kurs walut, konto, płatność → out_of_scope.`,
     model: DEEPSEEK_MASTRA_MODEL,
     tools: QUALIFIER_AGENT_TOOLS,
   });

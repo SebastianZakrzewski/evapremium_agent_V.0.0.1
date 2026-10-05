@@ -78,6 +78,23 @@ describe('prepareIntentTurn', () => {
     expect(profileAllowsTool(turn.toolIds, 'resolve-template')).toBe(false);
   });
 
+  it('exposes collect-contact for a contact request', async () => {
+    const turn = await prepareIntentTurn(qualifier, 'Proszę o kontakt');
+
+    expect(turn.intent).toBe('after_sales');
+    expect(turn.subIntent).toBe('contact_request');
+    expect(turn.mode).toBe('action');
+    expect(turn.toolIds).toEqual(['collect-contact']);
+    expect(turn.contactWorkflow?.missing).toBe('given_name');
+    expect(turn.instructions).toContain('collect-contact');
+  });
+
+  it('keeps a shop phone question off collect-contact', async () => {
+    const turn = await prepareIntentTurn(qualifier, 'Jaki macie numer telefonu?');
+
+    expect(turn.toolIds).not.toContain('collect-contact');
+  });
+
   it('gives delivery search-leaves and lookup-leaf without quote-price', async () => {
     const turn = await prepareIntentTurn(
       qualifier,

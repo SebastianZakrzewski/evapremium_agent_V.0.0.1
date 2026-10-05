@@ -107,7 +107,7 @@ export class AfterSalesIntentProfile implements IntentProfile {
   readonly context =
     'Pielęgnacja, gwarancja, montaż — z zapisanego faktu sklepu, gdy lookup-leaf zwraca hit.';
   readonly instructions =
-    `${FAQ_TURN_PROCEDURE} Z listy search preferuj (tylko jeśli tam są): gwarancja, reklamacja, czyszczenie, montaz, niedopasowanie-wymiana. Bez hitu nie obiecuj kontaktu bez leada Nest i nie opisuj klientowi braku rekordu.`;
+    `${FAQ_TURN_PROCEDURE} Z listy search preferuj (tylko jeśli tam są): gwarancja, reklamacja, czyszczenie, montaz, niedopasowanie-wymiana. Bez hitu nie obiecuj kontaktu bez leada Nest i nie opisuj klientowi braku rekordu. Prośba o kontakt, oddzwonienie albo zostawienie numeru: bez search-leaves. Zbierz imię i telefon przez collect-contact. E-mail jest opcjonalny.`;
   readonly tools: ShopToolId[] = ['lookup-leaf', 'search-leaves'];
   readonly execution = faqExecution;
   readonly permissions = shopPermissions(['answer_after_sales']);

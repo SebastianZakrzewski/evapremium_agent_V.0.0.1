@@ -23,6 +23,7 @@ export const SUB_INTENT_SLUGS = [
   'delivery_info',
   'indicative_quote',
   'complaint_info',
+  'contact_request',
 ] as const;
 
 export type SubIntentSlug = (typeof SUB_INTENT_SLUGS)[number];
@@ -173,6 +174,31 @@ export const SUB_INTENT_CATALOG: readonly SubIntentConfig[] = [
     allowedModes: ['knowledge'],
     allowedTools: [...knowledgeFaq],
     relatedWorkflows: [],
+    requiredInputs: [],
+  },
+  {
+    slug: 'contact_request',
+    name: 'Prośba o kontakt',
+    description:
+      'Klient prosi o kontakt, oddzwonienie albo chce zostawić imię i numer. Pytanie o numer sklepu albo godziny to fakt, nie ta pod-intencja.',
+    parentIntent: 'after_sales',
+    examples: {
+      knowledge: [],
+      action: [
+        'Proszę o kontakt.',
+        'Chcę zostawić numer, oddzwońcie.',
+      ],
+    },
+    negativeExamples: [
+      'Jaki macie numer telefonu?',
+      'Jak się z Wami skontaktować?',
+      'Ile kosztują dywaniki?',
+    ],
+    relatedBranches: ['kontakt'],
+    allowedModes: ['action'],
+    allowedTools: ['collect-contact'],
+    relatedWorkflows: [],
+    directTool: 'collect-contact',
     requiredInputs: [],
   },
 ];

@@ -32,6 +32,17 @@ describe('StubIntentQualifier', () => {
     expect(result.intent).toBe('out_of_scope');
   });
 
+  it('maps a contact request to after_sales contact_request', async () => {
+    const result = await qualifier.qualify('Proszę o kontakt');
+    expect(result).toEqual({
+      intent: 'after_sales',
+      confidence: 1,
+      sub_intent: 'contact_request',
+      mode: 'action',
+      entities: {},
+    });
+  });
+
   it('maps a greeting to product_info', async () => {
     const result = await qualifier.qualify('Dzień dobry');
     expect(result.intent).toBe('product_info');
